@@ -1,4 +1,4 @@
-import { Screen } from "../Screen/screen";
+import { Screen } from "../rendering/screen";
 import { Entity } from "./entity";
 import { V2, Vector2 } from "../math/vector";
 import { RectBody } from "./transform";
@@ -63,11 +63,13 @@ export class PlayerEntity extends Entity<PlayerEntityData> implements RectBody {
 
 		const vel = velocity.clone().multiplyScalar(Rune.msPerUpdate / 1000);
 
+		const WorldSize = Screen.WorldSize;
+		
 		const minX = this.extents.x;
-		const maxX = Screen.WorldSize().x - this.extents.x;
+		const maxX = WorldSize.x - this.extents.x;
 
 		const minY = this.extents.y;
-		const maxY = Screen.WorldSize().y - this.extents.y;
+		const maxY = WorldSize.y - this.extents.y;
 
 		const position = Vector2.asVector2(this.transform.position);
 		position.add(vel);

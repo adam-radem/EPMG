@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
-	<title>EPMG</title>
+	<title>epmg</title>
 </head>
 
 <body>
@@ -12,12 +12,53 @@
 		<div id="container">
 			<div id="game">
 			</div>
-			<div id="ui">
+			<div id="ui-header">
+				<div class="ui-container">
+					<div class="player-score" id="ui_header_player_one">
+						<div class="icon">
+							<img />
+						</div>
+						<span class="name"></span>
+						<span class="score">999,999,999</span>
+					</div>
+					<div class="player-score" id="ui_header_player_two">
+						<div class="icon">
+							<img />
+						</div>
+						<span class="name"></span>
+						<span class="score">999,999,999</span>
+					</div>
+				</div>
+			</div>
+			<div id="ui-footer">
+				<div class="ui-container">
+					<div id="ui_footer_btn_one" class="footer-button hidden" onclick="Callbacks.FooterButtonPressed(1);">
+						<div class="cooldown-mask hidden"></div>
+						<span class="quantity">1</span>
+					</div>
+					<div id="ui_footer_btn_two" class="footer-button hidden" onclick="Callbacks.FooterButtonPressed(2);">
+						<div class="cooldown-mask hidden"></div>
+						<span class="quantity">2</span>
+					</div>
+					<div id="ui_footer_btn_three" class="footer-button hidden" onclick="Callbacks.FooterButtonPressed(3);">
+						<div class="cooldown-mask hidden"></div>
+						<span class="quantity">3</span>
+					</div>
+					<div id="ui_footer_btn_four" class="footer-button hidden" onclick="Callbacks.FooterButtonPressed(4);">
+						<div class="cooldown-mask hidden"></div>
+						<span class="quantity">4</span>
+					</div>
+					</ul>
+				</div>
 			</div>
 		</div>
-	</div>
-	<script type="module" src="/src/logic.ts"></script>
-	<script type="module" src="/src/main.ts"></script>
+
+		<script type="module" src="/src/logic.ts"></script>
+		<script type="module" src="/src/main.ts"></script>
+		<script type="module">
+			import { Callbacks } from "/src/main.ts";
+			window.Callbacks = Callbacks;
+		</script>
 </body>
 
 </html>
