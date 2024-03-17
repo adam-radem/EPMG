@@ -7,11 +7,10 @@ export interface TransformData {
 }
 
 export interface Body {
-	velocity: V2;
+	center: V2;
 }
 
 export interface RectBody extends Body {
-	center: V2;
 	extents: V2;
 }
 

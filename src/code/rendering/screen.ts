@@ -13,4 +13,9 @@ export class Screen {
 	static get WorldSize(): Vector2 {
 		return this._WorldSize;
 	}
+
+	private static _PlayableSize: Vector2 = new Vector2(720, 1080);
+	static get PlayableArea(): Vector2 {
+		return this._PlayableSize;
+	}
 }

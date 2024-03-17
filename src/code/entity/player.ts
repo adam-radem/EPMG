@@ -1,79 +1,53 @@
 import { Screen } from "../rendering/screen";
-import { Entity } from "./entity";
+import { EntitySystem, ShipEntity } from "./entity";
 import { V2, Vector2 } from "../math/vector";
 import { RectBody } from "./transform";
 import { PlayerId } from "rune-games-sdk";
 import { GameState } from "../game/game";
+import { ShipSlot, Ships } from "../types/shipdata";
+import { GetShipData } from "../databases/shipdatabase";
 
-export interface PlayerEntityData {
-	center: V2;
-	extents: V2;
-	velocity: V2;
+export interface PlayerEntityData extends ShipEntity {
+	target: V2;
+	collider: RectBody;
 }
 
-export class PlayerEntity extends Entity<PlayerEntityData> implements RectBody {
-	public PlayerId: PlayerId;
-	
-	private entityData: PlayerEntityData = {
-		center: Vector2.zero(),
-		extents: Vector2.one(),
-		velocity: Vector2.zero()
-	};
-
-	public constructor(id: PlayerId) {
-		super();
-		this.PlayerId = id;
+export class PlayerSystem extends EntitySystem<PlayerEntityData> {
+	public onUpdate(entity: PlayerEntityData, state: GameState, dt: number): void {
+		this.updateData(entity, dt);
 	}
 
-	public getData(): PlayerEntityData {
-		return this.entityData;	
-	}
+	public updateData(data: PlayerEntityData, dt: number): void {
+		const targetVector = Vector2.asVector2(data.target);
+		if (targetVector.isZero() || targetVector.equals(data.transform.position))
+			return;
 
-	public updateOrder(): number {
-		return 50;
-	}
+		const positionVector = Vector2.asVector2(data.transform.position);
 
-	public get center(): V2 {
-		return this.entityData.center;
-	}
-	public get extents(): V2 {
-		return this.entityData.extents;
-	}
-	public get velocity(): V2 {
-		return this.entityData.velocity;
-	}
+		const diffVector = targetVector.clone().subtract(positionVector);
 
-	public width(): number {
-		return this.extents.x * 2;
-	}
+		const shipSpeed = GetShipData(data.shipData)?.speed ?? 15;
 
-	public height(): number {
-		return this.extents.y * 2;
-	}
+		const vel = diffVector.clone().normalize().multiplyScalar(shipSpeed * dt / 1000);
+		if (diffVector.sqrMagnitude() <= vel.sqrMagnitude()) {
+			data.transform.position = targetVector;
+			return;
+		}
+		const theta = Math.atan2(vel.y, vel.x);
+		data.transform.angle = Math.floor(theta * (180 / Math.PI) - 270);
 
-	public onUpdate(state: GameState): void {
-		const data = state.entityData[this.id];
-		this.updateData(data);
-	}
+		const WorldSize = Screen.PlayableArea;
 
-	public updateData(data: PlayerEntityData): void {
-		this.entityData = data;
-		
-		const velocity = Vector2.asVector2(this.velocity);
+		const minX = data.collider.extents.x;
+		const maxX = WorldSize.x - data.collider.extents.x;
 
-		const vel = velocity.clone().multiplyScalar(Rune.msPerUpdate / 1000);
+		const minY = data.collider.extents.y;
+		const maxY = WorldSize.y - data.collider.extents.y;
 
-		const WorldSize = Screen.WorldSize;
-		
-		const minX = this.extents.x;
-		const maxX = WorldSize.x - this.extents.x;
-
-		const minY = this.extents.y;
-		const maxY = WorldSize.y - this.extents.y;
-
-		const position = Vector2.asVector2(this.transform.position);
+		const position = Vector2.asVector2(data.transform.position);
 		position.add(vel);
 		position.clamp(minX, maxX, minY, maxY);
-		this.transform.position = position;
+
+		data.transform.position = position;
 	}
 }

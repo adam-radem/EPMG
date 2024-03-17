@@ -1,0 +1,231 @@
+{
+	"ships": {
+		"empty": {
+			"type": 0,
+			"sprite": null,
+			"equipPositions": {
+				"left": {
+					"x": 0,
+					"y": 0
+				},
+				"right": {
+					"x": 0,
+					"y": 0
+				},
+				"front": {
+					"x": 0,
+					"y": 0
+				},
+				"back": {
+					"x": 0,
+					"y": 0
+				}
+			}
+		},
+		"playerOneBlue": {
+			"type": 4,
+			"sprite": "playerShip1_blue",
+			"speed": 360,
+			"baseHealth": 100,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerOneGreen": {
+			"type": 5,
+			"sprite": "playerShip1_green",
+			"speed": 420,
+			"baseHealth": 90,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerOneOrange": {
+			"type": 6,
+			"sprite": "playerShip1_orange",
+			"speed": 540,
+			"baseHealth": 80,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerOneRed": {
+			"type": 7,
+			"sprite": "playerShip1_red",
+			"speed": 540,
+			"baseHealth": 70,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerTwoBlue": {
+			"type": 8,
+			"sprite": "playerShip2_blue",
+			"speed": 360,
+			"baseHealth": 100,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerTwoGreen": {
+			"type": 9,
+			"sprite": "playerShip2_green",
+			"speed": 420,
+			"baseHealth": 90,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerTwoOrange": {
+			"type": 10,
+			"sprite": "playerShip2_orange",
+			"speed": 480,
+			"baseHealth": 80,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerTwoRed": {
+			"type": 11,
+			"sprite": "playerShip2_red",
+			"speed": 540,
+			"baseHealth": 70,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerThreeBlue": {
+			"type": 12,
+			"sprite": "playerShip3_blue",
+			"speed": 360,
+			"baseHealth": 100,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerThreeGreen": {
+			"type": 13,
+			"sprite": "playerShip3_green",
+			"speed": 420,
+			"baseHealth": 90,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerThreeOrange": {
+			"type": 14,
+			"sprite": "playerShip3_orange",
+			"speed": 480,
+			"baseHealth": 80,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerThreeRed": {
+			"type": 15,
+			"sprite": "playerShip3_red",
+			"speed": 540,
+			"baseHealth": 70,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"enemyOneBlack": {
+			"type": 16,
+			"sprite": "enemyBlack1",
+			"speed": 540,
+			"baseHealth": 70,
+			"collider": {
+				"center": {
+					"x": 0,
+					"y": 40
+				},
+				"radius": 35
+			}
+		}
+	}
+}

@@ -1,13 +1,16 @@
-import { EntityId, Entity } from "../entity/entity";
 import { PlayerId } from "rune-games-sdk";
-import { PlayerEntity, PlayerEntityData } from "../entity/player";
-import { World } from "../level/world";
+import { PlayerSystem, PlayerEntityData } from "../entity/player";
 import { GlobalGameParameters } from "./static";
-import { EnemyEntity, EnemyEntityData } from "../entity/enemy";
-import { TransformData } from "../entity/transform";
-import { EntityList } from "../entity/entityList";
+import { EnemySystem, EnemyEntityData, Path } from "../entity/enemy";
+import { Ships } from "../types/shipdata";
+import { Vector2 } from "../math/vector";
+import { WeaponData, WeaponSystem } from "../entity/weapon";
+import { ProjectileData, ProjectileSystem } from "../entity/projectile";
+import { GetShipData } from "../databases/shipdatabase";
+import { RectBody } from "../entity/transform";
+import { Screen } from "../rendering/screen";
 
-export enum LevelState {
+export enum Phase {
 	Briefing,
 	Game,
 	Shop,
@@ -15,170 +18,117 @@ export enum LevelState {
 	Defeat
 }
 
-export class Game {
-	private static instance: Game;
-	public static get CurrentGame() {
-		return this.instance;
+const playerSystem = new PlayerSystem();
+const enemySystem = new EnemySystem();
+const weaponSystem = new WeaponSystem();
+const projectileSystem = new ProjectileSystem();
+
+export function NextEntityId(state: GameState) { return ++state.entityCount; };
+
+export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
+	const dt = Rune.gameTime() - state.time;
+	state.time = Rune.gameTime();
+
+	const destroyed = {
+		players: [],
+		enemies: [],
+		weapons: [],
+		projectiles: []
+	};
+
+	//Update player state first
+	for (const playerId in state.players) {
+		const playerData = state.players[playerId];
+		playerSystem.onUpdate(playerData, state, dt);
 	}
 
-	private entityList: EntityList;
-
-	constructor(state: GameState) {
-		this.entityList = new EntityList();
+	//Then update enemies
+	for (const enemyId in state.enemies) {
+		const enemyData = state.enemies[enemyId];
+		enemySystem.onUpdate(enemyData, state, dt);
 	}
 
-	public addEntity(state: GameState, entity: Entity<any>) {
-		this.entityList.addEntity(entity);
-		state.transforms[entity.id] = entity.transform;
-		state.entityData[entity.id] = entity?.getData?.();
+	for (const weaponId in state.weapons) {
+		const weaponData = state.weapons[weaponId];
+		weaponSystem.onUpdate(weaponData, state, dt);
 	}
 
-	public removeEntity(entityId: EntityId) {
-		this.entityList.removedEntities.push(entityId);
+	for (const projectileId in state.projectiles) {
+		const projectileData = state.projectiles[projectileId];
+		projectileSystem.onUpdate(projectileData, state, dt);
 	}
 
-	public getPlayer(playerId: PlayerId) {
-		return this.entityList.getPlayer(playerId);
+	for (const id in destroyed.players) {
+		delete state.players[id];
 	}
-
-	//Main gameplay update loop
-	public update(state: GameState, playerIds: string[]): void {
-		switch (state.level.state) {
-			case LevelState.Victory:
-				state.level.progress += Rune.msPerUpdate;
-				if (state.level.progress >= 5) {
-					this.exitGame();
-				}
-				return;
-			case LevelState.Briefing:
-				return;
-		}
-
-
-		const localState = JSON.parse(JSON.stringify(state));
-		/// Transform Pass ///
-		//Update entity positions to match the current game state
-
-		//Synchronize entity positions with current game state positions
-		//This is important because if the state has rolled back the 
-		//entities need to be repositioned to their previous points
-		for (const id in this.entityList.allEntities) {
-			const transformData = localState.transforms[id];
-			this.entityList.allEntities[id].updateTransform(transformData);
-		}
-
-		/// World State Pass ///
-		//Calculate the current World state based on the initial state of the level
-		//Update World
-		if (Rune.msPerUpdate) {//weird bug where Rune global objects get reassigned
-			World.Current.onUpdate?.(localState, Rune.msPerUpdate);
-		}
-
-		/// Individual Update Pass ///
-		//All entities run their game logic here in a specific order
-		const allEntities = Object.entries(this.entityList.allEntities).map(x => x[1]);
-		//Entity contains an updateOrder which specifies how soon it should be updated
-		//Players = 50, Enemies = 60, Default = 100
-		allEntities.sort((a, b) => a.updateOrder() - b.updateOrder());
-
-		//Update entities that have an update function implemented
-		for (var entity of allEntities) {
-			entity?.onUpdate?.(localState);
-		}
-
-		/// Collision Pass ///
-		//Resolve collisions between entities and invoke callbacks
-
-		/// Destruction Pass ///
-		//Remove any entities that have been flagged as Destroyed
-		this.entityList.cleanup();
-
-		/// Cleanup Pass ///
-		//Reassign updated level data
-		state.level.id = localState.level.id;
-		state.level.state = localState.level.state;
-		state.level.progress = localState.level.progress;
-
-		//Reassign all entity data back into the game state
-		state.transforms = {};
-		state.entityData = {};
-
-		//Reassign all the updated entity data back to the game state
-		for (const id in this.entityList.allEntities) {
-			const entity = this.entityList.allEntities[id];
-			const data = entity.transform;
-			state.transforms[entity.id] = data;
-
-			const entityData = entity?.getData?.();
-			if (entityData) {
-				state.entityData[entity.id] = entityData;
-			}
-		}
+	for (const id in destroyed.enemies) {
+		delete state.enemies[id];
 	}
-
-	public startLevel(state: GameState, levelId: number) {
-		// this.state!.gameLevelId = levelId;
-		// this.state!.levelProgress = 0;
-		// this.state!.levelState = LevelState.Game;
+	for (const id in destroyed.weapons) {
+		delete state.weapons[id];
 	}
-
-	public openShop(state: GameState) {
-		state.level.state = LevelState.Shop;
-	}
-
-	public victory(state: GameState) {
-		state.level.state = LevelState.Victory;
-		Rune.gameOver({
-			players: state.playerScores,
-			delayPopUp: true
-		});
-	}
-
-	public defeat(state: GameState) {
-		state.level.state = LevelState.Defeat;
-		const playerState: any = {};
-		for (const id in state.playerScores) {
-			playerState[id] = "LOST";
-		}
-		Rune.gameOver({
-			players: playerState,
-			delayPopUp: false
-		});
-	}
-
-	public exitGame() {
-		Rune.showGameOverPopUp();
-	}
-
-	static CreateGame(allPlayerIds: string[]): GameState {
-		const state: GameState = {
-			level: {
-				state: LevelState.Briefing,
-				id: 0,
-				segment: 0,
-				progress: 0,
-			},
-			playerScores: {},
-			transforms: {},
-			entityData: {}
-		};
-
-		Game.instance = new Game(state);
-
-		for (let playerId of allPlayerIds) {
-			const player: PlayerEntity = new PlayerEntity(playerId);
-			Game.instance.addEntity(state, player);
-
-			state.playerScores[playerId] = 0;
-		}
-		console.log(`Game has been initialized with ${allPlayerIds.length} players`);
-		console.log(state);
-		return state;
+	for (const id in destroyed.projectiles) {
+		delete state.projectiles[id];
 	}
 }
 
+export function NewGameState(allPlayerIds: string[]): GameState {
+	const state: GameState = {
+		level: {
+			phase: Phase.Game,
+			id: 0,
+			seed: Math.floor(Math.random() * 65535),
+			segment: 0,
+			progress: 0,
+		},
+		entityCount: 0,
+		time: 0,
+		scores: {},
+		players: {},
+		enemies: {},
+		enemyPathData: {},
+		weapons: {},
+		projectiles: {}
+	};
+
+	const livePlayers = allPlayerIds.filter(x => x);
+
+	let cnt = 0;
+	for (let playerId of allPlayerIds) {
+		if (!playerId) //Spectator playerIds are null
+			continue;
+
+		const ship = Ships.Players[cnt] + Ships.RandomColor();
+		const shipData = GetShipData(ship.GetShipType());
+		const player: PlayerEntityData = {
+			id: playerId,
+			shipData: ship,
+			transform: {
+				position: GlobalGameParameters.GetStartPosition(cnt, livePlayers.length),
+				angle: 0,
+				scale: 1
+			},
+			collider: (shipData.collider as RectBody),
+			target: Vector2.zero(),
+			health: shipData.baseHealth!,
+			maxHealth: shipData.baseHealth!
+		};
+		state.players[playerId] = player;
+		state.scores[playerId] = 0;
+
+		++cnt;
+	}
+
+	const path = EnemySystem.CreatePath(state, [{ x: Screen.PlayableArea.x + 100, y: 360 }, { x: -100, y: 360 }]);
+	EnemySystem.CreateEnemy(Ships.Enemies[0], path, state);
+
+	console.log(`Game has been initialized with ${allPlayerIds.length} players`);
+	return state;
+}
+
 export interface GameLevelState {
-	state: LevelState;
+	phase: Phase;
+	seed: number;
 	id: number;
 	segment: number;
 	progress: number;
@@ -186,7 +136,12 @@ export interface GameLevelState {
 
 export interface GameState {
 	level: GameLevelState;
-	playerScores: Record<PlayerId, number>;
-	transforms: Record<EntityId, TransformData>;
-	entityData: Record<EntityId, any>;
+	time: number;
+	entityCount: number;
+	scores: Record<PlayerId, number>;
+	players: Record<PlayerId, PlayerEntityData>;
+	enemies: Record<EntityId, EnemyEntityData>;
+	enemyPathData: Record<number, Path>;
+	weapons: Record<EntityId, WeaponData>;
+	projectiles: Record<EntityId, ProjectileData>;
 }

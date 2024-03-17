@@ -24,8 +24,16 @@ export class Vector2 implements V2 {
 		return new Vector2(1, 1);
 	}
 
+	public isZero(): boolean {
+		return this.x === 0 && this.y === 0;
+	}
+
 	public clone(): Vector2 {
 		return new Vector2(this.x, this.y);
+	}
+
+	public equals(other: V2): boolean {
+		return this.x === other.x && this.y === other.y;
 	}
 
 	public sqrMagnitude(): number {
@@ -35,8 +43,8 @@ export class Vector2 implements V2 {
 		return Math.sqrt(this.sqrMagnitude());
 	}
 
-	public normalize() {
-		this.divideScalar(this.magnitude());
+	public normalize(): Vector2 {
+		return this.divideScalar(this.magnitude());
 	}
 
 	public clamp(minX: number, maxX: number, minY: number, maxY: number): Vector2 {
@@ -67,5 +75,24 @@ export class Vector2 implements V2 {
 		this.x /= scalar;
 		this.y /= scalar;
 		return this;
+	}
+
+	public angle(): number {
+		return Math.atan2(this.y, this.x);
+	}
+
+	public static dot(a: Vector2, b: Vector2): number {
+		return a.x * b.x + a.y * b.y;
+	}
+
+	public static lerp(a: V2, b: V2, t: number): Vector2 {
+		const x = a.x * (1 - t) + b.x * t;
+		const y = a.y * (1 - t) + b.y * t;
+		return new Vector2(x,y);
+	}
+
+	public static angle(a: V2, b: V2): number {
+		const diffVector = Vector2.asVector2(a).subtract(Vector2.asVector2(b));
+		return Math.atan2(diffVector.y, diffVector.x);
 	}
 }

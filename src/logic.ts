@@ -1,59 +1,56 @@
 import type { RuneClient } from "rune-games-sdk/multiplayer";
 import { GameActions } from "./code/game/actions";
-import { Game, GameState, LevelState } from "./code/game/game";
+import * as Game from "./code/game/game";
 import { GlobalGameParameters } from "./code/game/static";
 
 declare global {
-	const Rune: RuneClient<GameState, GameActions>;
+	const Rune: RuneClient<Game.GameState, GameActions>;
 }
 
 Rune.initLogic({
 	minPlayers: 1,
 	maxPlayers: 2,
 	updatesPerSecond: 30,
-	setup: Game.CreateGame,
+	setup: (allPlayerIds: string[]) => {
+		return Game.NewGameState(allPlayerIds);
+	},
 	actions: {
-		setVelocity: ({ newVelocity }, { game, playerId }) => {
-			const playerEntity = Game.CurrentGame.getPlayer(playerId);
-			const vel = playerEntity?.getData?.().velocity;
-			if (vel) {
-				vel.x = newVelocity.x;
-				vel.y = newVelocity.y;
-			}
+		setTarget: ({ newTarget }, { game, playerId }) => {
+			const playerData = game.players[playerId];
+			playerData.target = newTarget;
 		},
 		endScene: ({ }, { game }) => {
-			switch (game.level.state) {
-				case LevelState.Briefing:
-					Game.CurrentGame.startLevel(game, 0);
+			game.level.progress = 0;
+			switch (game.level.phase) {
+				case Game.Phase.Briefing:
+					game.level.phase = Game.Phase.Game;
 					break;
-				case LevelState.Game:
+				case Game.Phase.Game:
 					if (game.level.id + 1 < GlobalGameParameters.GameLevelCount) {
-						Game.CurrentGame.openShop(game);
+						game.level.phase = Game.Phase.Shop;
 					}
 					else {
-						Game.CurrentGame.victory(game);
+						game.level.phase = Game.Phase.Victory;
 					}
 					break;
-				case LevelState.Shop:
-					Game.CurrentGame.startLevel(game, game.level.id + 1);
+				case Game.Phase.Shop:
+					game.level.id += 1;
+					game.level.phase = Game.Phase.Game;
+					game.level.progress = 0;
 					break;
 			}
 		}
 	},
 	update: ({ game, allPlayerIds }) => {
-		Game.CurrentGame?.update(game, allPlayerIds);
+		Game.UpdateGameState(game, allPlayerIds);
 	},
 	events: {
 		playerLeft: (playerId, eventContext) => {
-			if (!Game.CurrentGame) {
-				console.log(`Game was never initialized!`);
-				return;
-			}
 			console.log(`Player ${playerId} has left...`);
-			const playerEntity = Game.CurrentGame.getPlayer(playerId);
+			const playerEntity = (this as any).game.getPlayer(playerId);
 			console.log(playerEntity);
 			if (playerEntity) {
-				Game.CurrentGame.removeEntity(playerEntity.id);
+				(this as any).game.removeEntity(playerEntity.id);
 			}
 		},
 		playerJoined: (playerId, eventContext) => {

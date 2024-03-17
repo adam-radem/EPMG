@@ -1,0 +1,13 @@
+{
+	"equipment": {
+		"empty": {
+			"type": 0,
+			"slot": 0,
+			"sprite": null,
+			"anchor": {
+				"x": 0,
+				"y": 0
+			}
+		}
+	}
+}

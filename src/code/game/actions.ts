@@ -1,7 +1,9 @@
-import { Vector2
- } from "../math/vector";
+import {
+	V2,
+	Vector2
+} from "../math/vector";
 
 export type GameActions = {
-	setVelocity: (params: { newVelocity: Vector2; }) => void;
+	setTarget: (params: { newTarget: V2; }) => void;
 	endScene: (params: {}) => void;
 };

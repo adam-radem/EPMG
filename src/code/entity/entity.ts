@@ -1,30 +1,19 @@
 import { GameState } from "../game/game";
-import { Vector2 } from "../math/vector";
-import { TransformData } from "./transform";
+import { ShipEquipment } from "../types/shipdata";
+import { CircBody, RectBody, TransformData } from "./transform";
 
-export type EntityId = number;
-
-export class Entity<T> {
-	static LastID: EntityId = 0;
-
-	id: EntityId;
+export interface EntityData {
+	id: EntityId,
 	transform: TransformData;
+}
 
-	constructor() {
-		this.id = ++Entity.LastID;
-		this.transform = {
-			position: Vector2.zero(),
-			angle: 0,
-			scale: 1
-		};
-	}
+export interface ShipEntity extends EntityData {
+	shipData: ShipEquipment;
+	collider: RectBody | CircBody | undefined;
+	health: number;
+	maxHealth: number;
+}
 
-	public updateTransform(transform: TransformData) {
-		this.transform = transform;
-	}
-
-	public updateOrder(): number { return 100; }
-	public onUpdate?(state: GameState): void;
-	public onDestroy?(): void;
-	public getData?(): T;
+export class EntitySystem<T extends EntityData> {
+	public onUpdate(entityData: T, state: GameState, dt: number) { }
 }

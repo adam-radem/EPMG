@@ -21,15 +21,25 @@ export const GetFooterElement = (idx: number) => {
 	return UIFooterElements[idx];
 };
 
+export const UpdatePlayerScores = (scores: Record<string, number>) => {
+	for (const el of UIHeaderElements) {
+		const pid = el.PlayerID;
+		if (pid) {
+			const score = scores[pid];
+			el.updateScore(score);
+		}
+	}
+};
+
 export const UpdateFooterPositions = () => {
 	const count = UIFooterElements.filter(x => x.isVisible()).length;
 
 	const positions = [
 		[],
-		['40vw'],
-		['25vw', '55vw'],
-		['15vw', '40vw', '65vw'],
-		['5vw', '27.5vw', '50vw', '72.5vw'],
+		['calc(50vw - 5vh)'],
+		['calc(40vw - 5vh)', 'calc(60vw - 5vh)'],
+		['calc(30vw - 5vh)', 'calc(50vw - 5vh)', 'calc(70vw - 5vh)'],
+		['calc(20vw - 5vh)', 'calc(40vw - 5vh)', 'calc(60vw - 5vh)', 'calc(80vw - 5vh)'],
 	];
 
 	const arrPositions = positions[count];
@@ -37,7 +47,7 @@ export const UpdateFooterPositions = () => {
 	let idx = 0;
 	for (let i = 0; i < UIFooterElements.length; ++i) {
 		const el = UIFooterElements[i];
-		if(el.isVisible()){
+		if (el.isVisible()) {
 			el.setPosition(arrPositions[idx]);
 			++idx;
 		}
