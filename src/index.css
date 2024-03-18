@@ -44,10 +44,6 @@ button:focus-visible {
 	outline: 0;
 }
 
-.hidden {
-	display: none;
-}
-
 #root {
 	font-family: Avantgarde, TeX Gyre Adventor, URW Gothic L, sans-serif;
 	line-height: 2vh;
@@ -69,11 +65,11 @@ button:focus-visible {
 }
 
 #FPS {
-	position:fixed;
+	position: fixed;
 	bottom: 0;
 	text-align: center;
 	width: 100vw;
-	line-height: 2vh;
+	line-height: 4vh;
 	font-size: 2vh;
 	margin: 0 auto;
 	color: #00FF00;
@@ -84,7 +80,7 @@ button:focus-visible {
 	position: fixed;
 	bottom: 0;
 	height: 20vh;
-	background-color: rgba(0,0,0,0.3);
+	background-color: rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: inset 0px -19px 22px 0px rgba(0, 0, 0, 1);
 	-moz-box-shadow: inset 0px -19px 22px 0px rgba(0, 0, 0, 1);
 	box-shadow: inset 0px -19px 22px 0px rgba(0, 0, 0, 1);
@@ -155,7 +151,7 @@ button:focus-visible {
 }
 
 .footer-button.disabled {
-	background-color: #0000007e;
+	background-color: #4444667e;
 	border: solid 0px #ffffff77;
 	cursor: not-allowed;
 }
@@ -202,6 +198,7 @@ button:focus-visible {
 	display: block;
 	opacity: 1;
 	background-color: #00000075;
+	background-blend-mode: darken;
 	position: absolute;
 	bottom: 0;
 }
@@ -230,21 +227,30 @@ button:focus-visible {
 
 /*#endregion Footer*/
 /* #region Header */
-#ui-header {
+#ui-header .ui-container {
 	position: absolute;
 	top: 1vh;
-	width: 96vw;
+	width: 98vw;
 	height: 8vh;
-	margin: 0px 1vh;
+	margin: 0 auto;
 	border-bottom: solid 2px #ffffff2c;
+
+	background-color: rgba(0, 0, 11, 0);
+	backdrop-filter: blur(6px);
 }
 
 .player-score {
 	display: block;
-	width: 45vw;
+	width: 22vw;
+	margin: 0vh 1vh 0vh 1vh;
 	height: 7vh;
-	background-color: rgba(17, 17, 17, 0.4);
-	backdrop-filter: blur(6px);
+	overflow: hidden;
+	transition: 0.1s linear;
+	backdrop-filter: inherit;
+}
+
+.player-score.hidden {
+	margin-top: -20vh;
 }
 
 .player-score span {
@@ -255,125 +261,45 @@ button:focus-visible {
 }
 
 .player-score .icon {
-	display: block;
-	width: 7vh;
-	height: 7vh;
-}
-
-.icon img {
-	aspect-ratio: 1;
-	height: 6vh;
-	border: solid 0.4vh rgba(255, 255, 255, 0.7);
-	margin: 0.5vh;
-	padding: 0.1vh;
-
-	box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-
-	border-radius: 50%;
-}
-
-#ui_header_player_one .icon {
+	display: inline-block;
+	z-index: -1;
 	position: absolute;
-	left: 0;
 	top: 0;
-}
-
-#ui_header_player_two .icon {
-	position: absolute;
-	right: 0;
-	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	opacity: 30%;
 }
 
 .player-score .name {
 	display: inline-block;
+	width: 100%;
+	height: 3vw;
+	overflow: visible;
 	position: absolute;
 	top: 0;
-	margin-top: 0.5vh;
+	margin-top: 0;
 
+	line-height: 2vh;
 	font-size: 2vh;
-	font-weight: 600;
+	font-weight: 400;
 
 	text-shadow: #000 0px 0px 1vh;
-}
-
-.player-score .score {
-	font-size: 3vh;
-	font-weight: 100;
-	vertical-align: middle;
-}
-
-#ui_header_player_one {
-	position: absolute;
-	left: 2px;
-	top: 0;
-}
-
-#ui_header_player_two {
-	position: absolute;
-	right: 2px;
-	top: 0;
-}
-
-#ui_header_player_one .name {
-	position: absolute;
-	left: 7vh;
-	bottom: 0;
-	text-align: left;
-}
-
-#ui_header_player_two .name {
-	position: absolute;
-	right: 7vh;
-	bottom: 0;
-	text-align: right;
+	text-align: center;
 }
 
 .player-score .score {
 	display: inline-block;
-	line-height: 9vh;
+	position: absolute;
+	bottom: 0.25vh;
+	width: 100%;
+
+	line-height: 3vh;
 	font-size: 2.5vh;
-}
+	font-weight: 100;
+	letter-spacing: calc(1-0.01vw);
 
-#ui_header_player_one .score {
-	position: absolute;
-	left: 7vh;
-	top: 0;
-	text-align: left;
-}
-
-#ui_header_player_two .score {
-	position: absolute;
-	right: 7vh;
-	top: 0;
-	text-align: right;
-}
-
-.player-cash {
-	width: 22vw;
-	height: 25vw;
-	margin: -3vh auto 0;
-	border-radius: 0 0 100% 100%;
-	border: solid 2px cyan;
-
-	background-color: #050505;
-	box-shadow: 0px 0px 10px #050505;
-}
-
-span.cash {
-	display: block;
-	color: #fff;
 	text-align: center;
-	font-size: 3vh;
-	font-weight: 500;
-	line-height: 5vh;
-	width: 20vw;
-	height: 5vh;
-	margin: 2vh auto;
-
-	position: absolute;
-	top: 2vh;
 }
 
 /* #endregion Header */

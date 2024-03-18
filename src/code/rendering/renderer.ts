@@ -8,7 +8,7 @@ import { GlobalGameParameters } from "../game/static.ts";
 const WorldSize = Screen.WorldSize;
 const gameDiv = document.getElementById('game') ?? null;
 const pixiOptions = {
-	background: '#000000',
+	background: '#000011',
 	width: WorldSize.x,
 	height: WorldSize.y,
 	useContextAlpha: false,
@@ -24,6 +24,7 @@ const pixiOptions = {
 
 export const App = new Pixi.Application(pixiOptions);
 export const Scene = new Pixi.Container();
+export const Background = new Pixi.Graphics();
 export const Renderer = App.renderer;
 export const SpriteData = await new Sprites();
 
@@ -56,15 +57,24 @@ export async function Init() {
 	Scene.height = playable.y;
 	Scene.x = (WorldSize.x - playable.x) / 2;
 	Scene.y = (WorldSize.y - playable.y) / 2;
+
 	App.stage.addChild(Scene);
 
-	const playableFrame = new Pixi.Graphics();
-	playableFrame.beginFill(0x000000, 0.2);
-	playableFrame.drawRoundedRect(0, 0, playable.x, playable.y, 12);
-	playableFrame.endFill();
-	playableFrame.zIndex = -1000;
+	const mask = new Pixi.Graphics();
+	mask.beginFill(0x000000, 0.2);
+	mask.drawRoundedRect(0, 0, playable.x, playable.y, 12);
+	mask.endFill();
+	mask.zIndex = -1000;
 
-	Scene.addChild(playableFrame);
+	Scene.mask = mask;
+	Scene.addChild(mask);
+
+	Background.beginFill(0x000011, 1);
+	Background.blendMode = Pixi.BLEND_MODES.ADD;
+	Background.drawRoundedRect(0, 0, playable.x, playable.y, 12);
+	Background.endFill();
+	Background.zIndex = -1000;
+	Scene.addChild(Background);
 
 	Scene.sortableChildren = true;
 
@@ -101,5 +111,11 @@ function fit(center: boolean, stage: Pixi.Container, screenWidth: number, screen
 }
 
 export function updateLevelParameters(state: GameState) {
-	App.renderer.background.color = `hsl(${(state.level.seed / 65535) * 360}deg 30% 10%)`;
+	const playable = Screen.PlayableArea;
+
+	const col = `hsl(${(state.level.seed / 65535) * 360}deg 30% 10%)`;
+	Background.clear();
+	Background.beginFill(col, 1);
+	Background.drawRoundedRect(0, 0, playable.x, playable.y, 12);
+	Background.endFill();
 }

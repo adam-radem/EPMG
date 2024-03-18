@@ -9,8 +9,8 @@ declare global {
 
 Rune.initLogic({
 	minPlayers: 1,
-	maxPlayers: 2,
-	updatesPerSecond: 30,
+	maxPlayers: 4,
+	updatesPerSecond: 20,
 	setup: (allPlayerIds: string[]) => {
 		return Game.NewGameState(allPlayerIds);
 	},
@@ -46,15 +46,13 @@ Rune.initLogic({
 	},
 	events: {
 		playerLeft: (playerId, eventContext) => {
-			console.log(`Player ${playerId} has left...`);
-			const playerEntity = (this as any).game.getPlayer(playerId);
-			console.log(playerEntity);
-			if (playerEntity) {
-				(this as any).game.removeEntity(playerEntity.id);
-			}
+			Game.DeletePlayer(eventContext.game, playerId);
 		},
 		playerJoined: (playerId, eventContext) => {
 			console.log(`Player ${playerId} has joined...`);
+
+			const livePlayers = eventContext.allPlayerIds.filter(x => x);
+			Game.CreatePlayer(eventContext.game, livePlayers.length - 1, playerId);
 		}
 	}
 });

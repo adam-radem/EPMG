@@ -8,6 +8,10 @@ export class HeaderElement extends UIElement<Player> {
 		return this.playerId;
 	}
 
+	public Reset() {
+		this.playerId = null;
+	}
+
 	public updateScore(score: number): void {
 		const childElements = this.element?.children;
 		if (!childElements)
@@ -16,7 +20,8 @@ export class HeaderElement extends UIElement<Player> {
 		for (let i = 0; i < len; ++i) {
 			const child = childElements[i];
 			if (child) {
-				if(child.classList.contains('score')){
+				if (child.classList.contains('score')) {
+					const score = 999999;
 					child.innerHTML = score.toLocaleString();
 				}
 			}
@@ -28,7 +33,7 @@ export class HeaderElement extends UIElement<Player> {
 			return;
 
 		this.playerId = data.playerId;
-		
+
 		const childElements = this.element?.children;
 		if (!childElements)
 			return;
@@ -40,7 +45,11 @@ export class HeaderElement extends UIElement<Player> {
 					child.innerHTML = data.displayName;
 				}
 				if (child.classList.contains('icon')) {
-					(child.children[0] as HTMLImageElement).src = data.avatarUrl;
+					console.log(`Assigning avatar: ${data.avatarUrl}`);
+					const childElement = child as HTMLDivElement;
+					childElement.style.background = `url('${data.avatarUrl}')`;
+					childElement.style.backgroundPosition = 'bottom 40% right 60%';
+					childElement.style.backgroundSize = 'cover';
 				}
 			}
 		}

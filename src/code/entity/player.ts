@@ -9,6 +9,7 @@ import { GetShipData } from "../databases/shipdatabase";
 
 export interface PlayerEntityData extends ShipEntity {
 	target: V2;
+	idx:number;
 	collider: RectBody;
 }
 

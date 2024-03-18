@@ -5,12 +5,13 @@ import { Scene, SpriteData } from "./renderer.ts";
 import { RenderEntity } from "./renderEntity.ts";
 import { ShipEntity } from "../entity/entity.ts";
 import { GlobalGameParameters } from "../game/static.ts";
+import { HealthBar } from "./HealthBar.ts";
 
 export class Ship implements RenderEntity<ShipEntity> {
 	shipContainer: Pixi.Container | undefined;
 	shipData: ShipEquipment;
 	colliderDebug: Pixi.Graphics | undefined;
-	healthBar: Pixi.Graphics | undefined;
+	healthBar: HealthBar | undefined;
 	mainSprite: Pixi.Sprite | undefined;
 
 	public constructor(id: EntityId, data: ShipEntity) {
@@ -24,7 +25,7 @@ export class Ship implements RenderEntity<ShipEntity> {
 
 		this.shipContainer = new Pixi.Container();
 		this.shipContainer.sortableChildren = true;
-		this.shipContainer.pivot.set(0.5, 1);
+		this.shipContainer.pivot.set(0.5, 0);
 
 		const sortId = -id;
 		if (!isNaN(sortId))
@@ -49,37 +50,17 @@ export class Ship implements RenderEntity<ShipEntity> {
 			this.shipContainer.addChild(this.colliderDebug);
 		}
 
-		if (data.maxHealth > 0)
-			this.createHealthBar();
+		if (data.maxHealth > 0) {
+			this.healthBar = new HealthBar();
+			this.shipContainer.addChild(this.healthBar.Container);
+		}
 
 		this.setShipData(data.shipData);
 	}
 
-	private createHealthBar() {
-		const bg = new Pixi.Graphics();
-		bg.beginFill(0x000000, 1);
-		bg.lineStyle(2, 0xFFFFFF, 1);
-		bg.drawRect(-71, -61, 8, 62);
-		bg.endFill();
-		bg.zIndex = 1;
-
-		this.healthBar = new Pixi.Graphics();
-		bg.addChild(this.healthBar);
-
-		this.updateHealthBar(1);
-
-		this.shipContainer!.addChild(bg);
-	}
 
 	private updateHealthBar(ratio: number) {
-		if(this.healthBar){
-			const height = Math.min(Math.max(ratio, 0), 1) * 60;
-			this.healthBar.clear();
-	
-			this.healthBar.beginFill(0x00FF00, 1);
-			this.healthBar.drawRect(-70, -height, 6, height);
-			this.healthBar.endFill();
-		}
+		this.healthBar?.setHealthValue(ratio);
 	}
 
 	public setShipData(shipData: ShipEquipment) {
@@ -135,6 +116,7 @@ export class Ship implements RenderEntity<ShipEntity> {
 	}
 
 	public onDestroy() {
+		console.log(`destroying a ship`);
 		if (this.colliderDebug)
 			this.colliderDebug.destroy();
 		if (this.shipContainer)

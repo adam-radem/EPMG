@@ -19,6 +19,7 @@ export class GameClient {
 
 	interval: number = -1;
 	localPlayerPosition: V2 = Vector2.zero();
+	directionChanged: boolean = false;
 	lastInputDirection: Vector2 = Vector2.zero();
 	renderEntities: EntityList = {};
 
@@ -47,7 +48,7 @@ export class GameClient {
 
 			window.addEventListener('pointermove', cbMove);
 
-			this.interval = window.setInterval(dispatch, 250);
+			this.interval = window.setInterval(dispatch, 200);
 		};
 
 		const onPointerMove = (ev: PointerEvent) => {
@@ -55,8 +56,10 @@ export class GameClient {
 				return;
 
 			const projected = Vector2.asVector2(Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) }));
-			this.lastInputDirection = projected;
-
+			if(projected.clone().subtract(this.lastInputDirection).sqrMagnitude() > 10) {
+				this.directionChanged = true;
+				this.lastInputDirection = projected;
+			}
 		};
 
 		const onPointerCancel = (ev: PointerEvent) => {
@@ -71,8 +74,11 @@ export class GameClient {
 		};
 
 		const dispatchEvent = () => {
+			if (!this.directionChanged)
+				return;
 			const pos = this.lastInputDirection;
 			Rune.actions.setTarget({ newTarget: pos });
+			this.directionChanged = false;
 		};
 
 		const cbDown = onPointerDown.bind(this);
@@ -95,20 +101,7 @@ export class GameClient {
 	public updatePlayers(players: Players, localPlayer: PlayerId | undefined) {
 		this.localPlayerId = localPlayer;
 
-		let idx = 0;
-		let spectatorCount = 0;
-		for (const player in players) {
-			const playerData = players[player];
-			if (playerData.playerId) {
-				const playerHeaderElement = UI.GetHeaderElement(idx);
-				if (playerHeaderElement) {
-					playerHeaderElement.setData(playerData);
-					playerHeaderElement.setVisible(true);
-				}
-				++idx;
-			}
-			++spectatorCount;
-		}
+		UI.UpdatePlayers(players, localPlayer);
 	}
 
 	public updateState(state: GameState) {
@@ -161,7 +154,9 @@ export class GameClient {
 			this.renderEntities[enemyId] = ship;
 		}
 
-		for (const entityId in removedEntities) {
+		for (const entityId of removedEntities) {
+			if(!entityId)
+				continue;
 			const entity = this.renderEntities[entityId];
 			if (entity)
 				entity.onDestroy?.();

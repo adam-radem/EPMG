@@ -1,9 +1,12 @@
 import { HeaderElement } from "./HeaderElement";
 import { FooterElement } from "./FooterElement";
+import { Player, PlayerId, Players } from "rune-games-sdk";
 
 const UIHeaderElements = [
 	new HeaderElement('ui_header_player_one'),
-	new HeaderElement('ui_header_player_two')
+	new HeaderElement('ui_header_player_two'),
+	new HeaderElement('ui_header_player_three'),
+	new HeaderElement('ui_header_player_four')
 ];
 
 const UIFooterElements = [
@@ -24,9 +27,42 @@ export const GetFooterElement = (idx: number) => {
 export const UpdatePlayerScores = (scores: Record<string, number>) => {
 	for (const el of UIHeaderElements) {
 		const pid = el.PlayerID;
-		if (pid) {
+		if (pid && pid in scores) {
 			const score = scores[pid];
 			el.updateScore(score);
+		}
+	}
+};
+
+export const UpdatePlayers = (players: Players, localPlayerId: PlayerId | undefined) => {
+	const assignedPlayers: Record<PlayerId, Player> = {};
+	const unassignedUI: HeaderElement[] = [];
+	for (let ui of UIHeaderElements) {
+		if (ui.PlayerID) {
+			//If this ui is assigned to a player that left, disable it
+			if (!(ui.PlayerID in players)) {
+				ui.Reset();
+				unassignedUI.push(ui);
+			}
+			else {
+				assignedPlayers[ui.PlayerID] = players[ui.PlayerID];
+			}
+		}
+		else {
+			ui.setVisible(false);
+			unassignedUI.push(ui);
+		}
+	}
+
+	unassignedUI.reverse();
+
+	for (const playerId in players) {
+		if (!playerId || playerId in assignedPlayers)
+			continue;
+		const ui = unassignedUI.pop();
+		if (ui) {
+			ui.setData(players[playerId]);
+			ui.setVisible(true);
 		}
 	}
 };

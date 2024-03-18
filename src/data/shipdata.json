@@ -22,7 +22,7 @@
 				}
 			}
 		},
-		"playerOneBlue": {
+		"playerShipOneBlue": {
 			"type": 4,
 			"sprite": "playerShip1_blue",
 			"speed": 360,
@@ -38,57 +38,9 @@
 				}
 			}
 		},
-		"playerOneGreen": {
+		"playerShipOneGreen": {
 			"type": 5,
 			"sprite": "playerShip1_green",
-			"speed": 420,
-			"baseHealth": 90,
-			"collider": {
-				"center": {
-					"x": 40,
-					"y": 25
-				},
-				"extents": {
-					"x": 40,
-					"y": 20
-				}
-			}
-		},
-		"playerOneOrange": {
-			"type": 6,
-			"sprite": "playerShip1_orange",
-			"speed": 540,
-			"baseHealth": 80,
-			"collider": {
-				"center": {
-					"x": 40,
-					"y": 25
-				},
-				"extents": {
-					"x": 40,
-					"y": 20
-				}
-			}
-		},
-		"playerOneRed": {
-			"type": 7,
-			"sprite": "playerShip1_red",
-			"speed": 540,
-			"baseHealth": 70,
-			"collider": {
-				"center": {
-					"x": 40,
-					"y": 25
-				},
-				"extents": {
-					"x": 40,
-					"y": 20
-				}
-			}
-		},
-		"playerTwoBlue": {
-			"type": 8,
-			"sprite": "playerShip2_blue",
 			"speed": 360,
 			"baseHealth": 100,
 			"collider": {
@@ -102,11 +54,11 @@
 				}
 			}
 		},
-		"playerTwoGreen": {
-			"type": 9,
-			"sprite": "playerShip2_green",
-			"speed": 420,
-			"baseHealth": 90,
+		"playerShipOneOrange": {
+			"type": 6,
+			"sprite": "playerShip1_orange",
+			"speed": 360,
+			"baseHealth": 100,
 			"collider": {
 				"center": {
 					"x": 40,
@@ -118,7 +70,55 @@
 				}
 			}
 		},
-		"playerTwoOrange": {
+		"playerShipOneRed": {
+			"type": 7,
+			"sprite": "playerShip1_red",
+			"speed": 360,
+			"baseHealth": 100,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerShipTwoBlue": {
+			"type": 8,
+			"sprite": "playerShip2_blue",
+			"speed": 480,
+			"baseHealth": 80,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerShipTwoGreen": {
+			"type": 9,
+			"sprite": "playerShip2_green",
+			"speed": 480,
+			"baseHealth": 80,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerShipTwoOrange": {
 			"type": 10,
 			"sprite": "playerShip2_orange",
 			"speed": 480,
@@ -134,57 +134,9 @@
 				}
 			}
 		},
-		"playerTwoRed": {
+		"playerShipTwoRed": {
 			"type": 11,
 			"sprite": "playerShip2_red",
-			"speed": 540,
-			"baseHealth": 70,
-			"collider": {
-				"center": {
-					"x": 40,
-					"y": 25
-				},
-				"extents": {
-					"x": 40,
-					"y": 20
-				}
-			}
-		},
-		"playerThreeBlue": {
-			"type": 12,
-			"sprite": "playerShip3_blue",
-			"speed": 360,
-			"baseHealth": 100,
-			"collider": {
-				"center": {
-					"x": 40,
-					"y": 25
-				},
-				"extents": {
-					"x": 40,
-					"y": 20
-				}
-			}
-		},
-		"playerThreeGreen": {
-			"type": 13,
-			"sprite": "playerShip3_green",
-			"speed": 420,
-			"baseHealth": 90,
-			"collider": {
-				"center": {
-					"x": 40,
-					"y": 25
-				},
-				"extents": {
-					"x": 40,
-					"y": 20
-				}
-			}
-		},
-		"playerThreeOrange": {
-			"type": 14,
-			"sprite": "playerShip3_orange",
 			"speed": 480,
 			"baseHealth": 80,
 			"collider": {
@@ -198,7 +150,55 @@
 				}
 			}
 		},
-		"playerThreeRed": {
+		"playerShipThreeBlue": {
+			"type": 12,
+			"sprite": "playerShip3_blue",
+			"speed": 540,
+			"baseHealth": 70,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerShipThreeGreen": {
+			"type": 13,
+			"sprite": "playerShip3_green",
+			"speed": 540,
+			"baseHealth": 70,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerShipThreeOrange": {
+			"type": 14,
+			"sprite": "playerShip3_orange",
+			"speed": 540,
+			"baseHealth": 70,
+			"collider": {
+				"center": {
+					"x": 40,
+					"y": 25
+				},
+				"extents": {
+					"x": 40,
+					"y": 20
+				}
+			}
+		},
+		"playerShipThreeRed": {
 			"type": 15,
 			"sprite": "playerShip3_red",
 			"speed": 540,
@@ -217,7 +217,7 @@
 		"enemyOneBlack": {
 			"type": 16,
 			"sprite": "enemyBlack1",
-			"speed": 540,
+			"speed": 240,
 			"baseHealth": 70,
 			"collider": {
 				"center": {

@@ -14,12 +14,10 @@ export class GlobalGameParameters {
 	static readonly SegmentHeight: number = 1152;
 
 	static readonly StartPositions = [
-		[{ x: 360, y: StartPosY }],
-		[{ x: 240, y: StartPosY }, { x: 480, y: StartPosY }],
-		[{ x: 180, y: StartPosY }, { x: 360, y: StartPosY }, { x: 540, y: StartPosY }]
+		{ x: 90, y: StartPosY }, { x: 270, y: StartPosY }, { x: 450, y: StartPosY }, { x: 630, y: StartPosY }
 	];
 
-	static GetStartPosition(idx: number, cnt: number): V2 {
-		return this.StartPositions[cnt][idx];
+	static GetStartPosition(idx: number): V2 {
+		return this.StartPositions[idx];
 	}
 }

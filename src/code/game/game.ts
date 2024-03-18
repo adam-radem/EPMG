@@ -23,18 +23,14 @@ const enemySystem = new EnemySystem();
 const weaponSystem = new WeaponSystem();
 const projectileSystem = new ProjectileSystem();
 
+const removedEntities: EntityId[] = [];
+
 export function NextEntityId(state: GameState) { return ++state.entityCount; };
+export function Destroy(entity: EntityId) { removedEntities.push(entity); }
 
 export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	const dt = Rune.gameTime() - state.time;
 	state.time = Rune.gameTime();
-
-	const destroyed = {
-		players: [],
-		enemies: [],
-		weapons: [],
-		projectiles: []
-	};
 
 	//Update player state first
 	for (const playerId in state.players) {
@@ -58,18 +54,58 @@ export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 		projectileSystem.onUpdate(projectileData, state, dt);
 	}
 
-	for (const id in destroyed.players) {
+	const destroyed = {
+		players: removedEntities.filter(id => state.players[id]),
+		enemies: removedEntities.filter(id => state.enemies[id]),
+		weapons: removedEntities.filter(id => state.weapons[id]),
+		projectiles: removedEntities.filter(id => state.projectiles[id])
+	};
+
+	for (const id of destroyed.players) {
+		console.log(`Deleted player ${id}`);
 		delete state.players[id];
 	}
-	for (const id in destroyed.enemies) {
+	for (const id of destroyed.enemies) {
+		console.log(`Deleted enemy ${id}`);
 		delete state.enemies[id];
 	}
-	for (const id in destroyed.weapons) {
+	for (const id of destroyed.weapons) {
+		console.log(`Deleted weapon ${id}`);
 		delete state.weapons[id];
 	}
-	for (const id in destroyed.projectiles) {
+	for (const id of destroyed.projectiles) {
+		console.log(`Deleted projectile ${id}`);
 		delete state.projectiles[id];
 	}
+
+	removedEntities.length = 0;
+}
+
+export function CreatePlayer(state: GameState, idx: number, playerId: string) {
+	const ship = Ships.Players[0] + idx;
+	const shipData = GetShipData(ship.GetShipType());
+	const player: PlayerEntityData = {
+		id: playerId,
+		idx: idx,
+		shipData: ship,
+		transform: {
+			position: GlobalGameParameters.GetStartPosition(idx),
+			angle: 0,
+			scale: 1
+		},
+		collider: (shipData.collider as RectBody),
+		target: Vector2.zero(),
+		health: shipData.baseHealth!,
+		maxHealth: shipData.baseHealth!
+	};
+	state.players[playerId] = player;
+	state.scores[playerId] = 0;
+	return player;
+}
+
+export function DeletePlayer(state: GameState, playerId: string) {
+	delete state.players[playerId];
+	delete state.scores[playerId];
 }
 
 export function NewGameState(allPlayerIds: string[]): GameState {
@@ -97,30 +133,24 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 	for (let playerId of allPlayerIds) {
 		if (!playerId) //Spectator playerIds are null
 			continue;
-
-		const ship = Ships.Players[cnt] + Ships.RandomColor();
-		const shipData = GetShipData(ship.GetShipType());
-		const player: PlayerEntityData = {
-			id: playerId,
-			shipData: ship,
-			transform: {
-				position: GlobalGameParameters.GetStartPosition(cnt, livePlayers.length),
-				angle: 0,
-				scale: 1
-			},
-			collider: (shipData.collider as RectBody),
-			target: Vector2.zero(),
-			health: shipData.baseHealth!,
-			maxHealth: shipData.baseHealth!
-		};
-		state.players[playerId] = player;
-		state.scores[playerId] = 0;
-
+		CreatePlayer(state, cnt, playerId);
 		++cnt;
 	}
 
-	const path = EnemySystem.CreatePath(state, [{ x: Screen.PlayableArea.x + 100, y: 360 }, { x: -100, y: 360 }]);
+	const thirdWidth = Screen.PlayableArea.x / 3;
+
+	const p0 = { x: Screen.PlayableArea.x + 100, y: Math.random() * 500 + 350 };
+	const p1 = { x: Math.random() * thirdWidth + thirdWidth, y: Math.random() * 400 + 400 };
+	const p2 = { x: -100, y: Math.random() * 500 + 350 };
+
+	const pathPoints = [p0, p1, p2];
+	const reversed = [p2, p1, p0];
+
+	const path = EnemySystem.CreatePath(state, pathPoints);
 	EnemySystem.CreateEnemy(Ships.Enemies[0], path, state);
+
+	const reversedPath = EnemySystem.CreatePath(state, reversed);
+	EnemySystem.CreateEnemy(Ships.Enemies[0], reversedPath, state);
 
 	console.log(`Game has been initialized with ${allPlayerIds.length} players`);
 	return state;
