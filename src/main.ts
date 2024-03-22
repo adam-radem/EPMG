@@ -12,8 +12,7 @@ Renderer.Init().then(() => {
 	Rune.initClient({
 		onChange: (params) => {
 			Renderer.updateLevelParameters(params.game);
-			client.updatePlayers(params.players, params.yourPlayerId);
-			client.updateState(params.game);
+			client.updateState(params.game, params.allPlayerIds, params.yourPlayerId);
 		}
 	});
 });

@@ -51,8 +51,7 @@ Rune.initLogic({
 		playerJoined: (playerId, eventContext) => {
 			console.log(`Player ${playerId} has joined...`);
 
-			const livePlayers = eventContext.allPlayerIds.filter(x => x);
-			Game.CreatePlayer(eventContext.game, livePlayers.length - 1, playerId);
+			Game.CreatePlayer(eventContext.game, playerId);
 		}
 	}
 });

@@ -81,7 +81,17 @@ export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	removedEntities.length = 0;
 }
 
-export function CreatePlayer(state: GameState, idx: number, playerId: string) {
+export function CreatePlayer(state: GameState, playerId: string) {
+	const assignedPlayers = [];
+	for (const pid in state.players) {
+		assignedPlayers.push(state.players[pid].idx);
+	}
+	let idx = 0;
+	for (; idx < 4; ++idx) {
+		if(assignedPlayers.indexOf(idx) < 0)
+			break;
+	}
+
 	const ship = Ships.Players[0] + idx;
 	const shipData = GetShipData(ship.GetShipType());
 	const player: PlayerEntityData = {
@@ -127,13 +137,11 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		projectiles: {}
 	};
 
-	const livePlayers = allPlayerIds.filter(x => x);
-
 	let cnt = 0;
 	for (let playerId of allPlayerIds) {
 		if (!playerId) //Spectator playerIds are null
 			continue;
-		CreatePlayer(state, cnt, playerId);
+		CreatePlayer(state, playerId);
 		++cnt;
 	}
 

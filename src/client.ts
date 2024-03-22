@@ -56,7 +56,7 @@ export class GameClient {
 				return;
 
 			const projected = Vector2.asVector2(Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) }));
-			if(projected.clone().subtract(this.lastInputDirection).sqrMagnitude() > 10) {
+			if (projected.clone().subtract(this.lastInputDirection).sqrMagnitude() > 10) {
 				this.directionChanged = true;
 				this.lastInputDirection = projected;
 			}
@@ -98,13 +98,10 @@ export class GameClient {
 		console.log(`Button ${idx} was pressed`);
 	}
 
-	public updatePlayers(players: Players, localPlayer: PlayerId | undefined) {
+	public updateState(state: GameState, players: PlayerId[], localPlayer: PlayerId | undefined) {
 		this.localPlayerId = localPlayer;
+		UI.UpdatePlayers(state, players, this.localPlayerId);
 
-		UI.UpdatePlayers(players, localPlayer);
-	}
-
-	public updateState(state: GameState) {
 		//sync the local entity list with the remote one
 		this.syncEntityList(state);
 
@@ -155,7 +152,7 @@ export class GameClient {
 		}
 
 		for (const entityId of removedEntities) {
-			if(!entityId)
+			if (!entityId)
 				continue;
 			const entity = this.renderEntities[entityId];
 			if (entity)

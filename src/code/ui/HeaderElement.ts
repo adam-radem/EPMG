@@ -21,7 +21,6 @@ export class HeaderElement extends UIElement<Player> {
 			const child = childElements[i];
 			if (child) {
 				if (child.classList.contains('score')) {
-					const score = 999999;
 					child.innerHTML = score.toLocaleString();
 				}
 			}

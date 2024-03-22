@@ -1,6 +1,7 @@
 import { HeaderElement } from "./HeaderElement";
 import { FooterElement } from "./FooterElement";
 import { Player, PlayerId, Players } from "rune-games-sdk";
+import { GameState } from "../game/game";
 
 const UIHeaderElements = [
 	new HeaderElement('ui_header_player_one'),
@@ -9,12 +10,18 @@ const UIHeaderElements = [
 	new HeaderElement('ui_header_player_four')
 ];
 
+const UIHeaderColors = [`9FE2F5`, `A6F59F`, `F5DF9F`, `F59FA1`];
+const AlphaOthers = `66`;
+const AlphaMine = `FF`;
+
 const UIFooterElements = [
 	new FooterElement('ui_footer_btn_one'),
 	new FooterElement('ui_footer_btn_two'),
 	new FooterElement('ui_footer_btn_three'),
 	new FooterElement('ui_footer_btn_four')
 ];
+
+const CachedPlayerData: Record<PlayerId, Player> = {};
 
 export const GetHeaderElement = (idx: number) => {
 	return UIHeaderElements[idx];
@@ -34,18 +41,36 @@ export const UpdatePlayerScores = (scores: Record<string, number>) => {
 	}
 };
 
-export const UpdatePlayers = (players: Players, localPlayerId: PlayerId | undefined) => {
+export const UpdatePlayers = (state: GameState, players: PlayerId[], localPlayerId: PlayerId | undefined) => {
+	for (const pid of players) {
+		if (pid in CachedPlayerData)
+			continue;
+		CachedPlayerData[pid] = Rune.getPlayerInfo(pid);
+	}
+
+	const orderedPlayers = [];
+	for (const playerId in players) {
+		orderedPlayers[state.players[playerId].idx] = playerId;
+	}
+
 	const assignedPlayers: Record<PlayerId, Player> = {};
 	const unassignedUI: HeaderElement[] = [];
-	for (let ui of UIHeaderElements) {
+	for (let i = 0; i < UIHeaderElements.length; ++i) {
+		const ui = UIHeaderElements[i];
 		if (ui.PlayerID) {
+			if (ui.PlayerID === localPlayerId) {
+				ui.Element!.style.borderColor = `#${UIHeaderColors[i]}${AlphaMine}`;
+			} else {
+				ui.Element!.style.borderColor = `#${UIHeaderColors[i]}${AlphaOthers}`;
+			}
+
 			//If this ui is assigned to a player that left, disable it
 			if (!(ui.PlayerID in players)) {
 				ui.Reset();
 				unassignedUI.push(ui);
 			}
 			else {
-				assignedPlayers[ui.PlayerID] = players[ui.PlayerID];
+				assignedPlayers[ui.PlayerID] = CachedPlayerData[ui.PlayerID];
 			}
 		}
 		else {
@@ -56,12 +81,12 @@ export const UpdatePlayers = (players: Players, localPlayerId: PlayerId | undefi
 
 	unassignedUI.reverse();
 
-	for (const playerId in players) {
+	for (const playerId of orderedPlayers) {
 		if (!playerId || playerId in assignedPlayers)
 			continue;
 		const ui = unassignedUI.pop();
 		if (ui) {
-			ui.setData(players[playerId]);
+			ui.setData(CachedPlayerData[playerId]);
 			ui.setVisible(true);
 		}
 	}

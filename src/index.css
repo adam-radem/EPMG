@@ -247,6 +247,8 @@ button:focus-visible {
 	overflow: hidden;
 	transition: 0.1s linear;
 	backdrop-filter: inherit;
+	border-radius: 4px;
+	border: solid 2px;
 }
 
 .player-score.hidden {

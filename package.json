@@ -13,7 +13,7 @@
   "dependencies": {
     "cardinal-spline-js": "^2.3.10",
     "pixi.js": "^7.4.0",
-    "rune-games-sdk": "^4.16.22"
+    "rune-games-sdk": "^4.16.35"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.57.1",

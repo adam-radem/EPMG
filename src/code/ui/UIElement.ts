@@ -13,6 +13,8 @@ export class UIElement<T> {
 		return !this.element?.classList.contains('disabled');
 	}
 
+	public get Element() { return this.element; }
+
 	public setVisible(visible: boolean) {
 		if (this.isVisible() === visible)
 			return;

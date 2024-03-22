@@ -11,7 +11,7 @@ const pixiOptions = {
 	background: '#000011',
 	width: WorldSize.x,
 	height: WorldSize.y,
-	useContextAlpha: false,
+	premultipliedAlpha: false,
 	transparent: false,
 	antialias: true,
 	eventFeatures: {
@@ -32,7 +32,7 @@ if (GlobalGameParameters.Debug) {
 	const footer = document.getElementById('ui-footer');
 	const FPS = document.createElement('div');
 	FPS.id = "FPS";
-	FPS.innerHTML = "60.0 fps";
+	FPS.innerHTML = "00.0 fps";
 	footer?.appendChild(FPS);
 	if (FPS) {
 		let time = 0, frame = 0;
