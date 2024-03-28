@@ -191,7 +191,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/Backgrounds/purple.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -209,7 +209,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/fire10.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -233,7 +233,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/fire17.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -249,7 +249,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/fire12.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -265,7 +265,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/fire13.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -281,7 +281,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/fire19.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -296,7 +296,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/shield1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -311,7 +311,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/shield2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -326,7 +326,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/shield3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -341,7 +341,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/speed.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -357,7 +357,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/star2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -372,7 +372,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Effects/star3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -390,7 +390,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Enemies/enemyRed1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -408,7 +408,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Enemies/enemyRed2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -426,7 +426,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Enemies/enemyRed3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -444,7 +444,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Enemies/enemyRed4.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -462,7 +462,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Enemies/enemyRed5.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -479,7 +479,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserRed01.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -502,7 +502,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserRed06.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -525,7 +525,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserRed07.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -545,7 +545,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserRed09.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -562,7 +562,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserRed11.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -577,7 +577,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserBlue11.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -597,7 +597,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserRed14.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -617,7 +617,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserRed15.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -634,7 +634,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserRed16.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -649,7 +649,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserGreen01.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -664,7 +664,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Lasers/laserRed10.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -680,7 +680,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Meteors/meteorGrey_big1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -696,7 +696,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Meteors/meteorGrey_big2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -712,7 +712,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Meteors/meteorGrey_big3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -728,7 +728,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Meteors/meteorGrey_big4.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -744,7 +744,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Meteors/meteorGrey_med1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -760,7 +760,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Meteors/meteorGrey_med2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -776,7 +776,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Meteors/meteorGrey_small1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -792,7 +792,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Meteors/meteorGrey_small2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -808,7 +808,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Meteors/meteorGrey_tiny1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>
@@ -824,7 +824,7 @@
             <key type="filename">../../../../../Downloads/kenney_space-shooter-redux/PNG/Meteors/meteorGrey_tiny2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0,0</point_f>
                 <key>spriteScale</key>
                 <double>1</double>
                 <key>scale9Enabled</key>

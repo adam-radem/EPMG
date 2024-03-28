@@ -48,6 +48,11 @@ if (GlobalGameParameters.Debug) {
 			}
 		});
 	}
+
+	const version = document.createElement('div');
+	version.id = 'version';
+	version.innerHTML = GlobalGameParameters.Version;
+	footer?.appendChild(version);
 }
 
 export async function Init() {

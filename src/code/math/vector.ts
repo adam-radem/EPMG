@@ -53,13 +53,13 @@ export class Vector2 implements V2 {
 		return this;
 	}
 
-	public add(other: Vector2): Vector2 {
+	public add(other: V2): Vector2 {
 		this.x += other.x;
 		this.y += other.y;
 		return this;
 	}
 
-	public subtract(other: Vector2): Vector2 {
+	public subtract(other: V2): Vector2 {
 		this.x -= other.x;
 		this.y -= other.y;
 		return this;
@@ -81,7 +81,7 @@ export class Vector2 implements V2 {
 		return Math.atan2(this.y, this.x);
 	}
 
-	public static dot(a: Vector2, b: Vector2): number {
+	public static dot(a: V2, b: V2): number {
 		return a.x * b.x + a.y * b.y;
 	}
 

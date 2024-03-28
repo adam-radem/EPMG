@@ -12,8 +12,11 @@ export interface Body {
 
 export interface RectBody extends Body {
 	extents: V2;
+	angle: number;
 }
 
 export interface CircBody extends Body {
 	radius: number;
 }
+
+export type Collider = CircBody | RectBody | Body;

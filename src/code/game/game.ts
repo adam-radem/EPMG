@@ -2,13 +2,15 @@ import { PlayerId } from "rune-games-sdk";
 import { PlayerSystem, PlayerEntityData } from "../entity/player";
 import { GlobalGameParameters } from "./static";
 import { EnemySystem, EnemyEntityData, Path } from "../entity/enemy";
-import { Ships } from "../types/shipdata";
-import { Vector2 } from "../math/vector";
-import { WeaponData, WeaponSystem } from "../entity/weapon";
+import { ShipSlot, Ships, WeaponProjectileData } from "../types/shipdata";
+import { V2, Vector2 } from "../math/vector";
+import { EquipData, EquipSystem } from "../entity/weapon";
 import { ProjectileData, ProjectileSystem } from "../entity/projectile";
 import { GetShipData } from "../databases/shipdatabase";
 import { RectBody } from "../entity/transform";
 import { Screen } from "../rendering/screen";
+import { GetEquipmentData } from "../databases/equipdatabase";
+import { CollisionSystem } from "./collision";
 
 export enum Phase {
 	Briefing,
@@ -18,10 +20,30 @@ export enum Phase {
 	Defeat
 }
 
-const playerSystem = new PlayerSystem();
-const enemySystem = new EnemySystem();
-const weaponSystem = new WeaponSystem();
-const projectileSystem = new ProjectileSystem();
+export enum TeamId {
+	Player = 1,
+	Enemy = 2,
+	Both = 3,
+	Neither = 0
+}
+
+class SystemSet {
+	player:PlayerSystem;
+	enemy:EnemySystem;
+	equip:EquipSystem;
+	projectile:ProjectileSystem;
+	collision:CollisionSystem;
+
+	public constructor(){
+		this.player = new PlayerSystem();
+		this.enemy = new EnemySystem();
+		this.equip = new EquipSystem();
+		this.projectile = new ProjectileSystem();
+		this.collision = new CollisionSystem();
+	}
+}
+
+export const Systems:SystemSet = new SystemSet();
 
 const removedEntities: EntityId[] = [];
 
@@ -35,30 +57,32 @@ export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	//Update player state first
 	for (const playerId in state.players) {
 		const playerData = state.players[playerId];
-		playerSystem.onUpdate(playerData, state, dt);
+		Systems.player.onUpdate(playerData, state, dt);
 	}
 
 	//Then update enemies
 	for (const enemyId in state.enemies) {
 		const enemyData = state.enemies[enemyId];
-		enemySystem.onUpdate(enemyData, state, dt);
+		Systems.enemy.onUpdate(enemyData, state, dt);
 	}
 
-	for (const weaponId in state.weapons) {
-		const weaponData = state.weapons[weaponId];
-		weaponSystem.onUpdate(weaponData, state, dt);
+	for (const weaponId in state.equipment) {
+		const weaponData = state.equipment[weaponId];
+		Systems.equip.onUpdate(weaponData, state, dt);
 	}
 
 	for (const projectileId in state.projectiles) {
 		const projectileData = state.projectiles[projectileId];
-		projectileSystem.onUpdate(projectileData, state, dt);
+		Systems.projectile.onUpdate(projectileData, state, dt);
 	}
 
+	Systems.collision.onUpdate(state);
+
 	const destroyed = {
-		players: removedEntities.filter(id => state.players[id]),
-		enemies: removedEntities.filter(id => state.enemies[id]),
-		weapons: removedEntities.filter(id => state.weapons[id]),
-		projectiles: removedEntities.filter(id => state.projectiles[id])
+		players: removedEntities.filter(id => id in state.players),
+		enemies: removedEntities.filter(id => id in state.enemies),
+		weapons: removedEntities.filter(id => id in state.equipment),
+		projectiles: removedEntities.filter(id => id in state.projectiles)
 	};
 
 	for (const id of destroyed.players) {
@@ -71,7 +95,7 @@ export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	}
 	for (const id of destroyed.weapons) {
 		console.log(`Deleted weapon ${id}`);
-		delete state.weapons[id];
+		delete state.equipment[id];
 	}
 	for (const id of destroyed.projectiles) {
 		console.log(`Deleted projectile ${id}`);
@@ -81,6 +105,20 @@ export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	removedEntities.length = 0;
 }
 
+export function CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, state: GameState) {
+	Systems.projectile.CreateProjectile(proj, position, target, state);
+}
+
+export function EquipPlayer(state: GameState, playerId: string, equip: number, slot: ShipSlot) {
+	const equipData = GetEquipmentData(equip);
+	if ((equipData.slot & slot) !== 0) {
+		const playerData = state.players[playerId];
+		playerData.shipData.SetSlot(slot, equip);
+
+		Systems.equip.CreateEquipment(equipData, playerId, state);
+	}
+}
+
 export function CreatePlayer(state: GameState, playerId: string) {
 	const assignedPlayers = [];
 	for (const pid in state.players) {
@@ -88,7 +126,7 @@ export function CreatePlayer(state: GameState, playerId: string) {
 	}
 	let idx = 0;
 	for (; idx < 4; ++idx) {
-		if(assignedPlayers.indexOf(idx) < 0)
+		if (assignedPlayers.indexOf(idx) < 0)
 			break;
 	}
 
@@ -133,7 +171,7 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		players: {},
 		enemies: {},
 		enemyPathData: {},
-		weapons: {},
+		equipment: {},
 		projectiles: {}
 	};
 
@@ -142,6 +180,7 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		if (!playerId) //Spectator playerIds are null
 			continue;
 		CreatePlayer(state, playerId);
+		EquipPlayer(state, playerId, 1, ShipSlot.Left);
 		++cnt;
 	}
 
@@ -180,6 +219,6 @@ export interface GameState {
 	players: Record<PlayerId, PlayerEntityData>;
 	enemies: Record<EntityId, EnemyEntityData>;
 	enemyPathData: Record<number, Path>;
-	weapons: Record<EntityId, WeaponData>;
+	equipment: Record<EntityId, EquipData>;
 	projectiles: Record<EntityId, ProjectileData>;
 }

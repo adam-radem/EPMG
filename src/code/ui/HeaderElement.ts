@@ -46,9 +46,12 @@ export class HeaderElement extends UIElement<Player> {
 				if (child.classList.contains('icon')) {
 					console.log(`Assigning avatar: ${data.avatarUrl}`);
 					const childElement = child as HTMLDivElement;
+					
 					childElement.style.background = `url('${data.avatarUrl}')`;
-					childElement.style.backgroundPosition = 'bottom 40% right 60%';
+					childElement.style.backgroundPosition = 'center';
 					childElement.style.backgroundSize = 'cover';
+
+					childElement.style.opacity = '30%';
 				}
 			}
 		}

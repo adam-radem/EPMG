@@ -11,6 +11,7 @@ const UIHeaderElements = [
 ];
 
 const UIHeaderColors = [`9FE2F5`, `A6F59F`, `F5DF9F`, `F59FA1`];
+const AlphaBG = `33`;
 const AlphaOthers = `66`;
 const AlphaMine = `FF`;
 
@@ -49,7 +50,7 @@ export const UpdatePlayers = (state: GameState, players: PlayerId[], localPlayer
 	}
 
 	const orderedPlayers = [];
-	for (const playerId in players) {
+	for (const playerId of players) {
 		orderedPlayers[state.players[playerId].idx] = playerId;
 	}
 
@@ -59,13 +60,15 @@ export const UpdatePlayers = (state: GameState, players: PlayerId[], localPlayer
 		const ui = UIHeaderElements[i];
 		if (ui.PlayerID) {
 			if (ui.PlayerID === localPlayerId) {
-				ui.Element!.style.borderColor = `#${UIHeaderColors[i]}${AlphaMine}`;
+				// ui.Element!.style.borderColor = `#${UIHeaderColors[i]}${AlphaMine}`;
+				ui.Element!.style.color = `#${UIHeaderColors[i]}`;
 			} else {
-				ui.Element!.style.borderColor = `#${UIHeaderColors[i]}${AlphaOthers}`;
+				// ui.Element!.style.borderColor = `#${UIHeaderColors[i]}${AlphaOthers}`;
+				ui.Element!.style.color = `#${UIHeaderColors[i]}`;
 			}
 
 			//If this ui is assigned to a player that left, disable it
-			if (!(ui.PlayerID in players)) {
+			if (players.indexOf(ui.PlayerID) < 0) {
 				ui.Reset();
 				unassignedUI.push(ui);
 			}

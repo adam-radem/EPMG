@@ -40,7 +40,7 @@ export class HealthBar {
 			this.healthBar.endFill();
 		}
 
-		if (ratio >= 1) {
+		if (ratio >= 1 || ratio <= 0) {
 			window.setInterval(this.fade.bind(this), 160);
 		} else {
 			this.bg.alpha = 1;

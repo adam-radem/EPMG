@@ -1,24 +1,37 @@
 import { Screen } from "../rendering/screen";
-import { EntitySystem, ShipEntity } from "./entity";
+import { EntityData, EntitySystem, ShipEntity } from "./entity";
 import { V2, Vector2 } from "../math/vector";
 import { RectBody } from "./transform";
 import { PlayerId } from "rune-games-sdk";
-import { GameState } from "../game/game";
+import { Destroy, GameState } from "../game/game";
 import { ShipSlot, Ships } from "../types/shipdata";
 import { GetShipData } from "../databases/shipdatabase";
+import { isEnemy } from "./enemy";
+import { GlobalGameParameters } from "../game/static";
 
 export interface PlayerEntityData extends ShipEntity {
 	target: V2;
-	idx:number;
+	idx: number;
 	collider: RectBody;
+}
+
+export function isPlayer(other: EntityData): other is PlayerEntityData {
+	return 'idx' in other;
 }
 
 export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 	public onUpdate(entity: PlayerEntityData, state: GameState, dt: number): void {
+		if (entity.health <= 0) {
+			// Destroy(entity.id);
+			return;
+		}
+
 		this.updateData(entity, dt);
 	}
 
 	public updateData(data: PlayerEntityData, dt: number): void {
+		if (!data.target)
+			return;
 		const targetVector = Vector2.asVector2(data.target);
 		if (targetVector.isZero() || targetVector.equals(data.transform.position))
 			return;
@@ -50,5 +63,15 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 		position.clamp(minX, maxX, minY, maxY);
 
 		data.transform.position = position;
+	}
+
+	public onTakeDamage(entityData: PlayerEntityData, src: EntityData, damage: number, state: GameState) {
+		entityData.health -= damage;
+	}
+	public onCollide(entityData: PlayerEntityData, other: EntityData, state: GameState): void {
+		if (isEnemy(other)) {
+			Destroy(other.id);
+			this.onTakeDamage(entityData, other, GlobalGameParameters.EnemyCollisionDamage, state);
+		}
 	}
 }

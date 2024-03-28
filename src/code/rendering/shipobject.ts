@@ -5,14 +5,15 @@ import { Scene, SpriteData } from "./renderer.ts";
 import { RenderEntity } from "./renderEntity.ts";
 import { ShipEntity } from "../entity/entity.ts";
 import { GlobalGameParameters } from "../game/static.ts";
-import { HealthBar } from "./HealthBar.ts";
+import { HealthBar } from "./healthBar.ts";
 
-export class Ship implements RenderEntity<ShipEntity> {
+export class ShipObject implements RenderEntity<ShipEntity> {
 	shipContainer: Pixi.Container | undefined;
 	shipData: ShipEquipment;
 	colliderDebug: Pixi.Graphics | undefined;
 	healthBar: HealthBar | undefined;
 	mainSprite: Pixi.Sprite | undefined;
+	deathSprite: Pixi.Sprite | undefined;
 
 	public constructor(id: EntityId, data: ShipEntity) {
 		this.shipData = Ships.Empty;
@@ -108,6 +109,10 @@ export class Ship implements RenderEntity<ShipEntity> {
 		if (data.maxHealth > 0) {
 			const ratio = data.health / data.maxHealth;
 			this.updateHealthBar(ratio);
+			if(data.health <= 0){
+				if(this.shipContainer && this.shipContainer.alpha > 0)
+					this.shipContainer.alpha -= Rune.msPerUpdate / 500;
+			}
 		}
 	}
 

@@ -8,6 +8,27 @@
 				"x": 0,
 				"y": 0
 			}
+		},
+		"simpleLaser": {
+			"type": 1,
+			"sprite": null,
+			"slot": 3,
+			"anchor": {
+				"x": 30,
+				"y": 30
+			},
+			"weapon": {
+				"cooldown": 30000,
+				"range": 300,
+				"projectile": {
+					"sprite": "laserBlue01.png",
+					"type": "tracked"
+				},
+				"damage": {
+					"value": 1,
+					"time": 0.1
+				}
+			}
 		}
 	}
 }

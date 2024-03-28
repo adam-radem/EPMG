@@ -21,14 +21,28 @@ export interface ShipEquipmentData {
 	slot: ShipSlot;
 	sprite: SpriteID;
 	anchor: V2;
+	weapon: WeaponEquipmentData | undefined;
+}
+
+export interface WeaponProjectileData {
+	type: number;
+	speed: number;
+	damage: number;
+}
+
+export interface WeaponEquipmentData {
+	projectile: WeaponProjectileData | undefined;
+	cooldown: number;
+	range: number;
 }
 
 export type ShipEquipment = number;
 export enum ShipSlot {
-	Left = 0,
-	Right = 1,
-	Front = 2,
-	Back = 3
+	Unknown = 0,
+	Left = 1,
+	Right = 2,
+	Front = 4,
+	Back = 8
 };
 
 export class Ships {
@@ -51,18 +65,35 @@ declare global {
 		GetBackSlot(): number;
 
 		SetSprite(value: number): number;
+
+		SetSlot(slot: ShipSlot, value: number): number;
+
 		SetLeftSlot(value: number): number;
 		SetRightSlot(value: number): number;
 		SetFrontSlot(value: number): number;
 		SetBackSlot(value: number): number;
 	}
 }
-
 Number.prototype.GetShipType = function () { return this.valueOf() & 0xFF; };
+
 Number.prototype.GetLeftSlot = function () { return (this.valueOf() >> 2) & 0xFF; };
 Number.prototype.GetRightSlot = function () { return (this.valueOf() >> 4) & 0xFF; };
 Number.prototype.GetFrontSlot = function () { return (this.valueOf() >> 6) & 0xFF; };
 Number.prototype.GetBackSlot = function () { return (this.valueOf() >> 8) & 0xFF; };
+
+Number.prototype.SetSlot = function (slot: ShipSlot, value: number) {
+	switch (slot) {
+		case ShipSlot.Back:
+			return this.SetBackSlot(value);
+		case ShipSlot.Front:
+			return this.SetFrontSlot(value);
+		case ShipSlot.Left:
+			return this.SetLeftSlot(value);
+		case ShipSlot.Right:
+			return this.SetRightSlot(value);
+	}
+	return this.valueOf();
+};
 
 Number.prototype.SetSprite = function (value: number) {
 	if (value < 0 || value > 255)

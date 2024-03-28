@@ -1,12 +1,11 @@
 import * as Game from "../game/game";
 import { CircBody } from "./transform";
-import { EntitySystem, ShipEntity } from "./entity";
+import { EntityData, EntitySystem, ShipEntity } from "./entity";
 import { V2, Vector2 } from "../math/vector";
 import { ShipEquipment } from "../types/shipdata";
 import { GameState } from "../game/game";
 import { GetShipData } from "../databases/shipdatabase";
 import { getCurvePoints } from "cardinal-spline-js";
-
 
 export interface Path {
 	Path: V2[];
@@ -17,7 +16,6 @@ interface PathPoint {
 	Position: V2,
 	Heading: number;
 }
-
 
 function dist(x1: any, y1: any, x2: any, y2: any): number {
 	var dx = x2 - x1,
@@ -86,7 +84,7 @@ export class EnemyPath {
 		const nextPos = getXY(pts, Math.min(distance + 1, path.TotalDistance));
 		const vec = new Vector2(nextPos?.x, nextPos?.y);
 		vec.subtract(new Vector2(pathPos?.x, pathPos?.y)).normalize();
-		const theta = Math.atan2(vec.y, vec.x)
+		const theta = Math.atan2(vec.y, vec.x);
 		heading = Math.floor(theta * (180 / Math.PI) - 90);
 
 		return { Position: { x: pathPos?.x, y: pathPos?.y }, Heading: heading };
@@ -99,8 +97,17 @@ export interface EnemyEntityData extends ShipEntity {
 	time: number,
 }
 
+export function isEnemy(other: EntityData): other is EnemyEntityData {
+	return 'path' in other;
+}
+
 export class EnemySystem extends EntitySystem<EnemyEntityData> {
 	public onUpdate(entityData: EnemyEntityData, state: GameState, dt: number): void {
+		if (entityData.health <= 0) {
+			Game.Destroy(entityData.id);
+			return;
+		}
+
 		entityData.time += dt;
 
 		const shipData = GetShipData(entityData.shipData.GetShipType());
@@ -118,6 +125,10 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 
 		entityData.transform.position = pos.Position;
 		entityData.transform.angle = pos.Heading;
+	}
+
+	public onTakeDamage(entityData: EnemyEntityData, src:EntityData, damage:number, state:GameState) {
+		entityData.health -= damage;
 	}
 
 	public static CreatePath(state: GameState, points: V2[]): number {

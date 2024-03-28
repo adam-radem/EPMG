@@ -7,7 +7,7 @@ import { Keyboard, KeyState } from "./code/input/keyboard";
 import { RenderEntity } from "./code/rendering/renderEntity";
 import { EntitySystem, ShipEntity } from "./code/entity/entity";
 import { V2, Vector2 } from './code/math/vector';
-import { Ship } from './code/rendering/ship';
+import { ShipObject } from './code/rendering/shipobject';
 import { PlayerEntityData } from './code/entity/player';
 
 export const MaxPlayers = 2;
@@ -128,12 +128,8 @@ export class GameClient {
 
 		const players = Object.keys(state.players);
 		for (const playerId of players) {
-			const idx = removedEntities.indexOf(playerId);
-			if (idx >= 0) {
-				//If the player exists, remove it from the array
-				delete removedEntities[idx];
+			if (removeFromArray(playerId, removedEntities))
 				continue;
-			}
 			//Player does not exist, so create a new ship entity for it 
 			const ship = RenderFactory.CreateShip(playerId, state.players[playerId]);
 			this.renderEntities[playerId] = ship;
@@ -141,14 +137,29 @@ export class GameClient {
 
 		const enemies = Object.keys(state.enemies);
 		for (const enemyId of enemies) {
-			const idx = removedEntities.indexOf(enemyId);
-			if (idx >= 0) {
-				delete removedEntities[idx];
+			if (removeFromArray(enemyId, removedEntities))
 				continue;
-			}
 
 			const ship = RenderFactory.CreateShip(enemyId, state.enemies[enemyId]);
 			this.renderEntities[enemyId] = ship;
+		}
+
+		const equipment = Object.keys(state.equipment);
+		for (const equipmentId of equipment) {
+			if (removeFromArray(equipmentId, removedEntities))
+				continue;
+
+			const equipment = RenderFactory.CreateEquipment(equipmentId, state.equipment[equipmentId]);
+			this.renderEntities[equipmentId] = equipment;
+		}
+
+		const projectiles = Object.keys(state.projectiles);
+		for (const projectileId of projectiles) {
+			if (removeFromArray(projectileId, removedEntities))
+				continue;
+
+			const projectile = RenderFactory.CreateProjectile(projectileId, state.projectiles[projectileId]);
+			this.renderEntities[projectileId] = projectile;
 		}
 
 		for (const entityId of removedEntities) {
@@ -158,6 +169,15 @@ export class GameClient {
 			if (entity)
 				entity.onDestroy?.();
 			delete this.renderEntities[entityId];
+		}
+
+		function removeFromArray(id: string, arr: string[]) {
+			const idx = arr.indexOf(id);
+			if (idx >= 0) {
+				delete arr[idx];
+				return true;
+			}
+			return false;
 		}
 	}
 }
