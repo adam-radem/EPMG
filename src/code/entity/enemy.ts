@@ -6,6 +6,7 @@ import { ShipEquipment } from "../types/shipdata";
 import { GameState } from "../game/game";
 import { GetShipData } from "../databases/shipdatabase";
 import { getCurvePoints } from "cardinal-spline-js";
+import { GlobalGameParameters } from "../game/static";
 
 export interface Path {
 	Path: V2[];
@@ -129,6 +130,11 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 
 	public onTakeDamage(entityData: EnemyEntityData, src:EntityData, damage:number, state:GameState) {
 		entityData.health -= damage;
+
+		if(isEnemy(src))
+			entityData.collider.disabledUntil = state.time + GlobalGameParameters.EnemyInvulnerabilityTime.collision;
+		else
+			entityData.collider.disabledUntil = state.time + GlobalGameParameters.EnemyInvulnerabilityTime.projectile;
 	}
 
 	public static CreatePath(state: GameState, points: V2[]): number {

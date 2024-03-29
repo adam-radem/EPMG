@@ -8,6 +8,7 @@ export interface TransformData {
 
 export interface Body {
 	center: V2;
+	disabledUntil?: number;
 }
 
 export interface RectBody extends Body {

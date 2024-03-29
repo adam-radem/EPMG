@@ -4,7 +4,6 @@ import { Sprites } from "./sprites.ts";
 import { GameState } from "../game/game.ts";
 import { GlobalGameParameters } from "../game/static.ts";
 
-
 const WorldSize = Screen.WorldSize;
 const gameDiv = document.getElementById('game') ?? null;
 const pixiOptions = {
@@ -56,6 +55,9 @@ if (GlobalGameParameters.Debug) {
 }
 
 export async function Init() {
+	App.ticker.maxFPS = 60;
+	App.ticker.minFPS = 15;
+
 	const playable = Screen.PlayableArea;
 
 	Scene.width = playable.x;
@@ -85,6 +87,8 @@ export async function Init() {
 
 	gameDiv?.appendChild((App.view as any));
 	await SpriteData.Init();
+
+	resize();
 }
 
 window.onload = resize;

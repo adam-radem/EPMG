@@ -109,11 +109,11 @@ export class GameClient {
 			const ship = this.renderEntities[playerId];
 			if (!ship)
 				continue;
-			ship.onUpdate(state.players[playerId]);
+			ship.onUpdate(state.players[playerId], state);
 		}
 		for (const enemyId in state.enemies) {
 			const ship = this.renderEntities[enemyId];
-			ship.onUpdate(state.enemies[enemyId]);
+			ship.onUpdate(state.enemies[enemyId], state);
 		}
 
 		if (this.localPlayerId)

@@ -7,7 +7,7 @@ export interface ShipData {
 	sprite: SpriteID;
 	speed: number;
 	baseHealth: number;
-	collider: CircBody | RectBody | null;
+	collider: CircBody | RectBody | Body;
 	equipPositions: {
 		left: V2;
 		right: V2;

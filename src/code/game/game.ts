@@ -7,7 +7,7 @@ import { V2, Vector2 } from "../math/vector";
 import { EquipData, EquipSystem } from "../entity/weapon";
 import { ProjectileData, ProjectileSystem } from "../entity/projectile";
 import { GetShipData } from "../databases/shipdatabase";
-import { RectBody } from "../entity/transform";
+import { CircBody, RectBody } from "../entity/transform";
 import { Screen } from "../rendering/screen";
 import { GetEquipmentData } from "../databases/equipdatabase";
 import { CollisionSystem } from "./collision";
@@ -141,7 +141,7 @@ export function CreatePlayer(state: GameState, playerId: string) {
 			angle: 0,
 			scale: 1
 		},
-		collider: (shipData.collider as RectBody),
+		collider: (shipData.collider as CircBody),
 		target: Vector2.zero(),
 		health: shipData.baseHealth!,
 		maxHealth: shipData.baseHealth!

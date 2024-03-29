@@ -1,7 +1,7 @@
 import { Screen } from "../rendering/screen";
 import { EntityData, EntitySystem, ShipEntity } from "./entity";
 import { V2, Vector2 } from "../math/vector";
-import { RectBody } from "./transform";
+import { CircBody, RectBody } from "./transform";
 import { PlayerId } from "rune-games-sdk";
 import { Destroy, GameState } from "../game/game";
 import { ShipSlot, Ships } from "../types/shipdata";
@@ -12,7 +12,7 @@ import { GlobalGameParameters } from "../game/static";
 export interface PlayerEntityData extends ShipEntity {
 	target: V2;
 	idx: number;
-	collider: RectBody;
+	collider: CircBody;
 }
 
 export function isPlayer(other: EntityData): other is PlayerEntityData {
@@ -52,11 +52,12 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 
 		const WorldSize = Screen.PlayableArea;
 
-		const minX = data.collider.extents.x;
-		const maxX = WorldSize.x - data.collider.extents.x;
 
-		const minY = data.collider.extents.y;
-		const maxY = WorldSize.y - data.collider.extents.y;
+		const minX = data.collider.radius;
+		const maxX = WorldSize.x - data.collider.radius;
+
+		const minY = data.collider.radius;
+		const maxY = WorldSize.y - data.collider.radius;
 
 		const position = Vector2.asVector2(data.transform.position);
 		position.add(vel);
@@ -67,6 +68,10 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 
 	public onTakeDamage(entityData: PlayerEntityData, src: EntityData, damage: number, state: GameState) {
 		entityData.health -= damage;
+		if(isEnemy(src))
+			entityData.collider.disabledUntil = state.time + GlobalGameParameters.PlayerInvulnerabilityTimer.collision;
+		else
+			entityData.collider.disabledUntil = state.time + GlobalGameParameters.PlayerInvulnerabilityTimer.projectile;
 	}
 	public onCollide(entityData: PlayerEntityData, other: EntityData, state: GameState): void {
 		if (isEnemy(other)) {

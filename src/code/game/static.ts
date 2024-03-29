@@ -19,6 +19,8 @@ export class GlobalGameParameters {
 	];
 
 	static readonly EnemyCollisionDamage: number = 50;
+	static readonly EnemyInvulnerabilityTime = { projectile: 500, collision: 750 };
+	static readonly PlayerInvulnerabilityTimer = { projectile: 800, collision: 1900 };
 
 	static GetStartPosition(idx: number): V2 {
 		return this.StartPositions[idx];

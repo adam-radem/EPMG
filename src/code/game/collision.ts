@@ -1,4 +1,4 @@
-import { CircBody, Collider, RectBody, TransformData } from "../entity/transform";
+import { Body, CircBody, Collider, RectBody, TransformData } from "../entity/transform";
 import { V2, Vector2 } from "../math/vector";
 import { GameState, Systems, TeamId } from "./game";
 
@@ -15,8 +15,9 @@ function CircOverlap(circ1: CircBody, circ2: CircBody) {
 }
 
 function RotatePoint(pt: V2, angle: number): Vector2 {
-	const s = Math.sin(-angle);
-	const c = Math.cos(-angle);
+	const rads = angle * Math.PI / 180;
+	const s = Math.sin(-rads);
+	const c = Math.cos(-rads);
 	return new Vector2(pt.x * c - pt.y * s, pt.x * s + pt.y * c);
 }
 
@@ -97,8 +98,8 @@ function isRect(object: any): object is RectBody {
 	return 'extents' in object;
 }
 
-function isTransform(object: any): object is TransformData {
-	return 'position' in object;
+function colliderActive(collider:Body, state:GameState){
+	return (!collider.disabledUntil || collider.disabledUntil <= state.time);
 }
 
 export class CollisionSystem {
@@ -109,14 +110,20 @@ export class CollisionSystem {
 
 		//Cache player collider data
 		for (const pid in state.players) {
-			const col = this.TransformCollider(state.players[pid].transform, state.players[pid].collider);
-			players[pid] = col;
+			const playerData = state.players[pid];
+			if(colliderActive(playerData.collider, state)){
+				const col = this.TransformCollider(playerData.transform, playerData.collider);
+				players[pid] = col;
+			}
 		}
 
 		//Cache enemy collider data
 		for (const eid in state.enemies) {
-			const col = this.TransformCollider(state.enemies[eid].transform, state.enemies[eid].collider);
-			enemies[eid] = col;
+			const enemyData = state.enemies[eid];
+			if(colliderActive(enemyData.collider, state)){
+				const col = this.TransformCollider(enemyData.transform, enemyData.collider);
+				enemies[eid] = col;
+			}
 		}
 
 		//Check for player <-> enemy collisions
@@ -125,6 +132,7 @@ export class CollisionSystem {
 				if (this.Overlap(players[pid], enemies[eid])) {
 					Systems.player.onCollide?.(state.players[pid], state.enemies[eid], state);
 					Systems.enemy.onCollide?.(state.enemies[eid], state.players[pid], state);
+					break;
 				}
 			}
 		}
@@ -138,6 +146,7 @@ export class CollisionSystem {
 					if (this.Overlap(col, enemies[eid])) {
 						Systems.projectile.onCollide?.(projectile, state.enemies[eid], state);
 						Systems.enemy.onCollide?.(state.enemies[eid], projectile, state);
+						break;
 					}
 				}
 			}
@@ -147,6 +156,7 @@ export class CollisionSystem {
 					if (this.Overlap(col, players[pid])) {
 						Systems.projectile.onCollide?.(projectile, state.players[pid], state);
 						Systems.player.onCollide?.(state.players[pid], projectile, state);
+						break;
 					}
 				}
 			}
@@ -156,7 +166,7 @@ export class CollisionSystem {
 	private TransformCollider(transform: TransformData, collider: Collider): TransformedCollider {
 		const obj: any = {};
 		Object.assign(obj, collider, transform);
-		const pos = Vector2.asVector2(collider.center).subtract(transform.position);
+		const pos = Vector2.asVector2(transform.position).add(collider.center);
 		obj.center = pos;
 		return obj as TransformedCollider;
 	}
