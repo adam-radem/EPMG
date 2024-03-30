@@ -145,7 +145,7 @@
 		"enemyOneBlack": {
 			"type": 16,
 			"sprite": "enemyBlack1",
-			"speed": 240,
+			"speed": 360,
 			"baseHealth": 70,
 			"collider": {
 				"center": { "x": 0, "y": 0 },

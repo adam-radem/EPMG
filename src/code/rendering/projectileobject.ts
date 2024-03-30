@@ -17,5 +17,4 @@ export class ProjectileObject implements RenderEntity<ProjectileData> {
 	onDestroy?(): void {
 		// throw new Error("Method not implemented.");
 	}
-
 }

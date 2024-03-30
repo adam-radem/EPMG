@@ -52,7 +52,6 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 
 		const WorldSize = Screen.PlayableArea;
 
-
 		const minX = data.collider.radius;
 		const maxX = WorldSize.x - data.collider.radius;
 
@@ -75,7 +74,6 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 	}
 	public onCollide(entityData: PlayerEntityData, other: EntityData, state: GameState): void {
 		if (isEnemy(other)) {
-			Destroy(other.id);
 			this.onTakeDamage(entityData, other, GlobalGameParameters.EnemyCollisionDamage, state);
 		}
 	}

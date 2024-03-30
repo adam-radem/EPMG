@@ -1,16 +1,23 @@
 import { Destroy, GameState, NextEntityId, Systems, TeamId } from "../game/game";
 import { V2, Vector2 } from "../math/vector";
+import { Screen } from "../rendering/screen";
 import { WeaponProjectileData } from "../types/shipdata";
 import { EnemyEntityData, isEnemy } from "./enemy";
 import { EntityData, EntitySystem } from "./entity";
 import { PlayerEntityData, isPlayer } from "./player";
+import { Body } from "./transform";
 
 export interface ProjectileData extends EntityData {
+	collider: Body,
 	type: number,
 	team: TeamId,
 	damage: number,
 	speed: number,
-	target: EntityId;
+	target: EntityId,
+}
+
+export function isProjectile(object: any): object is ProjectileData {
+	return 'team' in object;
 }
 
 export class ProjectileSystem extends EntitySystem<ProjectileData> {
@@ -50,6 +57,8 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 		};
 
 		state.projectiles[id] = newProjectile;
+
+		console.log(`created projectile: ${JSON.stringify(newProjectile)}`);
 	}
 
 	public onUpdate(entityData: ProjectileData, state: GameState, dt: number) {
@@ -57,16 +66,22 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 		const dir = new Vector2(Math.cos(ang), Math.sin(ang)).multiplyScalar((dt * entityData.speed) / 1000);
 		const pos = Vector2.asVector2(entityData.transform.position).add(dir);
 
+		const bounds = Screen.PlayableArea;
+		if (pos.x < 0 || pos.x > bounds.x || pos.y < 0 || pos.y > bounds.y) {
+			Destroy(entityData.id);
+			return;
+		}
 		entityData.transform.position = pos;
 	}
 
-	public onCollide(entityData: ProjectileData, other: EntityData, state: GameState): void {
+	public onCollide(entityData: ProjectileData, other: EntityData, state: GameState): void {		
 		if (isPlayer(other)) {
 			this.onPlayerCollide(entityData, other as PlayerEntityData, state);
 		}
 		else if (isEnemy(other)) {
 			this.onEnemyCollide(entityData, other as EnemyEntityData, state);
 		}
+		
 		Destroy(entityData.id);
 	}
 

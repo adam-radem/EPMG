@@ -14,15 +14,15 @@
 			"sprite": null,
 			"slot": 3,
 			"anchor": {
-				"x": 30,
-				"y": 30
+				"x": 0,
+				"y": 0
 			},
 			"weapon": {
 				"cooldown": 30000,
-				"range": 300,
+				"range": 110,
 				"projectile": {
-					"sprite": "laserBlue01.png",
-					"type": "tracked"
+					"type": 1,
+					"speed": 150
 				},
 				"damage": {
 					"value": 1,

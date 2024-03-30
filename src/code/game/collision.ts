@@ -141,7 +141,7 @@ export class CollisionSystem {
 			const projectile = state.projectiles[proj];
 			const col = this.TransformCollider(projectile.transform, projectile.collider);
 			if (projectile.team === TeamId.Player) {
-				//Check for enemy collisions
+				// Check for enemy collisions
 				for (const eid in enemies) {
 					if (this.Overlap(col, enemies[eid])) {
 						Systems.projectile.onCollide?.(projectile, state.enemies[eid], state);
@@ -204,7 +204,7 @@ export class CollisionSystem {
 			//a point, b rect
 			return RectContains(b, a.position);
 		}
-		//a point, b point, etc.
+		//a point, b point, invalid colliders, etc.
 		return false;
 	}
 }

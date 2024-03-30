@@ -5,13 +5,13 @@ import { Collider, TransformData } from "./transform";
 export interface EntityData {
 	id: EntityId,
 	transform: TransformData;
-	collider: Collider;
 }
 
 export interface ShipEntity extends EntityData {
 	shipData: ShipEquipment;
 	health: number;
 	maxHealth: number;
+	collider: Collider;
 }
 
 export class EntitySystem<T extends EntityData> {

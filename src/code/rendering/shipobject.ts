@@ -7,12 +7,12 @@ import { ShipEntity } from "../entity/entity.ts";
 import { GlobalGameParameters } from "../game/static.ts";
 import { HealthBar } from "./healthBar.ts";
 import { GameState } from "../game/game.ts";
+import { GetEquipmentData } from "../databases/equipdatabase.ts";
 
 export class ShipObject implements RenderEntity<ShipEntity> {
 	shipContainer: Pixi.Container | undefined;
 	shipData: ShipEquipment;
-	colliderDebug: Pixi.Graphics | undefined;
-	pivotDebug: Pixi.Graphics | undefined;
+	debug: Pixi.Graphics | undefined;
 	healthBar: HealthBar | undefined;
 	mainSprite: Pixi.Sprite | undefined;
 	deathSprite: Pixi.Sprite | undefined;
@@ -38,33 +38,55 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 
 		//debug: add collider visualization
 		if (GlobalGameParameters.Debug) {
-			this.pivotDebug = new Pixi.Graphics();
-			this.pivotDebug.beginFill(0xFFFFFF, 1);
-			this.pivotDebug.drawCircle(0, 0, 5);
-			this.pivotDebug.endFill();
-			this.shipContainer.addChild(this.pivotDebug);
+			this.debug = new Pixi.Graphics();
 
+			this.debug.pivot.set(0.5, 0.5);
+			this.shipContainer.addChild(this.debug);
+
+			this.debug.beginFill(0xFFFFFF, 1);
+			this.debug.drawCircle(0, 0, 5);
+			this.debug.endFill();
+
+			//Collider debug view
 			if (data.collider) {
 				const col = data.collider;
-				this.colliderDebug = new Pixi.Graphics();
-				this.colliderDebug.beginFill(0x00FF00, 0.1);
-				this.colliderDebug.lineStyle(2, 0x00FF00, 0.6);
-				this.colliderDebug.zIndex = 2;
+				this.debug.beginFill(0x00FF00, 0.1);
+				this.debug.lineStyle(2, 0x00FF00, 0.6);
+				this.debug.zIndex = 2;
 				if ('radius' in col) {
-					this.colliderDebug.drawCircle(col.center.x, col.center.y, col.radius);
+					this.debug.drawCircle(col.center.x, col.center.y, col.radius);
 				}
 				else if ('extents' in col) {
-					this.colliderDebug.drawRect(col.center.x - col.extents.x, col.center.y - col.extents.y, col.extents.x * 2, col.extents.y * 2);
+					this.debug.drawRect(col.center.x - col.extents.x, col.center.y - col.extents.y, col.extents.x * 2, col.extents.y * 2);
 				}
-				this.colliderDebug.endFill();
-				this.colliderDebug.beginFill(0xFFFFFF, 1);
-				this.colliderDebug.lineStyle(2, 0xFFFFFF, 0.6);
-				this.colliderDebug.drawCircle(col.center.x, col.center.y, 5);
-				this.colliderDebug.endFill();
+				this.debug.endFill();
+				this.debug.beginFill(0xFFFFFF, 1);
+				this.debug.lineStyle(2, 0xFFFFFF, 0.6);
+				this.debug.drawCircle(col.center.x, col.center.y, 5);
+				this.debug.endFill();
+			}
 
-				this.colliderDebug.pivot.set(0.5, 0.5);
-
-				this.shipContainer.addChild(this.colliderDebug);
+			//Weapon Debug View
+			const leftWeapon = data.shipData.GetLeftSlot();
+			if (leftWeapon) {
+				const weaponData = GetEquipmentData(leftWeapon);
+				if (weaponData && weaponData.weapon) {
+					this.debug.beginFill(0xFF00FF, 0.2);
+					this.debug.lineStyle(2, 0xFF00FF, 0.7);
+					this.debug.drawCircle(weaponData.anchor.x, weaponData.anchor.y, weaponData.weapon.range);
+					this.debug.endFill();
+				}
+			}
+			const rightWeapon = data.shipData.GetRightSlot();
+			if(rightWeapon)
+			{
+				const weaponData = GetEquipmentData(rightWeapon);
+				if(weaponData && weaponData.weapon){
+					this.debug.beginFill(0xFFFF00, 0.05);
+					this.debug.lineStyle(2, 0xFFFF00, 0.7);
+					this.debug.drawCircle(weaponData.anchor.x, weaponData.anchor.y, weaponData.weapon.range);
+					this.debug.endFill();
+				}
 			}
 		}
 
@@ -118,7 +140,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 			this.shipContainer.angle = theta;
 	}
 
-	public onUpdate(data: ShipEntity, state:GameState) {
+	public onUpdate(data: ShipEntity, state: GameState) {
 		if (data?.transform) {
 			this.setPosition(data.transform.position.x, data.transform.position.y);
 			this.setAngle(data.transform.angle);
@@ -133,7 +155,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 			else if (data.collider.disabledUntil && data.collider.disabledUntil > state.time) {
 				const blinkPeriod = 210;
 				const blinkTime = (data.collider.disabledUntil - state.time);
-				console.log((blinkTime / blinkPeriod) % 1);
+
 				this.mainSprite!.alpha = (blinkTime / blinkPeriod) % 1;
 				this.mainSprite!.tint = "0xFFAAAAAA";
 			}
@@ -150,8 +172,8 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 
 	public onDestroy() {
 		console.log(`destroying a ship`);
-		if (this.colliderDebug)
-			this.colliderDebug.destroy();
+		if (this.debug)
+			this.debug.destroy();
 		if (this.shipContainer)
 			this.shipContainer.destroy();
 	}
