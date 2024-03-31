@@ -2,9 +2,7 @@
 	"projectiles":{
 		"shortLaser_blue": {
 			"type": 1,
-			"sprite":"laserBlue01.png",
-			"projectileType": "tracked",
-			"speed": 150
+			"sprite":"laserBlue01"
 		}
 	}
 }

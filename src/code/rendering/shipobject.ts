@@ -8,6 +8,7 @@ import { GlobalGameParameters } from "../game/static.ts";
 import { HealthBar } from "./healthBar.ts";
 import { GameState } from "../game/game.ts";
 import { GetEquipmentData } from "../databases/equipdatabase.ts";
+import { Vector2 } from "../math/vector.ts";
 
 export class ShipObject implements RenderEntity<ShipEntity> {
 	shipContainer: Pixi.Container | undefined;
@@ -29,6 +30,9 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 		this.shipContainer = new Pixi.Container();
 		this.shipContainer.sortableChildren = true;
 		this.shipContainer.pivot.set(0.5, 0.5);
+		this.shipContainer.angle = data.transform.angle;
+		this.shipContainer.x = data.transform.position.x;
+		this.shipContainer.y = data.transform.position.y;
 
 		const sortId = -id;
 		if (!isNaN(sortId))
@@ -45,6 +49,11 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 
 			this.debug.beginFill(0xFFFFFF, 1);
 			this.debug.drawCircle(0, 0, 5);
+			
+			const angle = (data.transform.angle + 90) * Math.PI / 180;
+			const fwd = new Vector2(Math.cos(angle), Math.sin(angle)).normalize().multiplyScalar(64);
+			this.debug.drawCircle(fwd.x, fwd.y, 5);
+			
 			this.debug.endFill();
 
 			//Collider debug view
@@ -71,7 +80,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 			if (leftWeapon) {
 				const weaponData = GetEquipmentData(leftWeapon);
 				if (weaponData && weaponData.weapon) {
-					this.debug.beginFill(0xFF00FF, 0.2);
+					// this.debug.beginFill(0xFF00FF, 0);
 					this.debug.lineStyle(2, 0xFF00FF, 0.7);
 					this.debug.drawCircle(weaponData.anchor.x, weaponData.anchor.y, weaponData.weapon.range);
 					this.debug.endFill();
@@ -82,7 +91,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 			{
 				const weaponData = GetEquipmentData(rightWeapon);
 				if(weaponData && weaponData.weapon){
-					this.debug.beginFill(0xFFFF00, 0.05);
+					// this.debug.beginFill(0xFFFF00, 0.05);
 					this.debug.lineStyle(2, 0xFFFF00, 0.7);
 					this.debug.drawCircle(weaponData.anchor.x, weaponData.anchor.y, weaponData.weapon.range);
 					this.debug.endFill();
@@ -171,7 +180,6 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 	}
 
 	public onDestroy() {
-		console.log(`destroying a ship`);
 		if (this.debug)
 			this.debug.destroy();
 		if (this.shipContainer)

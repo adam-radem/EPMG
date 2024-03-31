@@ -116,6 +116,16 @@ export class GameClient {
 			ship.onUpdate(state.enemies[enemyId], state);
 		}
 
+		for(const equipmentId in state.equipment){
+			const equip = this.renderEntities[equipmentId];
+			equip.onUpdate(state.equipment[equipmentId], state);
+		}
+
+		for(const projectileId in state.projectiles){
+			const proj = this.renderEntities[projectileId];
+			proj.onUpdate(state.projectiles[projectileId], state);
+		}
+
 		if (this.localPlayerId)
 			this.localPlayerPosition = state.players[this.localPlayerId].transform.position;
 

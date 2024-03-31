@@ -40,7 +40,7 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 
 		const diffVector = targetVector.clone().subtract(positionVector);
 
-		const shipSpeed = GetShipData(data.shipData)?.speed ?? 15;
+		const shipSpeed = data.speed;
 
 		const vel = diffVector.clone().normalize().multiplyScalar(shipSpeed * dt / 1000);
 		if (diffVector.sqrMagnitude() <= vel.sqrMagnitude()) {

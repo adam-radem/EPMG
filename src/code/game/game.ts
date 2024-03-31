@@ -28,13 +28,13 @@ export enum TeamId {
 }
 
 class SystemSet {
-	player:PlayerSystem;
-	enemy:EnemySystem;
-	equip:EquipSystem;
-	projectile:ProjectileSystem;
-	collision:CollisionSystem;
+	player: PlayerSystem;
+	enemy: EnemySystem;
+	equip: EquipSystem;
+	projectile: ProjectileSystem;
+	collision: CollisionSystem;
 
-	public constructor(){
+	public constructor() {
 		this.player = new PlayerSystem();
 		this.enemy = new EnemySystem();
 		this.equip = new EquipSystem();
@@ -43,7 +43,7 @@ class SystemSet {
 	}
 }
 
-export const Systems:SystemSet = new SystemSet();
+export const Systems: SystemSet = new SystemSet();
 
 const removedEntities: EntityId[] = [];
 
@@ -53,6 +53,15 @@ export function Destroy(entity: EntityId) { removedEntities.push(entity); }
 export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	const dt = Rune.gameTime() - state.time;
 	state.time = Rune.gameTime();
+
+	if (Math.floor(state.time / 1000) > state.level.progress) {
+		const paths = Object.keys(state.enemyPathData);
+		if (paths && paths.length > 0) {
+			const pathID = parseInt(paths[0]);
+			EnemySystem.CreateEnemy(Ships.Enemies[0], pathID, state);
+			state.level.progress = Math.floor(state.time / 1000);
+		}
+	}
 
 	//Update player state first
 	for (const playerId in state.players) {
@@ -86,19 +95,15 @@ export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	};
 
 	for (const id of destroyed.players) {
-		console.log(`Deleted player ${id}`);
 		delete state.players[id];
 	}
 	for (const id of destroyed.enemies) {
-		console.log(`Deleted enemy ${id}`);
 		delete state.enemies[id];
 	}
 	for (const id of destroyed.weapons) {
-		console.log(`Deleted weapon ${id}`);
 		delete state.equipment[id];
 	}
 	for (const id of destroyed.projectiles) {
-		console.log(`Deleted projectile ${id}`);
 		delete state.projectiles[id];
 	}
 
@@ -144,7 +149,8 @@ export function CreatePlayer(state: GameState, playerId: string) {
 		collider: (shipData.collider as CircBody),
 		target: Vector2.zero(),
 		health: shipData.baseHealth!,
-		maxHealth: shipData.baseHealth!
+		maxHealth: shipData.baseHealth!,
+		speed: shipData.speed!
 	};
 	state.players[playerId] = player;
 	state.scores[playerId] = 0;
@@ -184,20 +190,18 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		++cnt;
 	}
 
-	const thirdWidth = Screen.PlayableArea.x / 3;
+	const pathPoints: V2[] = [];
+	let x = 0, y = 0;
+	for (let i = 0; i != 12; ++i) {
+		//left = 0, middle = 1, right = 2
+		x = (i % 3) / 2 * (Screen.PlayableArea.x + 200) - 100;
 
-	const p0 = { x: Screen.PlayableArea.x + 100, y: Math.random() * 500 + 350 };
-	const p1 = { x: Math.random() * thirdWidth + thirdWidth, y: Math.random() * 400 + 400 };
-	const p2 = { x: -100, y: Math.random() * 500 + 350 };
+		//every 3 i values = 200 pixels less
+		y = Math.floor(i / 3) * 300 + (Math.random() * 300 - 100);
 
-	const pathPoints = [p0, p1, p2];
-	const reversed = [p2, p1, p0];
-
-	const path = EnemySystem.CreatePath(state, pathPoints);
-	EnemySystem.CreateEnemy(Ships.Enemies[0], path, state);
-
-	const reversedPath = EnemySystem.CreatePath(state, reversed);
-	EnemySystem.CreateEnemy(Ships.Enemies[0], reversedPath, state);
+		pathPoints.push({ x: x, y: y });
+	}
+	EnemySystem.CreatePath(state, pathPoints);
 
 	console.log(`Game has been initialized with ${allPlayerIds.length} players`);
 	return state;

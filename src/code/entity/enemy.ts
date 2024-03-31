@@ -7,6 +7,7 @@ import { GameState } from "../game/game";
 import { GetShipData } from "../databases/shipdatabase";
 import { getCurvePoints } from "cardinal-spline-js";
 import { GlobalGameParameters } from "../game/static";
+import { isPlayer } from "./player";
 
 export interface Path {
 	Path: V2[];
@@ -112,7 +113,7 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		entityData.time += dt;
 
 		const shipData = GetShipData(entityData.shipData.GetShipType());
-		const speed = shipData.speed ?? 10;
+		const speed = entityData.speed;
 		let distance = speed * entityData.time / 1000;
 
 		const path = state.enemyPathData[entityData.path];
@@ -128,13 +129,11 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		entityData.transform.angle = pos.Heading;
 	}
 
-	public onTakeDamage(entityData: EnemyEntityData, src:EntityData, damage:number, state:GameState) {
+	public onTakeDamage(entityData: EnemyEntityData, src: EntityData, damage: number, state: GameState) {
 		entityData.health -= damage;
 
-		if(isEnemy(src))
+		if (isPlayer(src))
 			entityData.collider.disabledUntil = state.time + GlobalGameParameters.EnemyInvulnerabilityTime.collision;
-		else
-			entityData.collider.disabledUntil = state.time + GlobalGameParameters.EnemyInvulnerabilityTime.projectile;
 	}
 
 	public static CreatePath(state: GameState, points: V2[]): number {
@@ -160,7 +159,8 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 			maxHealth: shipData.baseHealth!,
 			collider: (shipData.collider as CircBody),
 			path: path,
-			time: 0
+			time: 0,
+			speed: shipData.speed!
 		};
 
 		state.enemies[entityData.id] = entityData;

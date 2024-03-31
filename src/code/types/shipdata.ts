@@ -1,3 +1,4 @@
+import { ProjectileMotion } from "../entity/projectile";
 import { CircBody, RectBody } from "../entity/transform";
 import { V2 } from "../math/vector";
 
@@ -24,10 +25,18 @@ export interface ShipEquipmentData {
 	weapon: WeaponEquipmentData | undefined;
 }
 
+export interface ProjectileSpriteData {
+	type: number;
+	sprite: SpriteID;
+}
+
 export interface WeaponProjectileData {
 	type: number;
 	speed: number;
 	damage: number;
+	motion: ProjectileMotion;
+	life: number;
+	spread: number;
 }
 
 export interface WeaponEquipmentData {

@@ -5,6 +5,7 @@ import { Collider, TransformData } from "./transform";
 export interface EntityData {
 	id: EntityId,
 	transform: TransformData;
+	speed: number;
 }
 
 export interface ShipEntity extends EntityData {

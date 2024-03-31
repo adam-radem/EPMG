@@ -12,7 +12,7 @@ export class HealthBar {
 		this.bg = new Pixi.Graphics();
 		this.bg.beginFill(0x000000, 1);
 		this.bg.lineStyle(2, 0xFFFFFF, 1);
-		this.bg.drawRect(-71, -(Height+1), 8, (Height+2));
+		this.bg.drawRect(-71, -(Height + 1), 8, (Height + 2));
 		this.bg.endFill();
 		this.bg.alpha = 0;
 		this.bg.zIndex = 1;
@@ -26,11 +26,6 @@ export class HealthBar {
 	}
 
 	public setHealthValue(ratio: number) {
-		if (ratio < 1 && this.interval) {
-			window.clearInterval(this.interval);
-			this.interval = undefined;
-		}
-
 		if (this.healthBar) {
 			const height = Math.min(Math.max(ratio, 0), 1) * Height;
 			this.healthBar.clear();
@@ -41,7 +36,10 @@ export class HealthBar {
 		}
 
 		if (ratio >= 1 || ratio <= 0) {
-			window.setInterval(this.fade.bind(this), 160);
+			if(this.interval){
+				window.clearInterval(this.interval);
+			}
+			this.interval = window.setInterval(this.fade.bind(this), 160);
 		} else {
 			this.bg.alpha = 1;
 		}

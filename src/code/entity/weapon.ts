@@ -24,6 +24,7 @@ export class EquipSystem extends EntitySystem<EquipData> {
 				angle: 0,
 				scale: 1
 			},
+			speed: 0,
 			type: equipData.type,
 			time: 0,
 			owner: ownerId,

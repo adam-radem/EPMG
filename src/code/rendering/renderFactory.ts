@@ -1,8 +1,8 @@
 import { ShipEntity } from "../entity/entity";
 import { ProjectileData } from "../entity/projectile";
 import { EquipData } from "../entity/weapon";
-import { EquipObject } from "./EquipObject";
-import { ProjectileObject } from "./ProjectileObject";
+import { EquipObject } from "./equipobject";
+import { ProjectileObject } from "./projectileobject";
 import { ShipObject } from "./shipobject";
 
 export function CreateShip(id: EntityId, source: ShipEntity): ShipObject {

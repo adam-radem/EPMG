@@ -18,15 +18,15 @@
 				"y": 0
 			},
 			"weapon": {
-				"cooldown": 30000,
-				"range": 110,
+				"cooldown": 100,
+				"range": 400,
 				"projectile": {
 					"type": 1,
-					"speed": 150
-				},
-				"damage": {
-					"value": 1,
-					"time": 0.1
+					"speed": 700,
+					"damage": 20,
+					"motion": 0,
+					"life": 1000,
+					"spread": 8
 				}
 			}
 		}
