@@ -28,7 +28,10 @@
 			"speed": 360,
 			"baseHealth": 100,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -38,7 +41,10 @@
 			"speed": 360,
 			"baseHealth": 100,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -48,7 +54,10 @@
 			"speed": 360,
 			"baseHealth": 100,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -58,7 +67,10 @@
 			"speed": 360,
 			"baseHealth": 100,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -68,7 +80,10 @@
 			"speed": 480,
 			"baseHealth": 80,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -78,7 +93,10 @@
 			"speed": 480,
 			"baseHealth": 80,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -88,7 +106,10 @@
 			"speed": 480,
 			"baseHealth": 80,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -98,7 +119,10 @@
 			"speed": 480,
 			"baseHealth": 80,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -108,7 +132,10 @@
 			"speed": 540,
 			"baseHealth": 70,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -118,7 +145,10 @@
 			"speed": 540,
 			"baseHealth": 70,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -128,7 +158,10 @@
 			"speed": 540,
 			"baseHealth": 70,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -138,7 +171,10 @@
 			"speed": 540,
 			"baseHealth": 70,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		},
@@ -146,9 +182,12 @@
 			"type": 16,
 			"sprite": "enemyBlack1",
 			"speed": 360,
-			"baseHealth": 70,
+			"baseHealth": 40,
 			"collider": {
-				"center": { "x": 0, "y": 0 },
+				"center": {
+					"x": 0,
+					"y": 0
+				},
 				"radius": 30
 			}
 		}

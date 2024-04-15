@@ -18,15 +18,36 @@
 				"y": 0
 			},
 			"weapon": {
-				"cooldown": 100,
+				"cooldown": 500,
 				"range": 400,
 				"projectile": {
 					"type": 1,
-					"speed": 700,
-					"damage": 20,
+					"speed": 980,
+					"damage": 25,
 					"motion": 0,
 					"life": 1000,
-					"spread": 8
+					"spread": 2
+				}
+			}
+		},
+		"enemyLaser": {
+			"type": 2,
+			"sprite": null,
+			"slot": 3,
+			"anchor": {
+				"x": 0,
+				"y": 0
+			},
+			"weapon": {
+				"cooldown": 1000,
+				"range": 500,
+				"projectile": {
+					"type": 2,
+					"speed": 600,
+					"damage": 10,
+					"motion": 0,
+					"life": 1500,
+					"spread": 4
 				}
 			}
 		}

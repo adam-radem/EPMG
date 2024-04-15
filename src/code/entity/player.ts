@@ -3,7 +3,7 @@ import { EntityData, EntitySystem, ShipEntity } from "./entity";
 import { V2, Vector2 } from "../math/vector";
 import { CircBody, RectBody } from "./transform";
 import { PlayerId } from "rune-games-sdk";
-import { Destroy, GameState } from "../game/game";
+import { Destroy, GameState, Systems } from "../game/game";
 import { ShipSlot, Ships } from "../types/shipdata";
 import { GetShipData } from "../databases/shipdatabase";
 import { isEnemy } from "./enemy";
@@ -48,7 +48,7 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 			return;
 		}
 		const theta = Math.atan2(vel.y, vel.x);
-		data.transform.angle = Math.floor(theta * (180 / Math.PI) - 270);
+		data.transform.angle = Math.floor(theta * (180 / Math.PI) - 90);
 
 		const WorldSize = Screen.PlayableArea;
 
@@ -66,8 +66,11 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 	}
 
 	public onTakeDamage(entityData: PlayerEntityData, src: EntityData, damage: number, state: GameState) {
+		damage = Systems.aura.ApplyDamageDealtModifiers(src, damage);
+		damage = Systems.aura.ApplyDamageTakenModifiers(entityData, damage);
+
 		entityData.health -= damage;
-		if(isEnemy(src))
+		if (isEnemy(src))
 			entityData.collider.disabledUntil = state.time + GlobalGameParameters.PlayerInvulnerabilityTimer.collision;
 		else
 			entityData.collider.disabledUntil = state.time + GlobalGameParameters.PlayerInvulnerabilityTimer.projectile;

@@ -1,5 +1,5 @@
 import { RenderEntity } from "./renderEntity.ts";
-import { EquipData } from "../entity/weapon.ts";
+import { EquipData } from "../entity/equip.ts";
 
 
 export class EquipObject implements RenderEntity<EquipData> {

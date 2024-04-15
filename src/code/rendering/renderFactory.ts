@@ -1,6 +1,6 @@
 import { ShipEntity } from "../entity/entity";
 import { ProjectileData } from "../entity/projectile";
-import { EquipData } from "../entity/weapon";
+import { EquipData } from "../entity/equip";
 import { EquipObject } from "./equipobject";
 import { ProjectileObject } from "./projectileobject";
 import { ShipObject } from "./shipobject";

@@ -2856,13 +2856,13 @@
 	"meta": {
 		"app": "https://www.codeandweb.com/texturepacker",
 		"version": "1.0",
-		"image": "assets.png",
+		"image": "kenny_sheet_packed_data.png",
 		"format": "RGBA8888",
 		"size": {
 			"w": 1024,
 			"h": 1024
 		},
 		"scale": "1",
-		"smartupdate": "$TexturePacker:SmartUpdate:b80fb1daa01de935fffe2ae7f08acff8:acc66609cf5302b3dae463846cf1a949:980c4b06156752613be30be63d307446$"
+		"smartupdate": "$TexturePacker:SmartUpdate:9c03597d078fe0790da247bc5950850f:d26bb8aecd09428f319f8faf1ec40fab:980c4b06156752613be30be63d307446$"
 	}
 }

@@ -1,8 +1,12 @@
 {
-	"projectiles":{
+	"projectiles": {
 		"shortLaser_blue": {
 			"type": 1,
-			"sprite":"laserBlue01"
+			"sprite": "laserBlue01"
+		},
+		"shortLaser_red": {
+			"type": 2,
+			"sprite": "laserRed01"
 		}
 	}
 }

@@ -318,7 +318,7 @@ button:focus-visible {
 
 .player-score .score {
 	display: inline-block;
-	position: absolute;
+	position: relative;
 	bottom: 0.25vh;
 	width: inherit;
 

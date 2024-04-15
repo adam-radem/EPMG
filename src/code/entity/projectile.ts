@@ -1,5 +1,4 @@
 import { GetEquipmentData } from "../databases/equipdatabase";
-import { GetShipData } from "../databases/shipdatabase";
 import { Destroy, GameState, NextEntityId, Systems, TeamId } from "../game/game";
 import { V2, Vector2 } from "../math/vector";
 import { Screen } from "../rendering/screen";
@@ -10,11 +9,14 @@ import { PlayerEntityData, isPlayer } from "./player";
 import { Body } from "./transform";
 
 export interface ProjectileData extends EntityData {
-	collider: Body,
-	type: number,
-	team: TeamId,
-	target: EntityId,
+	collider: Body;
+	type: number;
+	team: TeamId;
+	owner: EntityId;
+	damage: number;
 	life: number;
+	pierce?: number;
+	target?: EntityId;
 }
 
 export enum ProjectileMotion {
@@ -28,10 +30,9 @@ export function isProjectile(object: any): object is ProjectileData {
 
 export class ProjectileSystem extends EntitySystem<ProjectileData> {
 
-	public CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, state: GameState) {
+	public CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, owner: EntityId, state: GameState) {
 
 		let team = TeamId.Neither;
-		let targetPosition: V2 = Vector2.zero();
 		let targetEntity: EntityData;
 
 		if (target in state.players) {
@@ -46,11 +47,11 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 			return;
 
 		const angle = (targetEntity.transform.angle + 90) * Math.PI / 180;
-		const fwd = new Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(targetEntity.speed / 6);
+		const fwd = new Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(128);
+		const fwdPos = fwd.clone().add(targetEntity.transform.position);
 
-		targetPosition = Vector2.asVector2(targetEntity.transform.position).add(fwd);
 		const spread = ((Math.random() * 2 - 1) * proj.spread * Math.PI / 180);
-		const spawnAngle = Vector2.asVector2(targetPosition).subtract(position).angle() + spread;
+		const spawnAngle = Vector2.asVector2(fwdPos).subtract(position).angle() + spread;
 
 		const id = NextEntityId(state);
 		const newProjectile = {
@@ -60,11 +61,14 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 				angle: spawnAngle,
 				scale: 1
 			},
+			owner: owner,
 			team: team,
 			type: proj.type,
 			target: target,
 			life: proj.life,
 			speed: proj.speed,
+			damage: proj.damage,
+			pierce: proj.pierce,
 			collider: {
 				center: Vector2.zero()
 			}
@@ -125,6 +129,12 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 		}
 		else if (isEnemy(other)) {
 			this.onEnemyCollide(entityData, other as EnemyEntityData, state);
+		}
+
+		if (entityData.pierce && entityData.pierce > 0) {
+			entityData.pierce -= 1;
+			entityData.damage *= 0.6;
+			return;
 		}
 
 		Destroy(entityData.id);

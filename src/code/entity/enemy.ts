@@ -7,7 +7,9 @@ import { GameState } from "../game/game";
 import { GetShipData } from "../databases/shipdatabase";
 import { getCurvePoints } from "cardinal-spline-js";
 import { GlobalGameParameters } from "../game/static";
-import { isPlayer } from "./player";
+import { PlayerEntityData, isPlayer } from "./player";
+import { ProjectileData, isProjectile } from "./projectile";
+import { GetEquipmentData } from "../databases/equipdatabase";
 
 export interface Path {
 	Path: V2[];
@@ -67,7 +69,7 @@ export class EnemyPath {
 		return { Path: points, TotalDistance: len };
 	}
 
-	public static GetPoint(path: Path, distance: number): PathPoint {
+	public static GetPoint(path: Path, distance: number, seed: number): PathPoint {
 		let pos = path.Path[0];
 		let heading = 270;
 
@@ -81,9 +83,12 @@ export class EnemyPath {
 		}
 
 		const pts = getCurvePoints(pathPoints);
-		const pathPos = getXY(pts, distance);
+		let pathPos = getXY(pts, distance);
+		pathPos = Vector2.asVector2(pathPos!).add({ x: 0, y: Math.sin(seed + distance / 1000) * 100 });
 
-		const nextPos = getXY(pts, Math.min(distance + 1, path.TotalDistance));
+		let nextPos = getXY(pts, Math.min(distance + 10, path.TotalDistance - 1));
+		nextPos = Vector2.asVector2(nextPos!).add({ x: 0, y: Math.sin(seed + (distance + 10) / 1000) * 100 });
+
 		const vec = new Vector2(nextPos?.x, nextPos?.y);
 		vec.subtract(new Vector2(pathPos?.x, pathPos?.y)).normalize();
 		const theta = Math.atan2(vec.y, vec.x);
@@ -96,7 +101,8 @@ export class EnemyPath {
 export interface EnemyEntityData extends ShipEntity {
 	collider: CircBody;
 	path: number;
-	time: number,
+	time: number;
+	seed: number;
 }
 
 export function isEnemy(other: EntityData): other is EnemyEntityData {
@@ -110,30 +116,48 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 			return;
 		}
 
-		entityData.time += dt;
-
-		const shipData = GetShipData(entityData.shipData.GetShipType());
 		const speed = entityData.speed;
-		let distance = speed * entityData.time / 1000;
+		entityData.time += dt * speed;
+
+		let distance = entityData.time / 1000;
 
 		const path = state.enemyPathData[entityData.path];
 
 		if (distance >= path.TotalDistance) {
-			// Game.Destroy(entityData.id);
-			distance %= path.TotalDistance;
+			Game.Destroy(entityData.id);
+			return;
 		}
 
-		const pos = EnemyPath.GetPoint(path, distance);
+		const pos = EnemyPath.GetPoint(path, distance, entityData.seed);
 
 		entityData.transform.position = pos.Position;
 		entityData.transform.angle = pos.Heading;
 	}
 
 	public onTakeDamage(entityData: EnemyEntityData, src: EntityData, damage: number, state: GameState) {
+		damage = Game.Systems.aura.ApplyDamageDealtModifiers(src, damage);
+		damage = Game.Systems.aura.ApplyDamageTakenModifiers(entityData, damage);
+
 		entityData.health -= damage;
 
 		if (isPlayer(src))
 			entityData.collider.disabledUntil = state.time + GlobalGameParameters.EnemyInvulnerabilityTime.collision;
+
+		if (entityData.health <= 0) {
+			let entityPlayer = undefined;
+			if (isProjectile(src)) {
+				entityPlayer = (src as ProjectileData).owner;
+			}
+			else if (isPlayer(src)) {
+				entityPlayer = src.id;
+			}
+
+			if (entityPlayer)
+				state.scores[entityPlayer] += 100;
+
+			Game.Destroy(entityData.id);
+			return;
+		}
 	}
 
 	public static CreatePath(state: GameState, points: V2[]): number {
@@ -144,11 +168,17 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		return idx;
 	}
 
-	public static CreateEnemy(ship: ShipEquipment, path: number, state: GameState) {
+	public static CreateEnemy(ship: ShipEquipment, state: GameState) {
 		const shipData = GetShipData(ship.GetShipType());
 
+		const id = Game.NextEntityId(state);
+		const seed = Math.random();
+
+		const paths = Object.keys(state.enemyPathData);
+		const path = Math.floor(seed * paths.length);
+
 		const entityData: EnemyEntityData = {
-			id: Game.NextEntityId(state),
+			id: id,
 			transform: {
 				position: { x: 0, y: 0 },
 				angle: 3 * Math.PI / 2,
@@ -158,11 +188,15 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 			health: shipData.baseHealth!,
 			maxHealth: shipData.baseHealth!,
 			collider: (shipData.collider as CircBody),
-			path: path,
+			path: parseInt(paths[path]),
 			time: 0,
+			seed: seed,
 			speed: shipData.speed!
 		};
 
 		state.enemies[entityData.id] = entityData;
+
+		const equipData = GetEquipmentData(2);
+		Game.Systems.equip.CreateEquipment(equipData, id, state);
 	}
 }

@@ -10,7 +10,7 @@ declare global {
 Rune.initLogic({
 	minPlayers: 1,
 	maxPlayers: 4,
-	updatesPerSecond: 20,
+	updatesPerSecond: 30,
 	setup: (allPlayerIds: string[]) => {
 		return Game.NewGameState(allPlayerIds);
 	},

@@ -21,7 +21,20 @@ export class HeaderElement extends UIElement<Player> {
 			const child = childElements[i];
 			if (child) {
 				if (child.classList.contains('score')) {
-					child.innerHTML = score.toLocaleString();
+					const prev = parseInt(child.getAttribute('displayedScore') || '0');
+					if (score != prev) {
+						const diff = (score - prev);
+						if (diff > 5) {
+							const v = Math.floor(Math.random() * (diff / 4) + 2);
+							const disp = Math.min(prev + v, score);
+							child.setAttribute('displayedScore', disp.toString());
+							child.innerHTML = disp.toLocaleString();
+						}
+						else {
+							child.setAttribute('displayedScore', score.toString());
+							child.innerHTML = score.toLocaleString();
+						}
+					}
 				}
 			}
 		}
@@ -46,7 +59,7 @@ export class HeaderElement extends UIElement<Player> {
 				if (child.classList.contains('icon')) {
 					console.log(`Assigning avatar: ${data.avatarUrl}`);
 					const childElement = child as HTMLDivElement;
-					
+
 					childElement.style.background = `url('${data.avatarUrl}')`;
 					childElement.style.backgroundPosition = 'center';
 					childElement.style.backgroundSize = 'cover';

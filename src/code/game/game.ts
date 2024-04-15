@@ -1,16 +1,17 @@
 import { PlayerId } from "rune-games-sdk";
-import { PlayerSystem, PlayerEntityData } from "../entity/player";
+import { PlayerSystem, PlayerEntityData, isPlayer } from "../entity/player";
 import { GlobalGameParameters } from "./static";
 import { EnemySystem, EnemyEntityData, Path } from "../entity/enemy";
 import { ShipSlot, Ships, WeaponProjectileData } from "../types/shipdata";
 import { V2, Vector2 } from "../math/vector";
-import { EquipData, EquipSystem } from "../entity/weapon";
+import { EquipData, EquipSystem } from "../entity/equip";
 import { ProjectileData, ProjectileSystem } from "../entity/projectile";
 import { GetShipData } from "../databases/shipdatabase";
 import { CircBody, RectBody } from "../entity/transform";
 import { Screen } from "../rendering/screen";
 import { GetEquipmentData } from "../databases/equipdatabase";
 import { CollisionSystem } from "./collision";
+import { Aura, AuraSystem } from "../aura/aura";
 
 export enum Phase {
 	Briefing,
@@ -33,6 +34,7 @@ class SystemSet {
 	equip: EquipSystem;
 	projectile: ProjectileSystem;
 	collision: CollisionSystem;
+	aura: AuraSystem;
 
 	public constructor() {
 		this.player = new PlayerSystem();
@@ -40,6 +42,7 @@ class SystemSet {
 		this.equip = new EquipSystem();
 		this.projectile = new ProjectileSystem();
 		this.collision = new CollisionSystem();
+		this.aura = new AuraSystem();
 	}
 }
 
@@ -54,12 +57,11 @@ export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	const dt = Rune.gameTime() - state.time;
 	state.time = Rune.gameTime();
 
-	if (Math.floor(state.time / 1000) > state.level.progress) {
-		const paths = Object.keys(state.enemyPathData);
-		if (paths && paths.length > 0) {
-			const pathID = parseInt(paths[0]);
-			EnemySystem.CreateEnemy(Ships.Enemies[0], pathID, state);
-			state.level.progress = Math.floor(state.time / 1000);
+	//TEMP -- spawn some enemies to play with in waves
+	if (state.time % 8000 <= 3000) {
+		if (Math.floor(state.time / 750) > state.level.progress) {
+			EnemySystem.CreateEnemy(Ships.Enemies[0], state);
+			state.level.progress = Math.floor(state.time / 750);
 		}
 	}
 
@@ -75,43 +77,48 @@ export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 		Systems.enemy.onUpdate(enemyData, state, dt);
 	}
 
+	//Update weapons to fire new projectiles
 	for (const weaponId in state.equipment) {
 		const weaponData = state.equipment[weaponId];
 		Systems.equip.onUpdate(weaponData, state, dt);
 	}
 
+	//Then update the projectile state
 	for (const projectileId in state.projectiles) {
 		const projectileData = state.projectiles[projectileId];
 		Systems.projectile.onUpdate(projectileData, state, dt);
 	}
 
+	//Update global aura state
+	for (const auraId in state.auras) {
+		const auraData = state.auras[auraId];
+		Systems.aura.onUpdate(auraData, state, dt);
+	}
+
 	Systems.collision.onUpdate(state);
 
-	const destroyed = {
-		players: removedEntities.filter(id => id in state.players),
-		enemies: removedEntities.filter(id => id in state.enemies),
-		weapons: removedEntities.filter(id => id in state.equipment),
-		projectiles: removedEntities.filter(id => id in state.projectiles)
-	};
+	Cleanup(state);
+}
 
-	for (const id of destroyed.players) {
-		delete state.players[id];
+function Cleanup(state: GameState) {
+	//Cleanup all entities that were destroyed this frame
+	for (const id of removedEntities) {
+		if (id in state.players)
+			delete state.players[id];
+		else if (id in state.enemies)
+			delete state.enemies[id];
+		else if (id in state.equipment)
+			delete state.equipment[id];
+		else if (id in state.projectiles)
+			delete state.projectiles[id];
+		else if (id in state.auras)
+			delete state.auras[id];
 	}
-	for (const id of destroyed.enemies) {
-		delete state.enemies[id];
-	}
-	for (const id of destroyed.weapons) {
-		delete state.equipment[id];
-	}
-	for (const id of destroyed.projectiles) {
-		delete state.projectiles[id];
-	}
-
 	removedEntities.length = 0;
 }
 
-export function CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, state: GameState) {
-	Systems.projectile.CreateProjectile(proj, position, target, state);
+export function CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, owner: EntityId, state: GameState) {
+	Systems.projectile.CreateProjectile(proj, position, target, owner, state);
 }
 
 export function EquipPlayer(state: GameState, playerId: string, equip: number, slot: ShipSlot) {
@@ -143,7 +150,7 @@ export function CreatePlayer(state: GameState, playerId: string) {
 		shipData: ship,
 		transform: {
 			position: GlobalGameParameters.GetStartPosition(idx),
-			angle: 0,
+			angle: 180,
 			scale: 1
 		},
 		collider: (shipData.collider as CircBody),
@@ -178,7 +185,8 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		enemies: {},
 		enemyPathData: {},
 		equipment: {},
-		projectiles: {}
+		projectiles: {},
+		auras: {}
 	};
 
 	let cnt = 0;
@@ -190,21 +198,31 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		++cnt;
 	}
 
-	const pathPoints: V2[] = [];
-	let x = 0, y = 0;
-	for (let i = 0; i != 12; ++i) {
-		//left = 0, middle = 1, right = 2
-		x = (i % 3) / 2 * (Screen.PlayableArea.x + 200) - 100;
-
-		//every 3 i values = 200 pixels less
-		y = Math.floor(i / 3) * 300 + (Math.random() * 300 - 100);
-
-		pathPoints.push({ x: x, y: y });
+	for (var i = 0; i != 5; ++i) {
+		CreateRandomPath(state);
 	}
-	EnemySystem.CreatePath(state, pathPoints);
 
 	console.log(`Game has been initialized with ${allPlayerIds.length} players`);
 	return state;
+}
+
+function CreateRandomPath(state: GameState) {
+	const pathPoints: V2[] = [];
+	let x = 0, y = 0;
+	const inv = Math.random() < 0.5;
+	for (let i = 0; i != 9; ++i) {
+		//left = 0, middle = 1, right = 2
+		x = (i % 3) / 2 * (Screen.PlayableArea.x + 200) - 100;
+		if (inv)
+			x = Screen.PlayableArea.x - x;
+
+		//every 3 i values = 200 pixels less
+		y = Math.floor(i / 3) * (Screen.PlayableArea.y - 200) / 2 + (Math.random() * 300 - 100) + 100;
+
+		pathPoints.push({ x: x, y: y });
+	}
+
+	EnemySystem.CreatePath(state, pathPoints);
 }
 
 export interface GameLevelState {
@@ -225,4 +243,5 @@ export interface GameState {
 	enemyPathData: Record<number, Path>;
 	equipment: Record<EntityId, EquipData>;
 	projectiles: Record<EntityId, ProjectileData>;
+	auras: Record<EntityId, Aura>;
 }

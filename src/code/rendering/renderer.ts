@@ -3,6 +3,7 @@ import { Screen } from "./screen.ts";
 import { Sprites } from "./sprites.ts";
 import { GameState } from "../game/game.ts";
 import { GlobalGameParameters } from "../game/static.ts";
+import { Starfield } from "./starfield.ts";
 
 const WorldSize = Screen.WorldSize;
 const gameDiv = document.getElementById('game') ?? null;
@@ -26,6 +27,8 @@ export const Scene = new Pixi.Container();
 export const Background = new Pixi.Graphics();
 export const Renderer = App.renderer;
 export const SpriteData = await new Sprites();
+
+let starfield: Starfield;
 
 if (GlobalGameParameters.Debug) {
 	const footer = document.getElementById('ui-footer');
@@ -57,6 +60,7 @@ if (GlobalGameParameters.Debug) {
 export async function Init() {
 	App.ticker.maxFPS = 60;
 	App.ticker.minFPS = 15;
+	App.ticker.add(tick);
 
 	const playable = Screen.PlayableArea;
 
@@ -83,12 +87,20 @@ export async function Init() {
 	Background.zIndex = -1000;
 	Scene.addChild(Background);
 
+	starfield = new Starfield(100);
+	Scene.addChild(starfield.container);
+
 	Scene.sortableChildren = true;
 
 	gameDiv?.appendChild((App.view as any));
 	await SpriteData.Init();
 
 	resize();
+}
+
+function tick(dt: number) {
+	if (starfield)
+		starfield.onUpdate(dt);
 }
 
 window.onload = resize;

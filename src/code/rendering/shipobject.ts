@@ -49,9 +49,9 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 
 			this.debug.beginFill(0xFFFFFF, 1);
 			this.debug.drawCircle(0, 0, 5);
-			
-			const angle = (data.transform.angle + 90) * Math.PI / 180;
-			const fwd = new Vector2(Math.cos(angle), Math.sin(angle)).normalize().multiplyScalar(64);
+
+			const angle = Math.PI/2;
+			const fwd = new Vector2(Math.cos(angle), Math.sin(angle)).normalize().multiplyScalar(data.speed / 6);
 			this.debug.drawCircle(fwd.x, fwd.y, 5);
 			
 			this.debug.endFill();

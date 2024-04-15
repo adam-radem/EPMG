@@ -37,12 +37,15 @@ export interface WeaponProjectileData {
 	motion: ProjectileMotion;
 	life: number;
 	spread: number;
+	pierce?: number;
 }
 
 export interface WeaponEquipmentData {
 	projectile: WeaponProjectileData | undefined;
 	cooldown: number;
 	range: number;
+	special?: number;
+	specialValue?: number;
 }
 
 export type ShipEquipment = number;
