@@ -23,9 +23,9 @@ Rune.initLogic({
 			game.level.progress = 0;
 			switch (game.level.phase) {
 				case Game.Phase.Briefing:
-					game.level.phase = Game.Phase.Game;
+					game.level.phase = Game.Phase.Level;
 					break;
-				case Game.Phase.Game:
+				case Game.Phase.Level:
 					if (game.level.id + 1 < GlobalGameParameters.GameLevelCount) {
 						game.level.phase = Game.Phase.Shop;
 					}
@@ -35,7 +35,7 @@ Rune.initLogic({
 					break;
 				case Game.Phase.Shop:
 					game.level.id += 1;
-					game.level.phase = Game.Phase.Game;
+					game.level.phase = Game.Phase.Level;
 					game.level.progress = 0;
 					break;
 			}

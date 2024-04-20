@@ -35,7 +35,6 @@ export class Starfield {
 				y: Math.random() * Screen.WorldSize.y
 			}
 		};
-		console.log(newStar.color);
 		return newStar;
 	}
 

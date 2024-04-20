@@ -22,10 +22,8 @@ export function isPlayer(other: EntityData): other is PlayerEntityData {
 export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 	public onUpdate(entity: PlayerEntityData, state: GameState, dt: number): void {
 		if (entity.health <= 0) {
-			// Destroy(entity.id);
 			return;
 		}
-
 		this.updateData(entity, dt);
 	}
 
@@ -75,9 +73,14 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 		else
 			entityData.collider.disabledUntil = state.time + GlobalGameParameters.PlayerInvulnerabilityTimer.projectile;
 	}
+
 	public onCollide(entityData: PlayerEntityData, other: EntityData, state: GameState): void {
 		if (isEnemy(other)) {
 			this.onTakeDamage(entityData, other, GlobalGameParameters.EnemyCollisionDamage, state);
 		}
+	}
+
+	public levelTransition(entityData: PlayerEntityData) {
+		
 	}
 }

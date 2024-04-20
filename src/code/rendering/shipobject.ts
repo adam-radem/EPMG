@@ -50,10 +50,10 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 			this.debug.beginFill(0xFFFFFF, 1);
 			this.debug.drawCircle(0, 0, 5);
 
-			const angle = Math.PI/2;
+			const angle = Math.PI / 2;
 			const fwd = new Vector2(Math.cos(angle), Math.sin(angle)).normalize().multiplyScalar(data.speed / 6);
 			this.debug.drawCircle(fwd.x, fwd.y, 5);
-			
+
 			this.debug.endFill();
 
 			//Collider debug view
@@ -87,10 +87,9 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 				}
 			}
 			const rightWeapon = data.shipData.GetRightSlot();
-			if(rightWeapon)
-			{
+			if (rightWeapon) {
 				const weaponData = GetEquipmentData(rightWeapon);
-				if(weaponData && weaponData.weapon){
+				if (weaponData && weaponData.weapon) {
 					// this.debug.beginFill(0xFFFF00, 0.05);
 					this.debug.lineStyle(2, 0xFFFF00, 0.7);
 					this.debug.drawCircle(weaponData.anchor.x, weaponData.anchor.y, weaponData.weapon.range);
@@ -169,6 +168,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 				this.mainSprite!.tint = "0xFFAAAAAA";
 			}
 			else {
+				this.shipContainer!.alpha = 1;
 				this.mainSprite!.alpha = 1;
 				this.mainSprite!.tint = "0xFFFFFF";
 			}

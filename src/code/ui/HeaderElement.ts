@@ -57,7 +57,6 @@ export class HeaderElement extends UIElement<Player> {
 					child.innerHTML = data.displayName;
 				}
 				if (child.classList.contains('icon')) {
-					console.log(`Assigning avatar: ${data.avatarUrl}`);
 					const childElement = child as HTMLDivElement;
 
 					childElement.style.background = `url('${data.avatarUrl}')`;

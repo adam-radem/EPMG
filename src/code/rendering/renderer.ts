@@ -131,10 +131,23 @@ function fit(center: boolean, stage: Pixi.Container, screenWidth: number, screen
 	}
 }
 
+let currFill: number = -1;
+let fillVal: number = 0;
 export function updateLevelParameters(state: GameState) {
 	const playable = Screen.PlayableArea;
 
-	const col = `hsl(${(state.level.seed / 65535) * 360}deg 30% 10%)`;
+	const newFill = (state.level.seed / 65535) * 360;
+	if (currFill >= 0) {
+		fillVal = (newFill - currFill) / 5;
+		if (Math.abs(fillVal) < 1)
+			return;
+
+		currFill += fillVal;
+	}
+	else {
+		currFill = newFill;
+	}
+	const col = `hsl(${currFill}deg 30% 10%)`;
 	Background.clear();
 	Background.beginFill(col, 1);
 	Background.drawRoundedRect(0, 0, playable.x, playable.y, 12);

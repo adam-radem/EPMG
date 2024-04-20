@@ -7,15 +7,18 @@ import { V2, Vector2 } from "../math/vector";
 import { EquipData, EquipSystem } from "../entity/equip";
 import { ProjectileData, ProjectileSystem } from "../entity/projectile";
 import { GetShipData } from "../databases/shipdatabase";
-import { CircBody, RectBody } from "../entity/transform";
+import { CircBody } from "../entity/transform";
 import { Screen } from "../rendering/screen";
 import { GetEquipmentData } from "../databases/equipdatabase";
 import { CollisionSystem } from "./collision";
 import { Aura, AuraSystem } from "../aura/aura";
+import { Phases } from "../phases/Phases";
+import { Level } from "../phases/LevelPhase";
 
 export enum Phase {
+	None,
 	Briefing,
-	Game,
+	Level,
 	Shop,
 	Victory,
 	Defeat
@@ -48,73 +51,13 @@ class SystemSet {
 
 export const Systems: SystemSet = new SystemSet();
 
-const removedEntities: EntityId[] = [];
-
 export function NextEntityId(state: GameState) { return ++state.entityCount; };
-export function Destroy(entity: EntityId) { removedEntities.push(entity); }
-
+export function Destroy(entity: EntityId) { Level.DestroyGameEntity(entity); }
 export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	const dt = Rune.gameTime() - state.time;
 	state.time = Rune.gameTime();
 
-	//TEMP -- spawn some enemies to play with in waves
-	if (state.time % 8000 <= 3000) {
-		if (Math.floor(state.time / 750) > state.level.progress) {
-			EnemySystem.CreateEnemy(Ships.Enemies[0], state);
-			state.level.progress = Math.floor(state.time / 750);
-		}
-	}
-
-	//Update player state first
-	for (const playerId in state.players) {
-		const playerData = state.players[playerId];
-		Systems.player.onUpdate(playerData, state, dt);
-	}
-
-	//Then update enemies
-	for (const enemyId in state.enemies) {
-		const enemyData = state.enemies[enemyId];
-		Systems.enemy.onUpdate(enemyData, state, dt);
-	}
-
-	//Update weapons to fire new projectiles
-	for (const weaponId in state.equipment) {
-		const weaponData = state.equipment[weaponId];
-		Systems.equip.onUpdate(weaponData, state, dt);
-	}
-
-	//Then update the projectile state
-	for (const projectileId in state.projectiles) {
-		const projectileData = state.projectiles[projectileId];
-		Systems.projectile.onUpdate(projectileData, state, dt);
-	}
-
-	//Update global aura state
-	for (const auraId in state.auras) {
-		const auraData = state.auras[auraId];
-		Systems.aura.onUpdate(auraData, state, dt);
-	}
-
-	Systems.collision.onUpdate(state);
-
-	Cleanup(state);
-}
-
-function Cleanup(state: GameState) {
-	//Cleanup all entities that were destroyed this frame
-	for (const id of removedEntities) {
-		if (id in state.players)
-			delete state.players[id];
-		else if (id in state.enemies)
-			delete state.enemies[id];
-		else if (id in state.equipment)
-			delete state.equipment[id];
-		else if (id in state.projectiles)
-			delete state.projectiles[id];
-		else if (id in state.auras)
-			delete state.auras[id];
-	}
-	removedEntities.length = 0;
+	Phases.RunPhase(state, dt);
 }
 
 export function CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, owner: EntityId, state: GameState) {
@@ -172,10 +115,10 @@ export function DeletePlayer(state: GameState, playerId: string) {
 export function NewGameState(allPlayerIds: string[]): GameState {
 	const state: GameState = {
 		level: {
-			phase: Phase.Game,
+			phase: Phase.Level,
 			id: 0,
 			seed: Math.floor(Math.random() * 65535),
-			segment: 0,
+			eventIdx: 0,
 			progress: 0,
 		},
 		entityCount: 0,
@@ -201,6 +144,8 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 	for (var i = 0; i != 5; ++i) {
 		CreateRandomPath(state);
 	}
+	
+	Phases.SetPhase(state, Phase.Briefing);
 
 	console.log(`Game has been initialized with ${allPlayerIds.length} players`);
 	return state;
@@ -229,7 +174,7 @@ export interface GameLevelState {
 	phase: Phase;
 	seed: number;
 	id: number;
-	segment: number;
+	eventIdx: number;
 	progress: number;
 }
 

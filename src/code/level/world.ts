@@ -12,14 +12,14 @@ export class World implements WorldData {
 
 	public Start(state:GameState) {
 		this.level = LevelData.Load(state.level.id);
-		this.currentSegment = this.level.getSegment(state.level.segment);
+		this.currentSegment = this.level.getSegment(state.level.eventIdx);
 	}
 
 	public onUpdate(state: GameState, timeMS: number) {
 		this.currentSegment?.onUpdate?.(state, timeMS);
 		if (this.currentSegment?.IsComplete(state)) {
-		state.level.segment = state.level.segment + 1;
-			this.currentSegment = this.level?.getSegment(state.level.segment + 1);
+		state.level.eventIdx = state.level.eventIdx + 1;
+			this.currentSegment = this.level?.getSegment(state.level.eventIdx + 1);
 		}
 	}
 }

@@ -1,0 +1,169 @@
+{
+	"timelines": {
+		"null": {
+			"id": 0,
+			"events": []
+		},
+		"level_one": {
+			"id": 1,
+			"events": [
+				{
+					"startTime": 750,
+					"interval": 1000,
+					"count": 2,
+					"enemies": [
+						0
+					]
+				}
+			]
+		},
+		"level_two": {
+			"id": 2,
+			"events": [
+				{
+					"startTime": 500,
+					"interval": 400,
+					"count": 7,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 4000,
+					"interval": 250,
+					"count": 10,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 7500,
+					"interval": 300,
+					"count": 8,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 10000,
+					"interval": 500,
+					"count": 1,
+					"enemies": [
+						0
+					]
+				}
+			]
+		},
+		"level_three": {
+			"id": 3,
+			"events": [
+				{
+					"startTime": 500,
+					"interval": 400,
+					"count": 7,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 4000,
+					"interval": 250,
+					"count": 10,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 7500,
+					"interval": 300,
+					"count": 8,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 10000,
+					"interval": 500,
+					"count": 1,
+					"enemies": [
+						0
+					]
+				}
+			]
+		},
+		"level_four": {
+			"id": 4,
+			"events": [
+				{
+					"startTime": 500,
+					"interval": 400,
+					"count": 7,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 4000,
+					"interval": 250,
+					"count": 10,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 7500,
+					"interval": 300,
+					"count": 8,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 10000,
+					"interval": 500,
+					"count": 1,
+					"enemies": [
+						0
+					]
+				}
+			]
+		},
+		"level_five": {
+			"id": 5,
+			"events": [
+				{
+					"startTime": 500,
+					"interval": 400,
+					"count": 7,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 4000,
+					"interval": 250,
+					"count": 10,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 7500,
+					"interval": 300,
+					"count": 8,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 10000,
+					"interval": 500,
+					"count": 1,
+					"enemies": [
+						0
+					]
+				}
+			]
+		}
+	}
+}

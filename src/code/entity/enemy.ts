@@ -164,11 +164,10 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		const path = EnemyPath.GetPath(points);
 		const idx = Game.NextEntityId(state);
 		state.enemyPathData[idx] = path;
-		console.log(JSON.stringify(path));
 		return idx;
 	}
 
-	public static CreateEnemy(ship: ShipEquipment, state: GameState) {
+	public CreateEnemy(ship: ShipEquipment, state: GameState) {
 		const shipData = GetShipData(ship.GetShipType());
 
 		const id = Game.NextEntityId(state);

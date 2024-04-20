@@ -2,7 +2,7 @@ import * as UI from './code/ui/UIController';
 import * as RenderFactory from "./code/rendering/renderFactory";
 import { Scene } from './code/rendering/renderer';
 import { PlayerId, Players } from "rune-games-sdk";
-import { GameState } from "./code/game/game";
+import { GameState, Phase } from "./code/game/game";
 import { Keyboard, KeyState } from "./code/input/keyboard";
 import { RenderEntity } from "./code/rendering/renderEntity";
 import { EntitySystem, ShipEntity } from "./code/entity/entity";
@@ -17,6 +17,7 @@ type EntityList = Record<string, RenderEntity<any>>;
 export class GameClient {
 	localPlayerId: PlayerId | undefined;
 
+	control: boolean = false;
 	interval: number = -1;
 	localPlayerPosition: V2 = Vector2.zero();
 	directionChanged: boolean = false;
@@ -40,7 +41,7 @@ export class GameClient {
 		keyboard.subscribe(KeyState.KeyDown, pressedKey);
 
 		const onPointerDown = (ev: PointerEvent) => {
-			if (!this.localPlayerId) //ignore this from spectators
+			if (!this.localPlayerId || !this.control) //ignore this from spectators
 				return;
 
 			const projected = Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) });
@@ -52,7 +53,7 @@ export class GameClient {
 		};
 
 		const onPointerMove = (ev: PointerEvent) => {
-			if (!this.localPlayerId) //ignore this from spectators
+			if (!this.localPlayerId || !this.control) //ignore this from spectators
 				return;
 
 			const projected = Vector2.asVector2(Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) }));
@@ -63,7 +64,7 @@ export class GameClient {
 		};
 
 		const onPointerCancel = (ev: PointerEvent) => {
-			if (!this.localPlayerId)
+			if (!this.localPlayerId || !this.control)
 				return;
 
 			Rune.actions.setTarget({ newTarget: Vector2.zero() });
@@ -74,7 +75,7 @@ export class GameClient {
 		};
 
 		const dispatchEvent = () => {
-			if (!this.directionChanged)
+			if (!this.directionChanged || !this.control)
 				return;
 			const pos = this.lastInputDirection;
 			Rune.actions.setTarget({ newTarget: pos });
@@ -100,6 +101,7 @@ export class GameClient {
 
 	public updateState(state: GameState, players: PlayerId[], localPlayer: PlayerId | undefined) {
 		this.localPlayerId = localPlayer;
+		this.control = state.level.phase == Phase.Level;
 		UI.UpdatePlayers(state, players, this.localPlayerId);
 
 		//sync the local entity list with the remote one
@@ -116,12 +118,12 @@ export class GameClient {
 			ship.onUpdate(state.enemies[enemyId], state);
 		}
 
-		for(const equipmentId in state.equipment){
+		for (const equipmentId in state.equipment) {
 			const equip = this.renderEntities[equipmentId];
 			equip.onUpdate(state.equipment[equipmentId], state);
 		}
 
-		for(const projectileId in state.projectiles){
+		for (const projectileId in state.projectiles) {
 			const proj = this.renderEntities[projectileId];
 			proj.onUpdate(state.projectiles[projectileId], state);
 		}
