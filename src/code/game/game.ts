@@ -163,7 +163,7 @@ function CreateRandomPath(state: GameState) {
 			x = Screen.PlayableArea.x - x;
 
 		//every 3 i values = 200 pixels less
-		y = Math.floor(i / 3) * (Screen.PlayableArea.y - 200) / 2 + (Math.random() * 300 - 100) + 100;
+		y = Math.floor(i / 3) * (Screen.PlayableArea.y - 200)/2 + (Math.random() * 400);
 
 		pathPoints.push({ x: x, y: y });
 	}
@@ -176,18 +176,17 @@ function CreateAsteroidPaths(state: GameState) {
 	const yMid = Screen.PlayableArea.y / 2;
 	const yEnd = Screen.PlayableArea.y + 100;
 
-	//0-3 straight quadrant paths
+	//2 straight quadrant paths
 	const quadScreenX = Screen.PlayableArea.x / 4;
 	const halfScreenX = Screen.PlayableArea.x / 2;
 	for (let i = 0; i < 2; ++i) {
-		const xStart = (halfScreenX * i) + Math.random() * quadScreenX + (quadScreenX*i);
-		const xEnd = (halfScreenX * i) + Math.random() * quadScreenX + (quadScreenX*i);
+		const xStart = (halfScreenX * i) + Math.random() * quadScreenX + (quadScreenX * i);
+		const xEnd = (halfScreenX * i) + Math.random() * quadScreenX + (quadScreenX * i);
 
 		EnemySystem.CreatePath(state, [{ x: xStart, y: yStart }, { x: xEnd, y: yEnd }]);
 	}
 
-
-	//4 - 8: diagonal paths Q1 -> Q3, Q4 -> Q2 
+	//4 diagonal paths Q1 -> Q3, Q2-> Q4, Q3 -> Q1, Q4 -> Q2 
 	for (let i = 0; i < 4; ++i) {
 		const iEnd = (i + 2) % 4;
 
@@ -197,11 +196,11 @@ function CreateAsteroidPaths(state: GameState) {
 		EnemySystem.CreatePath(state, [{ x: xStart, y: yStart }, { x: xEnd, y: yEnd }]);
 	}
 
-	// //9 - 12: curved paths Q1 -> Q1, etc
+	//3 curved paths Q1 -> Q1, etc
 	for (let i = 0; i < 3; ++i) {
-		const xStart = (quadScreenX * i) + Math.random() * quadScreenX + (quadScreenX/3 * i);
-		const xEnd = (quadScreenX * i) + Math.random() * quadScreenX + (quadScreenX/3 * i);
-		const xMid = quadScreenX/2 + Math.random() * quadScreenX * 3;
+		const xStart = (quadScreenX * i) + Math.random() * quadScreenX + (quadScreenX / 3 * i);
+		const xEnd = (quadScreenX * i) + Math.random() * quadScreenX + (quadScreenX / 3 * i);
+		const xMid = quadScreenX / 2 + Math.random() * quadScreenX * 3;
 
 		EnemySystem.CreatePath(state, [{ x: xStart, y: yStart }, { x: xMid, y: yMid }, { x: xEnd, y: yEnd }]);
 	}

@@ -21,10 +21,12 @@ export module Shop {
 	export function Run(state: GameState, dt: number) {
 		state.level.progress += dt;
 
+		const p = state.level.progress / 1000;
+		const speedMod = (p*p*p) * 10;
 		for (const pid in state.players) {
 			const playerData = state.players[pid];
 			const pos = playerData.transform.position;
-			playerData.transform.position = { x: pos.x, y: pos.y - (playerData.speed * dt / 1000) };
+			playerData.transform.position = { x: pos.x, y: pos.y - (playerData.speed * speedMod * dt / 1000) };
 		}
 
 		if (state.level.progress >= 5000) {

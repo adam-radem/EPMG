@@ -23,11 +23,13 @@ export module Briefing {
 
 		state.level.progress += dt;
 
+		const p = state.level.progress / 1000;
+		const prog = (p*p*p) * 250;
 		for (const pid in state.players) {
 			const playerData = state.players[pid];
 			const targetPos = GlobalGameParameters.GetStartPosition(playerData.idx);
 
-			const yOffset = Math.max(200 - (state.level.progress / 10), 0);
+			const yOffset = Math.max(200 - prog, 0);
 			state.players[pid].transform.position = { x: targetPos.x, y: Math.floor(targetPos.y + yOffset) };
 		}
 	}
