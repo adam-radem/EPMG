@@ -1,7 +1,7 @@
 import * as Pixi from "pixi.js";
 import { Screen } from "./screen.ts";
 import { Sprites } from "./sprites.ts";
-import { GameState } from "../game/game.ts";
+import { GameState, Phase } from "../game/game.ts";
 import { GlobalGameParameters } from "../game/static.ts";
 import { Starfield } from "./starfield.ts";
 
@@ -133,8 +133,7 @@ function fit(center: boolean, stage: Pixi.Container, screenWidth: number, screen
 	}
 }
 
-let currFill: number = -1;
-let fillVal: number = 0;
+let targetSat: number = 0;
 export function updateLevelParameters(state: GameState) {
 	if (GlobalGameParameters.Debug && !debug) {
 		debug = new Pixi.Graphics();
@@ -156,21 +155,22 @@ export function updateLevelParameters(state: GameState) {
 		Scene.addChild(debug);
 	}
 
-
 	const playable = Screen.PlayableArea;
 
-	const newFill = (state.level.seed / 65535) * 360;
-	if (currFill >= 0) {
-		fillVal = (newFill - currFill) / 5;
-		if (Math.abs(fillVal) < 1)
-			return;
+	const targetHue = (state.level.seed / 65535) * 360;
+	if (state.level.phase !== Phase.Level) {
+		if (targetSat > 0) {
+			targetSat -= 2;
+		}
+	} else {
+		if (targetSat < 30) {
+			targetSat += 2;
+		}
+	}
 
-		currFill += fillVal;
-	}
-	else {
-		currFill = newFill;
-	}
-	const col = `hsl(${currFill}deg 30% 10%)`;
+	const targetVal = 20 - (targetSat / 3);
+
+	const col = `hsl(${targetHue}deg ${targetSat}% ${targetVal}%)`;
 	Background.clear();
 	Background.beginFill(col, 1);
 	Background.drawRoundedRect(0, 0, playable.x, playable.y, 12);
