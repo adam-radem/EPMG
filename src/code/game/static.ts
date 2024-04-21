@@ -6,7 +6,7 @@ const StartPosY: number = Playable.y - 48;
 
 export class GlobalGameParameters {
 	static readonly Debug: boolean = false;
-	static readonly Version: string = "Pre-Alpha v0.2.0";
+	static readonly Version: string = "Pre-Alpha v0.3.0";
 
 	static readonly GameLevelCount: number = 3;
 	static readonly SegmentsPerLevel: number[] = [10, 12, 14];

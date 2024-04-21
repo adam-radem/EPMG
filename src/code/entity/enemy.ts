@@ -11,8 +11,26 @@ import { PlayerEntityData, isPlayer } from "./player";
 import { ProjectileData, isProjectile } from "./projectile";
 import { GetEquipmentData } from "../databases/equipdatabase";
 
+const pathCache: any = {};
+function GetPointsForPath(path: Path) {
+	if (pathCache[path.idx]) {
+		return pathCache[path.idx];
+	}
+
+	let pathPoints = [];
+	for (let i = 0; i < path.Path.length; ++i) {
+		pathPoints.push(path.Path[i].x, path.Path[i].y);
+	}
+
+	const pts = getCurvePoints(pathPoints);
+	pathCache[path.idx] = pts;
+
+	return pts;
+}
+
 export interface Path {
 	Path: V2[];
+	idx: number;
 	TotalDistance: number;
 }
 
@@ -27,7 +45,6 @@ function dist(x1: any, y1: any, x2: any, y2: any): number {
 	return Math.sqrt(dx * dx + dy * dy);
 }
 function getXY(points: any, pos: any) {
-
 	var len = 0, lastLen, i, l = points.length;
 
 	// find segment
@@ -50,9 +67,9 @@ function getXY(points: any, pos: any) {
 }
 export class EnemyPath {
 
-	public static GetPath(points: V2[]) {
+	public static GetPath(points: V2[]): Path {
 		if (points.length == 1) {
-			return { Path: points, TotalDistance: 0 };
+			return { Path: points, TotalDistance: 0, idx: -1 };
 		}
 
 		let path = [];
@@ -66,7 +83,7 @@ export class EnemyPath {
 			len += dist(pts[i], pts[i + 1], pts[i + 2], pts[i + 3]);
 		}
 
-		return { Path: points, TotalDistance: len };
+		return { Path: points, TotalDistance: len, idx: 0 };
 	}
 
 	public static GetPoint(path: Path, distance: number, seed: number): PathPoint {
@@ -77,12 +94,8 @@ export class EnemyPath {
 			return { Position: pos, Heading: heading };
 		}
 
-		let pathPoints = [];
-		for (let i = 0; i < path.Path.length; ++i) {
-			pathPoints.push(path.Path[i].x, path.Path[i].y);
-		}
+		const pts = GetPointsForPath(path);
 
-		const pts = getCurvePoints(pathPoints);
 		let pathPos = getXY(pts, distance);
 		pathPos = Vector2.asVector2(pathPos!).add({ x: 0, y: Math.sin(seed + distance / 1000) * 100 });
 
@@ -122,9 +135,14 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		let distance = entityData.time / 1000;
 
 		const path = state.enemyPathData[entityData.path];
+		if(!path)
+		{
+			console.error(`Enemy path ${entityData.path} is not valid`);
+			return;	
+		}
 
 		if (distance >= path.TotalDistance) {
-			Game.Destroy(entityData.id);
+			this.ResetPath(entityData, state);
 			return;
 		}
 
@@ -160,9 +178,21 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		}
 	}
 
+	public ResetPath(entityData: EnemyEntityData, state: GameState) {
+		const newSeed = Math.random();
+		entityData.seed = Math.floor(newSeed * 65535);
+
+		const paths = Object.keys(state.enemyPathData);
+		const path = Math.floor(newSeed * paths.length);
+
+		entityData.path = parseInt(paths[path]);
+		entityData.time = 0;
+	}
+
 	public static CreatePath(state: GameState, points: V2[]): number {
-		const path = EnemyPath.GetPath(points);
 		const idx = Game.NextEntityId(state);
+		const path = EnemyPath.GetPath(points);
+		path.idx = idx;
 		state.enemyPathData[idx] = path;
 		return idx;
 	}
@@ -172,6 +202,7 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 
 		const id = Game.NextEntityId(state);
 		const seed = Math.random();
+		const shortSeed = Math.floor(seed * 65535);
 
 		const paths = Object.keys(state.enemyPathData);
 		const path = Math.floor(seed * paths.length);
@@ -189,7 +220,7 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 			collider: (shipData.collider as CircBody),
 			path: parseInt(paths[path]),
 			time: 0,
-			seed: seed,
+			seed: shortSeed,
 			speed: shipData.speed!
 		};
 

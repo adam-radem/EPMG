@@ -16,6 +16,9 @@ Rune.initLogic({
 	},
 	actions: {
 		setTarget: ({ newTarget }, { game, playerId }) => {
+			if(game.level.phase !== Game.Phase.Level)
+				throw Rune.invalidAction();
+			
 			const playerData = game.players[playerId];
 			playerData.target = newTarget;
 		},
@@ -50,7 +53,6 @@ Rune.initLogic({
 		},
 		playerJoined: (playerId, eventContext) => {
 			console.log(`Player ${playerId} has joined...`);
-
 			Game.CreatePlayer(eventContext.game, playerId);
 		}
 	}

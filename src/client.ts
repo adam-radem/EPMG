@@ -41,7 +41,7 @@ export class GameClient {
 		keyboard.subscribe(KeyState.KeyDown, pressedKey);
 
 		const onPointerDown = (ev: PointerEvent) => {
-			if (!this.localPlayerId || !this.control) //ignore this from spectators
+			if (!this.localPlayerId) //ignore this from spectators
 				return;
 
 			const projected = Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) });
@@ -53,7 +53,7 @@ export class GameClient {
 		};
 
 		const onPointerMove = (ev: PointerEvent) => {
-			if (!this.localPlayerId || !this.control) //ignore this from spectators
+			if (!this.localPlayerId) //ignore this from spectators
 				return;
 
 			const projected = Vector2.asVector2(Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) }));
@@ -64,7 +64,7 @@ export class GameClient {
 		};
 
 		const onPointerCancel = (ev: PointerEvent) => {
-			if (!this.localPlayerId || !this.control)
+			if (!this.localPlayerId)
 				return;
 
 			Rune.actions.setTarget({ newTarget: Vector2.zero() });

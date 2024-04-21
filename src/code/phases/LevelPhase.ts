@@ -1,6 +1,7 @@
 import { GameState, Phase, Systems } from "../game/game";
 import { GlobalGameParameters } from "../game/static";
 import { LevelRunner } from "../level/timeline";
+import { Vector2 } from "../math/vector";
 import { Ships } from "../types/shipdata";
 import { Phases } from "./Phases";
 
@@ -89,15 +90,17 @@ export module Level {
 			//Reset players to the starting position
 			playerData.transform.position = GlobalGameParameters.GetStartPosition(playerData.idx);
 			playerData.transform.angle = 180;
+			playerData.target = Vector2.zero();
 
 			//If players are damaged, heal them as far as half-health
 			if (playerData.health < playerData.maxHealth / 2) {
 				playerData.health = playerData.maxHealth / 2;
 			}
+
 		}
 	}
 	export function Exit(state: GameState) { }
-	
+
 	export function Run(state: GameState, dt: number): void { RunGamePhase(state, dt); }
 	export function DestroyGameEntity(id: EntityId): void { Destroy(id); }
 }

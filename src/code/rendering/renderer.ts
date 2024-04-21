@@ -30,6 +30,8 @@ export const SpriteData = await new Sprites();
 
 let starfield: Starfield;
 
+let debug: Pixi.Graphics | undefined = undefined;
+
 if (GlobalGameParameters.Debug) {
 	const footer = document.getElementById('ui-footer');
 	const FPS = document.createElement('div');
@@ -134,6 +136,27 @@ function fit(center: boolean, stage: Pixi.Container, screenWidth: number, screen
 let currFill: number = -1;
 let fillVal: number = 0;
 export function updateLevelParameters(state: GameState) {
+	if (GlobalGameParameters.Debug && !debug) {
+		debug = new Pixi.Graphics();
+		debug.beginFill('0xFFFFFF', 1);
+		debug.lineStyle(2, 0xFFFFFF, 0.6);
+		for (const pid in state.enemyPathData) {
+			const path = state.enemyPathData[pid];
+			for (let i = 0; i < path.Path.length; ++i) {
+				debug.drawCircle(path.Path[i].x, path.Path[i].y, 10);
+				if (i + 1 < path.Path.length) {
+					debug.lineStyle(4, 0xFFFFFF, 0.5)
+						.moveTo(path.Path[i].x, path.Path[i].y)
+						.lineTo(path.Path[i + 1].x, path.Path[i + 1].y);
+				}
+			}
+		}
+		debug.endFill();
+
+		Scene.addChild(debug);
+	}
+
+
 	const playable = Screen.PlayableArea;
 
 	const newFill = (state.level.seed / 65535) * 360;

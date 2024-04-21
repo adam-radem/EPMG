@@ -6,7 +6,6 @@ import { Shop } from "./ShopPhase";
 
 function ExitPhase(state: GameState) {
 	const phase = state.level.phase;
-	console.log(`Exiting phase ${phase}`);
 	switch (phase) {
 		case Phase.Briefing:
 			Briefing.Exit(state);
@@ -26,7 +25,6 @@ function ExitPhase(state: GameState) {
 
 function EnterPhase(state: GameState) {
 	const phase = state.level.phase;
-	console.log(`Entering phase ${phase}`);
 	switch (phase) {
 		case Phase.Briefing:
 			Briefing.Enter(state);

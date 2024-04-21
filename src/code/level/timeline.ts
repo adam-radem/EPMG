@@ -37,7 +37,7 @@ export class LevelRunner {
 			}
 
 			state.level.progress += dt;
-			if (state.level.progress < 3000) {
+			if (state.level.progress < 1000) {
 				return;
 			}
 			//All enemies have been defeated! 
