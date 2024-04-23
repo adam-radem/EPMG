@@ -12,38 +12,57 @@
 		<div id="container">
 			<div id="game">
 			</div>
+			<!--Player Scores [Header]-->
 			<div id="ui-header">
 				<div class="ui-container">
 					<div class="player-score" id="ui_header_player_one">
 						<div class="icon hidden">
-							<!-- <img /> -->
 						</div>
 						<span class="name"></span>
 						<span class="score"></span>
 					</div>
 					<div class="player-score" id="ui_header_player_two">
 						<div class="icon hidden">
-							<!-- <img /> -->
 						</div>
 						<span class="name"></span>
 						<span class="score"></span>
 					</div>
 					<div class="player-score" id="ui_header_player_three">
 						<div class="icon hidden">
-							<!-- <img /> -->
 						</div>
 						<span class="name"></span>
 						<span class="score"></span>
 					</div>
 					<div class="player-score" id="ui_header_player_four">
 						<div class="icon hidden">
-							<!-- <img /> -->
 						</div>
 						<span class="name"></span>
 						<span class="score"></span>
 					</div>
 				</div>
 			</div>
+			<!--Panels-->
+			<!-- Briefing / Player Ship Select -->
+			<div id="ui-briefing" class="ui-briefing">
+				<div id="briefing-selection" class="briefing-selection">
+					<div class="briefing-header">Select a Ship:</div>
+					<div class="shop-option" id="ship_one" , onclick="Callbacks.ShipSelected(event,0);">
+						<div class="shop-icon"></div>
+						<div class="ship-stats"></div>
+					</div>
+					<div class="shop-option" id="ship_two" , onclick="Callbacks.ShipSelected(event,1);">
+						<div class="shop-icon"></div>
+						<div class="ship-stats"></div>
+					</div>
+					<div class="shop-option" id="ship_three" , onclick="Callbacks.ShipSelected(event,2);">
+						<div class="shop-icon"></div>
+						<div class="ship-stats"></div>
+					</div>
+				</div>
+				<div id="briefing-ready" class="briefing-header hidden">Get Ready!<br /><span id="briefing-countdown">3</span></div>
+				<div id="briefing-status" class="briefing-header">Preparing... <span id="briefing-timeout"></span> seconds left</div>
+			</div>
+			<!--Ability Buttons [Footer]-->
 			<div id="ui-footer">
 				<div class="ui-container">
 					<div id="ui_footer_btn_one" class="footer-button hidden"
