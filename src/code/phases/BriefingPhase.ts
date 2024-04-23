@@ -5,6 +5,8 @@ import { Phases } from "./Phases";
 export module Briefing {
 	export function Enter(state: GameState) {
 		state.level.progress = 0;
+		state.level.ready = 0;
+		
 		for (var pid in state.players) {
 			const playerData = state.players[pid];
 			Systems.player.levelTransition(playerData);
@@ -45,8 +47,9 @@ export module Briefing {
 		if (!allReady)
 			return;
 
+		state.level.ready = 1;
 		state.level.progress += dt;
-
+		
 		if (state.level.progress >= 2000) {
 			Phases.SetPhase(state, Phase.Level);
 			return;

@@ -135,10 +135,9 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		let distance = entityData.time / 1000;
 
 		const path = state.enemyPathData[entityData.path];
-		if(!path)
-		{
+		if (!path) {
 			console.error(`Enemy path ${entityData.path} is not valid`);
-			return;	
+			return;
 		}
 
 		if (distance >= path.TotalDistance) {

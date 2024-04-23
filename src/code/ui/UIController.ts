@@ -4,6 +4,8 @@ import { Player, PlayerId, Players } from "rune-games-sdk";
 import { GameState } from "../game/game";
 import { UIElement } from "./UIElement";
 import { UIPanel } from "./UIPanel";
+import { BriefingPanel } from "./BriefingPanel";
+import { EmptyPanel } from "./EmptyPanel";
 
 const UIHeaderElements = [
 	new HeaderElement('ui_header_player_one'),
@@ -23,7 +25,7 @@ const UIFooterElements = [
 
 const CachedPlayerData: Record<PlayerId, Player> = {};
 
-enum PanelType {
+export enum PanelType {
 	None = 0,
 	Briefing = 1,
 	GameHUD = 2,
@@ -31,22 +33,44 @@ enum PanelType {
 	GameOver = 4
 };
 const Panels: Record<PanelType, UIPanel> = {
-	0: {},
-	1: {},
-	2: {},
-	3: {},
-	4: {}
+	0: new EmptyPanel(),
+	1: new BriefingPanel(),
+	2: new EmptyPanel(),
+	3: new EmptyPanel(),
+	4: new EmptyPanel()
 };
-let CurrentUIPanel: UIPanel = {};
+let CurrentUIPanel: UIPanel = Panels[PanelType.None];
+
+export const CurrentPanelType = () => {
+	return CurrentUIPanel.Type();
+};
+
+export const GetCurrentPanel = () => {
+	return CurrentUIPanel;
+};
+
+export const SwitchUI = (panel: PanelType, state: GameState, localPlayer: PlayerId) => {
+	if (CurrentUIPanel.Type() === panel)
+		return;
+	CurrentUIPanel.Dismiss?.(state, localPlayer);
+	SetUIPanel(panel);
+	CurrentUIPanel.Present?.(state, localPlayer);
+};
 
 export const SetUIPanel = (panel: PanelType) => {
-	CurrentUIPanel.Dismiss?.();
 	CurrentUIPanel = Panels[panel];
-	CurrentUIPanel.Present?.();
 };
 
-export const UpdateUIPanel = (state: GameState) => {
-	CurrentUIPanel.Update?.(state);
+export const PresentCurrentUI = (state: GameState, localPlayer:PlayerId) => {
+	CurrentUIPanel.Present?.(state, localPlayer);
+};
+
+export const DismissCurrentUI = (state: GameState, localPlayer:PlayerId) => {
+	CurrentUIPanel.Dismiss?.(state, localPlayer);
+};
+
+export const UpdateUIPanel = (state: GameState, localPlayer:PlayerId) => {
+	CurrentUIPanel.Update?.(state, localPlayer);
 };
 
 export const GetHeaderElement = (idx: number) => {

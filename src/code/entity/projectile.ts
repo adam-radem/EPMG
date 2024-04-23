@@ -15,6 +15,7 @@ export interface ProjectileData extends EntityData {
 	owner: EntityId;
 	damage: number;
 	life: number;
+	motion: ProjectileMotion;
 	pierce?: number;
 	target?: EntityId;
 }
@@ -66,6 +67,7 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 			type: proj.type,
 			target: target,
 			life: proj.life,
+			motion: proj.motion,
 			speed: proj.speed,
 			damage: proj.damage,
 			pierce: proj.pierce,
@@ -84,13 +86,7 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 			return;
 		}
 
-		const data = GetEquipmentData(entityData.type).weapon?.projectile;
-		if (!data) {
-			Destroy(entityData.id);
-			return;
-		}
-
-		if (data.motion == ProjectileMotion.Tracked) {
+		if (entityData.motion == ProjectileMotion.Tracked) {
 			const target = entityData.target;
 			if (target) {
 				let targetPos: Vector2;
@@ -101,7 +97,7 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 					targetPos = Vector2.asVector2(state.players[target].transform.position);
 				}
 				else {
-					data.motion = ProjectileMotion.Flat;
+					entityData.motion = ProjectileMotion.Flat;
 					return;
 				}
 
@@ -111,7 +107,7 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 		}
 
 		const ang = entityData.transform.angle;
-		const dir = new Vector2(Math.cos(ang), Math.sin(ang)).multiplyScalar((dt * data.speed) / 1000);
+		const dir = new Vector2(Math.cos(ang), Math.sin(ang)).multiplyScalar((dt * entityData.speed) / 1000);
 		const pos = Vector2.asVector2(entityData.transform.position).add(dir);
 
 		const bounds = Screen.PlayableArea;

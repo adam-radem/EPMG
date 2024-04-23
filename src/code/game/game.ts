@@ -137,6 +137,7 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 			seed: Math.floor(Math.random() * 65535),
 			eventIdx: 0,
 			progress: 0,
+			ready: 1
 		},
 		entityCount: 0,
 		time: 0,
@@ -229,6 +230,7 @@ export interface GameLevelState {
 	id: number;
 	eventIdx: number;
 	progress: number;
+	ready: number;
 }
 
 export interface GameState {

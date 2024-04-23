@@ -18,8 +18,15 @@ Renderer.Init().then(() => {
 
 
 export module Callbacks {
-	export const FooterButtonPressed = (event:Event, idx: number) => {
+	export const FooterButtonPressed = (event: Event, idx: number) => {
 		client.footerButtonPressed(idx);
+		event.stopPropagation();
+		event.preventDefault();
+		return false;
+	};
+
+	export const ShipSelected = (event: Event, idx: number) => {
+		client.shipSelected(idx);
 		event.stopPropagation();
 		event.preventDefault();
 		return false;

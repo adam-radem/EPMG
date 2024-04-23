@@ -22,7 +22,7 @@ export class GlobalGameParameters {
 	static readonly EnemyInvulnerabilityTime = { projectile: 500, collision: 750 };
 	static readonly PlayerInvulnerabilityTimer = { projectile: 800, collision: 1900 };
 
-	static readonly MaxShoppingTime: number = 5000;
+	static readonly MaxShoppingTime: number = 60000;
 
 	static GetStartPosition(idx: number): Vector2 {
 		return Vector2.asVector2(this.StartPositions[idx]);

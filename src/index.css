@@ -78,7 +78,7 @@ button:focus-visible {
 }
 
 #version {
-	position:fixed;
+	position: fixed;
 	bottom: 0;
 	right: 0;
 	width: 100vw;
@@ -331,3 +331,152 @@ button:focus-visible {
 }
 
 /* #endregion Header */
+
+/* #region Briefing */
+.ui-briefing {
+	width: 90vw;
+	height: 85vh;
+	position: absolute;
+	top: 10vh;
+	left: 5vw;
+	align-items: center;
+
+	text-shadow: #000 0px 0px 1vh;
+}
+
+.ui-briefing.hidden {
+	display: none;
+}
+
+.briefing-selection {
+	opacity: 1;
+	transition: opacity 1s ease-out;
+}
+
+.briefing-selection.hidden {
+	opacity: 0;
+}
+
+.briefing-header {
+	display: block;
+	color: #f9f9f9;
+	font-variant: small-caps;
+	font-size: 4vh;
+	line-height: 4vh;
+	height: 5vh;
+	width: auto;
+	text-align: center;
+
+	background-color: #41007e33;
+	border-bottom: 2px solid #00F4E933;
+
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+}
+
+#briefing-status.briefing-header {
+	border-top: 2px solid #00F4E933;
+	border-bottom: none;
+}
+
+#briefing-ready.briefing-header {
+	display: block;
+	width: auto;
+	position: relative;
+	top: -50vh;
+	height: 16vh;
+	line-height: 5vh;
+	width: 100%;
+
+	border-top: 2px solid #00F4E933;
+	border-bottom: 2px solid #00F4E933;
+}
+
+#briefing-ready.briefing-header.hidden {
+	display: none;
+}
+
+#briefing-countdown {
+	font-size: 8vh;
+	line-height: 8vh;
+}
+
+.briefing-header.hidden {
+	display: none;
+}
+
+.shop-option {
+	display: block;
+	background-color: #41007e33;
+	height: 20vh;
+	width: 60vh;
+	margin: 13px auto;
+
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+}
+
+.shop-option .shop-icon {
+	display: inline-block;
+	background-color: #11111199;
+	width: 16vh;
+	height: 16vh;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	top: 2vh;
+	left: 2vh;
+}
+
+.shop-option .ship-stats {
+	display: inline-block;
+	width: 40vh;
+	height: 16vh;
+	position: relative;
+	margin: 0 0 0 1vh;
+	padding: 0;
+	top: 2vh;
+	border-left: 2px solid #00F4E966;
+}
+
+@property --ship-stat-value {
+	syntax: "<percentage>";
+	inherits: false;
+	initial-value: 20%;
+}
+
+.stats {
+	background: repeat url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACaADAAQAAAABAAAACQAAAAAvQpmhAAAAHElEQVQYGWNgoBIwJmQOQQWEDGAgaAJBBTS2AgCuBgEza+0zRAAAAABJRU5ErkJggg==');
+	position: relative;
+	left: 5.5vh;
+	top: 0.5vh;
+	height: 3.5vh;
+	margin: 1.5vh;
+	border-radius: 1vh;
+	width: calc(.8 * var(--ship-stat-value));
+}
+
+.stats.ship-speed {
+	background-color: #de9649;
+}
+
+.stats.ship-damage {
+	background-color: rgb(250, 86, 86);
+}
+
+.stats.ship-health {
+	background-color: rgb(153, 153, 242);
+}
+
+.stat-icon {
+	object-fit: contain;
+	float: left;
+	display: inline;
+	height: 5vh;
+	width: 5vh;
+	position: relative;
+	left: -5.5vh;
+	top: -1vh;
+}
+
+/* #endregion */

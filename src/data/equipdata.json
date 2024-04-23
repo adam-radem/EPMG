@@ -9,7 +9,7 @@
 				"y": 0
 			}
 		},
-		"simpleLaser": {
+		"startingLaser1": {
 			"type": 1,
 			"sprite": null,
 			"slot": 4,
@@ -26,11 +26,11 @@
 					"damage": 25,
 					"motion": 0,
 					"life": 1000,
-					"spread": 2
+					"spread": 3
 				}
 			}
 		},
-		"enemyLaser": {
+		"startingLaser2": {
 			"type": 2,
 			"sprite": null,
 			"slot": 4,
@@ -39,12 +39,54 @@
 				"y": 0
 			},
 			"weapon": {
-				"cooldown": 1000,
-				"range": 500,
+				"cooldown": 400,
+				"range": 400,
 				"projectile": {
-					"type": 2,
-					"speed": 600,
-					"damage": 10,
+					"type": 1,
+					"speed": 1100,
+					"damage": 30,
+					"motion": 0,
+					"life": 1000,
+					"spread": 4
+				}
+			}
+		},
+		"startingLaser3": {
+			"type": 3,
+			"sprite": null,
+			"slot": 4,
+			"anchor": {
+				"x": 0,
+				"y": 0
+			},
+			"weapon": {
+				"cooldown": 300,
+				"range": 400,
+				"projectile": {
+					"type": 1,
+					"speed": 1120,
+					"damage": 35,
+					"motion": 0,
+					"life": 1000,
+					"spread": 2
+				}
+			}
+		},
+		"enemyLaser1": {
+			"type": 100,
+			"sprite": null,
+			"slot": 4,
+			"anchor": {
+				"x": 0,
+				"y": 0
+			},
+			"weapon": {
+				"cooldown": 1000,
+				"range": 400,
+				"projectile": {
+					"type": 100,
+					"speed": 500,
+					"damage": 5,
 					"motion": 0,
 					"life": 1500,
 					"spread": 4

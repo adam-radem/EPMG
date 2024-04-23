@@ -25,7 +25,7 @@
 		"playerShipOneBlue": {
 			"type": 4,
 			"sprite": "playerShip1_blue",
-			"speed": 360,
+			"speed": 400,
 			"baseHealth": 100,
 			"collider": {
 				"center": {
@@ -34,12 +34,12 @@
 				},
 				"radius": 30
 			},
-			"defaultWeapon": 1
+			"defaultWeapon": 2
 		},
 		"playerShipOneGreen": {
 			"type": 5,
 			"sprite": "playerShip1_green",
-			"speed": 360,
+			"speed": 400,
 			"baseHealth": 100,
 			"collider": {
 				"center": {
@@ -48,12 +48,12 @@
 				},
 				"radius": 30
 			},
-			"defaultWeapon": 1
+			"defaultWeapon": 2
 		},
 		"playerShipOneOrange": {
 			"type": 6,
 			"sprite": "playerShip1_orange",
-			"speed": 360,
+			"speed": 400,
 			"baseHealth": 100,
 			"collider": {
 				"center": {
@@ -62,12 +62,12 @@
 				},
 				"radius": 30
 			},
-			"defaultWeapon": 1
+			"defaultWeapon": 2
 		},
 		"playerShipOneRed": {
 			"type": 7,
 			"sprite": "playerShip1_red",
-			"speed": 360,
+			"speed": 400,
 			"baseHealth": 100,
 			"collider": {
 				"center": {
@@ -76,13 +76,13 @@
 				},
 				"radius": 30
 			},
-			"defaultWeapon": 1
+			"defaultWeapon": 2
 		},
 		"playerShipTwoBlue": {
 			"type": 8,
 			"sprite": "playerShip2_blue",
 			"speed": 480,
-			"baseHealth": 80,
+			"baseHealth": 85,
 			"collider": {
 				"center": {
 					"x": 0,
@@ -96,7 +96,7 @@
 			"type": 9,
 			"sprite": "playerShip2_green",
 			"speed": 480,
-			"baseHealth": 80,
+			"baseHealth": 85,
 			"collider": {
 				"center": {
 					"x": 0,
@@ -110,7 +110,7 @@
 			"type": 10,
 			"sprite": "playerShip2_orange",
 			"speed": 480,
-			"baseHealth": 80,
+			"baseHealth": 85,
 			"collider": {
 				"center": {
 					"x": 0,
@@ -124,7 +124,7 @@
 			"type": 11,
 			"sprite": "playerShip2_red",
 			"speed": 480,
-			"baseHealth": 80,
+			"baseHealth": 85,
 			"collider": {
 				"center": {
 					"x": 0,
@@ -146,7 +146,7 @@
 				},
 				"radius": 30
 			},
-			"defaultWeapon": 1
+			"defaultWeapon": 3
 		},
 		"playerShipThreeGreen": {
 			"type": 13,
@@ -160,7 +160,7 @@
 				},
 				"radius": 30
 			},
-			"defaultWeapon": 1
+			"defaultWeapon": 3
 		},
 		"playerShipThreeOrange": {
 			"type": 14,
@@ -174,7 +174,7 @@
 				},
 				"radius": 30
 			},
-			"defaultWeapon": 1
+			"defaultWeapon": 3
 		},
 		"playerShipThreeRed": {
 			"type": 15,
@@ -188,14 +188,14 @@
 				},
 				"radius": 30
 			},
-			"defaultWeapon": 1
+			"defaultWeapon": 3
 		},
 		"enemyOneBlack": {
 			"type": 16,
 			"sprite": "enemyBlack1",
 			"speed": 360,
 			"baseHealth": 40,
-			"defaultWeapon": 2,
+			"defaultWeapon": 100,
 			"collider": {
 				"center": {
 					"x": 0,

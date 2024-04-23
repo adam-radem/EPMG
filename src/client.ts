@@ -9,6 +9,7 @@ import { EntitySystem, ShipEntity } from "./code/entity/entity";
 import { V2, Vector2 } from './code/math/vector';
 import { ShipObject } from './code/rendering/shipobject';
 import { PlayerEntityData } from './code/entity/player';
+import { BriefingPanel } from './code/ui/BriefingPanel';
 
 export const MaxPlayers = 2;
 
@@ -93,6 +94,11 @@ export class GameClient {
 		App.canvas?.addEventListener('pointercancel', cbCancel);
 	}
 
+	public shipSelected(idx: number) {
+		Rune.actions.setShip({ id: idx });
+		(UI.GetCurrentPanel() as BriefingPanel).HideShipSelection();
+	}
+
 	public footerButtonPressed(idx: number) {
 		const footer = UI.GetFooterElement(idx - 1);
 		footer?.buttonPressed();
@@ -103,6 +109,29 @@ export class GameClient {
 		this.localPlayerId = localPlayer;
 		this.control = state.level.phase == Phase.Level;
 		UI.UpdatePlayers(state, players, this.localPlayerId);
+
+		if (localPlayer) {
+			switch (state.level.phase) {
+				case Phase.None:
+					UI.SwitchUI(UI.PanelType.None, state, localPlayer);
+					break;
+				case Phase.Briefing:
+					UI.SwitchUI(UI.PanelType.Briefing, state, localPlayer);
+					break;
+				case Phase.Level:
+					UI.SwitchUI(UI.PanelType.GameHUD, state, localPlayer);
+					break;
+				case Phase.Shop:
+					UI.SwitchUI(UI.PanelType.Shop, state, localPlayer);
+					break;
+				case Phase.Victory:
+				case Phase.Defeat:
+					UI.SwitchUI(UI.PanelType.GameOver, state, localPlayer);
+					break;
+			}
+
+			UI.UpdateUIPanel(state, localPlayer);
+		}
 
 		//sync the local entity list with the remote one
 		this.syncEntityList(state);
