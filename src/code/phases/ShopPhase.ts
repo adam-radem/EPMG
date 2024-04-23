@@ -1,6 +1,7 @@
 import { GameState, Phase, Systems } from "../game/game";
 import { GlobalGameParameters } from "../game/static";
 import { Vector2 } from "../math/vector";
+import { Screen } from "../rendering/screen";
 import { Phases } from "./Phases";
 
 export module Shop {
@@ -15,14 +16,18 @@ export module Shop {
 	}
 
 	export function Exit(state: GameState) {
-
+		for (const pid in state.players) {
+			const playerData = state.players[pid];
+			const startPos = GlobalGameParameters.GetStartPosition(playerData.idx);
+			startPos.y = Screen.PlayableArea.y + 200;
+			playerData.transform.position = startPos;
+		}
 	}
 
 	export function Run(state: GameState, dt: number) {
 		state.level.progress += dt;
-
 		const p = state.level.progress / 1000;
-		const speedMod = (p*p*p) * 10;
+		const speedMod = (p * p * p) * 10;
 		for (const pid in state.players) {
 			const playerData = state.players[pid];
 			const pos = playerData.transform.position;

@@ -24,7 +24,7 @@ interface StatsModifier extends Aura {
 }
 
 function isStatModifier(mod: Aura): mod is StatsModifier {
-	return 'speedMod' in mod;
+	return (mod as StatsModifier).speedMod !== undefined;
 }
 
 interface DamageTakenModifier extends Aura {
@@ -32,7 +32,7 @@ interface DamageTakenModifier extends Aura {
 }
 
 function isDamageTakenModifier(mod: Aura): mod is DamageTakenModifier {
-	return 'damageTakenMod' in mod;
+	return (mod as DamageTakenModifier).damageTakenMod !== undefined;
 }
 
 interface DamageDealtModifier extends Aura {
@@ -40,7 +40,7 @@ interface DamageDealtModifier extends Aura {
 }
 
 function isDamageDealtModifier(mod: Aura): mod is DamageDealtModifier {
-	return 'damageDealtMod' in mod;
+	return (mod as DamageDealtModifier).damageDealtMod !== undefined;
 }
 
 interface WeaponModifier extends Aura {
@@ -50,9 +50,10 @@ interface WeaponModifier extends Aura {
 }
 
 function isWeaponModifier(mod: Aura): mod is WeaponModifier {
-	return 'weaponTimeScale' in mod ||
-		'weaponRange' in mod ||
-		'weaponDamageMod' in mod;
+	const wMod = mod as WeaponModifier;
+	return (wMod.weaponDamageMod !== undefined) ||
+		(wMod.weaponRange !== undefined) ||
+		(wMod.weaponDamageMod !== undefined);
 }
 
 enum ModifierClass {

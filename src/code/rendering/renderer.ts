@@ -14,6 +14,7 @@ const pixiOptions = {
 	premultipliedAlpha: false,
 	transparent: false,
 	antialias: true,
+	resizeTo: gameDiv!,
 	eventFeatures: {
 		move: false,
 		globalMove: false,
@@ -22,10 +23,9 @@ const pixiOptions = {
 	}
 };
 
-export const App = new Pixi.Application(pixiOptions);
+export const App = new Pixi.Application();
 export const Scene = new Pixi.Container();
 export const Background = new Pixi.Graphics();
-export const Renderer = App.renderer;
 export const SpriteData = await new Sprites();
 
 let starfield: Starfield;
@@ -60,6 +60,8 @@ if (GlobalGameParameters.Debug) {
 }
 
 export async function Init() {
+	await App.init(pixiOptions);
+
 	App.ticker.maxFPS = 60;
 	App.ticker.minFPS = 15;
 	App.ticker.add(tick);
@@ -74,18 +76,15 @@ export async function Init() {
 	App.stage.addChild(Scene);
 
 	const mask = new Pixi.Graphics();
-	mask.beginFill(0x000000, 0.2);
-	mask.drawRoundedRect(0, 0, playable.x, playable.y, 12);
-	mask.endFill();
+	mask.roundRect(0, 0, playable.x, playable.y, 12)
+		.fill({ color: 0x000000, alpha: 0.2 });
 	mask.zIndex = -1000;
 
 	Scene.mask = mask;
 	Scene.addChild(mask);
 
-	Background.beginFill(0x000011, 1);
-	Background.blendMode = Pixi.BLEND_MODES.ADD;
-	Background.drawRoundedRect(0, 0, playable.x, playable.y, 12);
-	Background.endFill();
+	Background.blendMode = 'add';
+	Background.roundRect(0, 0, playable.x, playable.y, 12).fill(0x000011FF);
 	Background.zIndex = -1000;
 	Scene.addChild(Background);
 
@@ -94,22 +93,22 @@ export async function Init() {
 
 	Scene.sortableChildren = true;
 
-	gameDiv?.appendChild((App.view as any));
+	gameDiv?.appendChild((App.canvas as any));
 	await SpriteData.Init();
 
 	resize();
 }
 
-function tick(dt: number) {
+function tick(ticker: Pixi.Ticker) {
 	if (starfield)
-		starfield.onUpdate(dt);
+		starfield.onUpdate(ticker.deltaTime);
 }
 
 window.onload = resize;
 window.onresize = resize;
 function resize() {
-	if (gameDiv) {
-		Renderer.resize(gameDiv.clientWidth, gameDiv.clientHeight);
+	if (gameDiv && App.renderer) {
+		App.renderer.resize(gameDiv.clientWidth, gameDiv.clientHeight);
 		fit(false, App.stage, gameDiv.clientWidth, gameDiv.clientHeight, WorldSize.x, WorldSize.y);
 	}
 }
@@ -137,20 +136,19 @@ let targetSat: number = 0;
 export function updateLevelParameters(state: GameState) {
 	if (GlobalGameParameters.Debug && !debug) {
 		debug = new Pixi.Graphics();
-		debug.beginFill('0xFFFFFF', 1);
-		debug.lineStyle(2, 0xFFFFFF, 0.6);
 		for (const pid in state.enemyPathData) {
 			const path = state.enemyPathData[pid];
 			for (let i = 0; i < path.Path.length; ++i) {
-				debug.drawCircle(path.Path[i].x, path.Path[i].y, 10);
+				debug.circle(path.Path[i].x, path.Path[i].y, 10)
+					.fill(0xFFFFFFFF)
+					.stroke({ color: 0xFFFFFF, alpha: 0.6, width: 2 });
 				if (i + 1 < path.Path.length) {
-					debug.lineStyle(4, 0xFFFFFF, 0.5)
-						.moveTo(path.Path[i].x, path.Path[i].y)
-						.lineTo(path.Path[i + 1].x, path.Path[i + 1].y);
+					debug.moveTo(path.Path[i].x, path.Path[i].y)
+						.lineTo(path.Path[i + 1].x, path.Path[i + 1].y)
+						.stroke({ color: 0xFFFFFF, alpha: 0.5, width: 4 });
 				}
 			}
 		}
-		debug.endFill();
 
 		Scene.addChild(debug);
 	}
@@ -172,7 +170,6 @@ export function updateLevelParameters(state: GameState) {
 
 	const col = `hsl(${targetHue}deg ${targetSat}% ${targetVal}%)`;
 	Background.clear();
-	Background.beginFill(col, 1);
-	Background.drawRoundedRect(0, 0, playable.x, playable.y, 12);
-	Background.endFill();
+	Background.roundRect(0, 0, playable.x, playable.y, 12)
+		.fill(col);
 }

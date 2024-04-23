@@ -25,7 +25,7 @@ export enum ProjectileMotion {
 }
 
 export function isProjectile(object: any): object is ProjectileData {
-	return 'team' in object;
+	return (object as ProjectileData).team !== undefined;
 }
 
 export class ProjectileSystem extends EntitySystem<ProjectileData> {
@@ -47,7 +47,7 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 			return;
 
 		const angle = (targetEntity.transform.angle + 90) * Math.PI / 180;
-		const fwd = new Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(128);
+		const fwd = new Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(64);
 		const fwdPos = fwd.clone().add(targetEntity.transform.position);
 
 		const spread = ((Math.random() * 2 - 1) * proj.spread * Math.PI / 180);

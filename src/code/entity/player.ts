@@ -15,8 +15,8 @@ export interface PlayerEntityData extends ShipEntity {
 	collider: CircBody;
 }
 
-export function isPlayer(other: EntityData): other is PlayerEntityData {
-	return 'idx' in other;
+export function isPlayer(object: EntityData): object is PlayerEntityData {
+	return (object as PlayerEntityData).idx !== undefined;
 }
 
 export class PlayerSystem extends EntitySystem<PlayerEntityData> {

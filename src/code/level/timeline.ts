@@ -14,7 +14,7 @@ interface SpawnEnemyEvent extends TimelineEvent {
 }
 
 function isSpawnEnemyEvent(event: TimelineEvent): event is SpawnEnemyEvent {
-	return 'enemies' in event;
+	return (event as SpawnEnemyEvent).enemies !== undefined;
 }
 
 export interface LevelTimeline {

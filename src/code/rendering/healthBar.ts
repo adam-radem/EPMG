@@ -4,25 +4,29 @@ const Height = 60;
 const Width = 8;
 
 export class HealthBar {
+	private container: Pixi.Container;
 	private bg: Pixi.Graphics;
 	private healthBar: Pixi.Graphics;
 	private interval: number | undefined;
 
 	public constructor() {
+		this.container = new Pixi.Container();
+		this.container.pivot.set(0.5, 0.5);
 		this.bg = new Pixi.Graphics();
-		this.bg.beginFill(0x000000, 1);
-		this.bg.lineStyle(2, 0xFFFFFF, 1);
-		this.bg.drawRect(-71, -(Height + 1), 8, (Height + 2));
-		this.bg.endFill();
-		this.bg.alpha = 0;
-		this.bg.zIndex = 1;
+		this.bg.rect(-72, -(Height + 1), 8, (Height + 2))
+			.fill({ color: 0x000000, alpha: 0})
+			.stroke({ color: 0xFFFFFF, alpha: 1, width: 2 });
+		this.bg.zIndex = -1;
+		this.container.addChild(this.bg);
 
 		this.healthBar = new Pixi.Graphics();
-		this.bg.addChild(this.healthBar);
+		this.container.addChild(this.healthBar);
+
+		this.container.alpha = 0;
 	}
 
 	public get Container() {
-		return this.bg;
+		return this.container;
 	}
 
 	public setHealthValue(ratio: number) {
@@ -30,23 +34,22 @@ export class HealthBar {
 			const height = Math.min(Math.max(ratio, 0), 1) * Height;
 			this.healthBar.clear();
 
-			this.healthBar.beginFill(0x00FF00, 1);
-			this.healthBar.drawRect(-70, -height, 6, height);
-			this.healthBar.endFill();
+			this.healthBar.rect(-71, -height, 6, height)
+				.fill({ color: 0x00FF00, alpha: 1 });
 		}
 
 		if (ratio >= 1 || ratio <= 0) {
-			if(this.interval){
+			if (this.interval) {
 				window.clearInterval(this.interval);
 			}
 			this.interval = window.setInterval(this.fade.bind(this), 160);
 		} else {
-			this.bg.alpha = 1;
+			this.container.alpha = 1;
 		}
 	}
 
 	private fade() {
-		if (this.bg.alpha > 0)
-			this.bg.alpha -= 1 / 60;
+		if (this.container.alpha > 0)
+			this.container.alpha -= 1 / 60;
 	}
 }

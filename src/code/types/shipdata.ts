@@ -1,5 +1,5 @@
 import { ProjectileMotion } from "../entity/projectile";
-import { CircBody, RectBody } from "../entity/transform";
+import { CircBody, RectBody, Body } from "../entity/transform";
 import { V2 } from "../math/vector";
 
 export { };
@@ -8,6 +8,7 @@ export interface ShipData {
 	sprite: SpriteID;
 	speed: number;
 	baseHealth: number;
+	defaultWeapon: number;
 	collider: CircBody | RectBody | Body;
 	equipPositions: {
 		left: V2;

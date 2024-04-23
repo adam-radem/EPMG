@@ -33,7 +33,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipOneGreen": {
 			"type": 5,
@@ -46,7 +47,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipOneOrange": {
 			"type": 6,
@@ -59,7 +61,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipOneRed": {
 			"type": 7,
@@ -72,7 +75,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipTwoBlue": {
 			"type": 8,
@@ -85,7 +89,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipTwoGreen": {
 			"type": 9,
@@ -98,7 +103,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipTwoOrange": {
 			"type": 10,
@@ -111,7 +117,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipTwoRed": {
 			"type": 11,
@@ -124,7 +131,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipThreeBlue": {
 			"type": 12,
@@ -137,7 +145,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipThreeGreen": {
 			"type": 13,
@@ -150,7 +159,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipThreeOrange": {
 			"type": 14,
@@ -163,7 +173,8 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"playerShipThreeRed": {
 			"type": 15,
@@ -176,13 +187,15 @@
 					"y": 0
 				},
 				"radius": 30
-			}
+			},
+			"defaultWeapon": 1
 		},
 		"enemyOneBlack": {
 			"type": 16,
 			"sprite": "enemyBlack1",
 			"speed": 360,
 			"baseHealth": 40,
+			"defaultWeapon": 2,
 			"collider": {
 				"center": {
 					"x": 0,

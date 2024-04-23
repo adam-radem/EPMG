@@ -1,6 +1,6 @@
 import * as UI from './code/ui/UIController';
 import * as RenderFactory from "./code/rendering/renderFactory";
-import { Scene } from './code/rendering/renderer';
+import { App, Scene } from './code/rendering/renderer';
 import { PlayerId, Players } from "rune-games-sdk";
 import { GameState, Phase } from "./code/game/game";
 import { Keyboard, KeyState } from "./code/input/keyboard";
@@ -88,9 +88,9 @@ export class GameClient {
 
 		const dispatch = dispatchEvent.bind(this);
 
-		window.addEventListener('pointerdown', cbDown);
-		window.addEventListener('pointerup', cbCancel);
-		window.addEventListener('pointercancel', cbCancel);
+		App.canvas?.addEventListener('pointerdown', cbDown);
+		App.canvas?.addEventListener('pointerup', cbCancel);
+		App.canvas?.addEventListener('pointercancel', cbCancel);
 	}
 
 	public footerButtonPressed(idx: number) {

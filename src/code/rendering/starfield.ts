@@ -41,7 +41,6 @@ export class Starfield {
 	public onUpdate(dt: number) {
 		this.container.clear();
 
-
 		for (let i = 0; i < this.stars.length; ++i) {
 			this.stars[i].offset.y += this.stars[i].speed * dt;
 
@@ -51,11 +50,8 @@ export class Starfield {
 
 				this.stars[i] = newStar;
 			}
-
-			this.container.beginFill(this.stars[i].color, this.stars[i].intensity);
-			this.container.drawCircle(this.stars[i].offset.x, this.stars[i].offset.y, this.stars[i].scale);
+			this.container.circle(this.stars[i].offset.x, this.stars[i].offset.y, this.stars[i].scale)
+				.fill({ color: this.stars[i].color, alpha: this.stars[i].intensity });
 		}
-
-		this.container.endFill();
 	}
 }

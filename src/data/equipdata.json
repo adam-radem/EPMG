@@ -12,7 +12,7 @@
 		"simpleLaser": {
 			"type": 1,
 			"sprite": null,
-			"slot": 3,
+			"slot": 4,
 			"anchor": {
 				"x": 0,
 				"y": 0
@@ -22,7 +22,7 @@
 				"range": 400,
 				"projectile": {
 					"type": 1,
-					"speed": 980,
+					"speed": 1080,
 					"damage": 25,
 					"motion": 0,
 					"life": 1000,
@@ -33,7 +33,7 @@
 		"enemyLaser": {
 			"type": 2,
 			"sprite": null,
-			"slot": 3,
+			"slot": 4,
 			"anchor": {
 				"x": 0,
 				"y": 0

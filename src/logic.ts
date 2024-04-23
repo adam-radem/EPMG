@@ -15,10 +15,19 @@ Rune.initLogic({
 		return Game.NewGameState(allPlayerIds);
 	},
 	actions: {
-		setTarget: ({ newTarget }, { game, playerId }) => {
-			if(game.level.phase !== Game.Phase.Level)
+		setShip: ({ id }, { game, playerId }) => {
+			if (game.level.phase !== Game.Phase.Briefing)
 				throw Rune.invalidAction();
 			
+			if(game.players[playerId].shipData > 0)
+				throw Rune.invalidAction();
+
+			Game.SetPlayerShip(game, playerId, id);
+		},
+		setTarget: ({ newTarget }, { game, playerId }) => {
+			if (game.level.phase !== Game.Phase.Level)
+				throw Rune.invalidAction();
+
 			const playerData = game.players[playerId];
 			playerData.target = newTarget;
 		},

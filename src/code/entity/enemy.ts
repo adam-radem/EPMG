@@ -118,8 +118,8 @@ export interface EnemyEntityData extends ShipEntity {
 	seed: number;
 }
 
-export function isEnemy(other: EntityData): other is EnemyEntityData {
-	return 'path' in other;
+export function isEnemy(object: EntityData): object is EnemyEntityData {
+	return (object as EnemyEntityData).path !== undefined;
 }
 
 export class EnemySystem extends EntitySystem<EnemyEntityData> {
@@ -226,7 +226,7 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 
 		state.enemies[entityData.id] = entityData;
 
-		const equipData = GetEquipmentData(2);
+		const equipData = GetEquipmentData(shipData.defaultWeapon!);
 		Game.Systems.equip.CreateEquipment(equipData, id, state);
 	}
 }

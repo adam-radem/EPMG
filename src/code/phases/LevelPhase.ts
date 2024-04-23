@@ -2,7 +2,7 @@ import { GameState, Phase, Systems } from "../game/game";
 import { GlobalGameParameters } from "../game/static";
 import { LevelRunner } from "../level/timeline";
 import { Vector2 } from "../math/vector";
-import { Ships } from "../types/shipdata";
+import { Screen } from "../rendering/screen";
 import { Phases } from "./Phases";
 
 const removedEntities: EntityId[] = [];
@@ -88,7 +88,9 @@ export module Level {
 			const playerData = state.players[pid];
 
 			//Reset players to the starting position
-			playerData.transform.position = GlobalGameParameters.GetStartPosition(playerData.idx);
+			const pos = GlobalGameParameters.GetStartPosition(playerData.idx);
+			playerData.transform.position = pos;
+
 			playerData.transform.angle = 180;
 			playerData.target = Vector2.zero();
 
@@ -99,7 +101,11 @@ export module Level {
 
 		}
 	}
-	export function Exit(state: GameState) { }
+	export function Exit(state: GameState) {
+		for (const pid in state.projectiles) {
+			Destroy(pid);
+		}
+	}
 
 	export function Run(state: GameState, dt: number): void { RunGamePhase(state, dt); }
 	export function DestroyGameEntity(id: EntityId): void { Destroy(id); }

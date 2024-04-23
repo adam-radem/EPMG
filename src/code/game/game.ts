@@ -69,7 +69,7 @@ export function EquipPlayer(state: GameState, playerId: string, equip: number, s
 	if ((equipData.slot & slot) !== 0) {
 		const playerData = state.players[playerId];
 		playerData.shipData.SetSlot(slot, equip);
-
+		state.players[playerId] = playerData;
 		Systems.equip.CreateEquipment(equipData, playerId, state);
 	}
 }
@@ -85,26 +85,43 @@ export function CreatePlayer(state: GameState, playerId: string) {
 			break;
 	}
 
-	const ship = Ships.Players[0] + idx;
-	const shipData = GetShipData(ship.GetShipType());
+	const ship = 0;//Ships.Players[0] + idx;
+	const startPos = GlobalGameParameters.GetStartPosition(idx);
+	const yPosOffscreen = Screen.PlayableArea.y + 200;
 	const player: PlayerEntityData = {
 		id: playerId,
 		idx: idx,
 		shipData: ship,
 		transform: {
-			position: GlobalGameParameters.GetStartPosition(idx),
+			position: { x: startPos.x, y: yPosOffscreen },
 			angle: 180,
 			scale: 1
 		},
-		collider: (shipData.collider as CircBody),
+		collider: { center: Vector2.zero(), radius: 1 },
 		target: Vector2.zero(),
-		health: shipData.baseHealth!,
-		maxHealth: shipData.baseHealth!,
-		speed: shipData.speed!
+		health: 0,
+		maxHealth: 0,
+		speed: 0
 	};
 	state.players[playerId] = player;
 	state.scores[playerId] = 0;
 	return player;
+}
+
+export function SetPlayerShip(state: GameState, playerId: string, shipID: number) {
+	const playerData = state.players[playerId];
+	const ship = Ships.Players[shipID] + playerData.idx;
+	const shipData = GetShipData(ship.GetShipType());
+
+	playerData.shipData = ship;
+	playerData.collider = (shipData.collider as CircBody);
+	playerData.maxHealth = playerData.health = shipData.baseHealth!;
+	playerData.speed = shipData.speed!;
+
+	console.log(`Player ${playerData.idx} has chosen ${ship}`);
+	state.players[playerId] = playerData;
+
+	EquipPlayer(state, playerId, shipData.defaultWeapon!, ShipSlot.Front);
 }
 
 export function DeletePlayer(state: GameState, playerId: string) {
@@ -137,7 +154,7 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		if (!playerId) //Spectator playerIds are null
 			continue;
 		CreatePlayer(state, playerId);
-		EquipPlayer(state, playerId, 1, ShipSlot.Left);
+		// EquipPlayer(state, playerId, 1, ShipSlot.Left);
 		++cnt;
 	}
 
@@ -163,7 +180,7 @@ function CreateRandomPath(state: GameState) {
 			x = Screen.PlayableArea.x - x;
 
 		//every 3 i values = 200 pixels less
-		y = Math.floor(i / 3) * (Screen.PlayableArea.y - 200)/2 + (Math.random() * 400);
+		y = Math.floor(i / 3) * (Screen.PlayableArea.y - 200) / 2 + (Math.random() * 400);
 
 		pathPoints.push({ x: x, y: y });
 	}

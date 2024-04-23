@@ -2,6 +2,8 @@ import { HeaderElement } from "./HeaderElement";
 import { FooterElement } from "./FooterElement";
 import { Player, PlayerId, Players } from "rune-games-sdk";
 import { GameState } from "../game/game";
+import { UIElement } from "./UIElement";
+import { UIPanel } from "./UIPanel";
 
 const UIHeaderElements = [
 	new HeaderElement('ui_header_player_one'),
@@ -11,9 +13,6 @@ const UIHeaderElements = [
 ];
 
 const UIHeaderColors = [`9FE2F5`, `A6F59F`, `F5DF9F`, `F59FA1`];
-const AlphaBG = `33`;
-const AlphaOthers = `66`;
-const AlphaMine = `FF`;
 
 const UIFooterElements = [
 	new FooterElement('ui_footer_btn_one'),
@@ -23,6 +22,32 @@ const UIFooterElements = [
 ];
 
 const CachedPlayerData: Record<PlayerId, Player> = {};
+
+enum PanelType {
+	None = 0,
+	Briefing = 1,
+	GameHUD = 2,
+	Shop = 3,
+	GameOver = 4
+};
+const Panels: Record<PanelType, UIPanel> = {
+	0: {},
+	1: {},
+	2: {},
+	3: {},
+	4: {}
+};
+let CurrentUIPanel: UIPanel = {};
+
+export const SetUIPanel = (panel: PanelType) => {
+	CurrentUIPanel.Dismiss?.();
+	CurrentUIPanel = Panels[panel];
+	CurrentUIPanel.Present?.();
+};
+
+export const UpdateUIPanel = (state: GameState) => {
+	CurrentUIPanel.Update?.(state);
+};
 
 export const GetHeaderElement = (idx: number) => {
 	return UIHeaderElements[idx];
