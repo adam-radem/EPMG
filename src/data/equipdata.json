@@ -13,6 +13,7 @@
 			"type": 1,
 			"sprite": null,
 			"slot": 4,
+			"special": 1,
 			"anchor": {
 				"x": 0,
 				"y": 0
@@ -34,6 +35,7 @@
 			"type": 2,
 			"sprite": null,
 			"slot": 4,
+			"special": 2,
 			"anchor": {
 				"x": 0,
 				"y": 0
@@ -55,6 +57,7 @@
 			"type": 3,
 			"sprite": null,
 			"slot": 4,
+			"special": 3,
 			"anchor": {
 				"x": 0,
 				"y": 0
@@ -83,6 +86,7 @@
 			"weapon": {
 				"cooldown": 1000,
 				"range": 400,
+				"special": 0,
 				"projectile": {
 					"type": 100,
 					"speed": 500,
