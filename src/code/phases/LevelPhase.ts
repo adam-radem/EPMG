@@ -1,14 +1,16 @@
-import { GameState, Phase, Systems } from "../game/game";
+import { Destroy, GameState, Phase } from "../game/game";
 import { GlobalGameParameters } from "../game/static";
 import { LevelRunner } from "../level/timeline";
 import { Vector2 } from "../math/vector";
-import { Screen } from "../rendering/screen";
 import { Phases } from "./Phases";
+import { PlayerSystem } from "../entity/player";
+import { EquipSystem } from "../entity/equip";
+import { ProjectileSystem } from "../entity/projectile";
+import { EnemySystem } from "../entity/enemy";
+import { AuraSystem } from "../aura/aura";
+import { CollisionSystem } from "../game/collision";
 
-const removedEntities: EntityId[] = [];
 const runner: LevelRunner = new LevelRunner();
-
-export function Destroy(entity: EntityId) { removedEntities.push(entity); }
 
 export function RunGamePhase(state: GameState, dt: number) {
 	//Advance level state
@@ -17,34 +19,34 @@ export function RunGamePhase(state: GameState, dt: number) {
 	//Update player state first
 	for (const playerId in state.players) {
 		const playerData = state.players[playerId];
-		Systems.player.onUpdate(playerData, state, dt);
+		PlayerSystem.onUpdate(playerData, state, dt);
 	}
 
 	//Then update enemies
 	for (const enemyId in state.enemies) {
 		const enemyData = state.enemies[enemyId];
-		Systems.enemy.onUpdate(enemyData, state, dt);
+		EnemySystem.onUpdate(enemyData, state, dt);
 	}
 
 	//Update weapons to fire new projectiles
 	for (const weaponId in state.equipment) {
 		const weaponData = state.equipment[weaponId];
-		Systems.equip.onUpdate(weaponData, state, dt);
+		EquipSystem.onUpdate(weaponData, state, dt);
 	}
 
 	//Then update the projectile state
 	for (const projectileId in state.projectiles) {
 		const projectileData = state.projectiles[projectileId];
-		Systems.projectile.onUpdate(projectileData, state, dt);
+		ProjectileSystem.onUpdate(projectileData, state, dt);
 	}
 
 	//Update global aura state
 	for (const auraId in state.auras) {
 		const auraData = state.auras[auraId];
-		Systems.aura.onUpdate(auraData, state, dt);
+		AuraSystem.onUpdate(auraData, state, dt);
 	}
 
-	Systems.collision.onUpdate(state);
+	CollisionSystem.onUpdate(state);
 
 	Cleanup(state);
 
@@ -61,6 +63,7 @@ function CheckGameOver(state: GameState) {
 }
 
 function Cleanup(state: GameState) {
+	const removedEntities = state.removed;
 	//Cleanup all entities that were destroyed this frame
 	for (const id of removedEntities) {
 		if (id in state.players)
@@ -74,7 +77,7 @@ function Cleanup(state: GameState) {
 		else if (id in state.auras)
 			delete state.auras[id];
 	}
-	removedEntities.length = 0;
+	state.removed.length = 0;
 }
 
 export module Level {
@@ -103,10 +106,9 @@ export module Level {
 	}
 	export function Exit(state: GameState) {
 		for (const pid in state.projectiles) {
-			Destroy(pid);
+			Destroy(state, pid);
 		}
 	}
 
 	export function Run(state: GameState, dt: number): void { RunGamePhase(state, dt); }
-	export function DestroyGameEntity(id: EntityId): void { Destroy(id); }
 }

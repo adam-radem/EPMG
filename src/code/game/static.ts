@@ -24,7 +24,7 @@ export class GlobalGameParameters {
 
 	static readonly MaxShoppingTime: number = 30000;
 
-	static GetStartPosition(idx: number): Vector2 {
-		return Vector2.asVector2(this.StartPositions[idx]);
+	static GetStartPosition(idx: number): V2 {
+		return Vector2.clone(GlobalGameParameters.StartPositions[idx]);
 	}
 }

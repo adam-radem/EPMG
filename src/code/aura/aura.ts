@@ -1,7 +1,6 @@
 import { GetEquipmentData } from "../databases/equipdatabase";
-import { EntityData, EntitySystem, ShipEntity } from "../entity/entity";
+import { EntityData } from "../entity/entity";
 import { EquipData } from "../entity/equip";
-import { PlayerEntityData } from "../entity/player";
 import { Destroy, GameState } from "../game/game";
 import { WeaponEquipmentData } from "../types/shipdata";
 
@@ -65,21 +64,21 @@ enum ModifierClass {
 	TargetEnemy
 }
 
-export class AuraSystem {
-	public onUpdate(auraData: Aura, state: GameState, dt: number) {
+export module AuraSystem {
+	export function onUpdate(auraData: Aura, state: GameState, dt: number) {
 		if (state.time >= auraData.expires) {
-			Destroy(auraData.id);
+			Destroy(state, auraData.id);
 			return;
 		}
 	}
 
-	public ApplyStatsModifiers(data: EntityData): EntityData {
+	export function ApplyStatsModifiers(data: EntityData): EntityData {
 		if (data.auras) {
 			const statModifiers = data.auras.filter(x => isStatModifier(x));
 			if (statModifiers.length > 0) {
-				const entity = structuredClone(data);
+				const entity = JSON.parse(JSON.stringify(data));
 				for (const aura of statModifiers) {
-					this.ApplyStats(aura, entity);
+					AuraSystem.ApplyStats(aura, entity);
 				}
 				return entity;
 			}
@@ -87,46 +86,46 @@ export class AuraSystem {
 		return data;
 	}
 
-	private ApplyStats(modifier: StatsModifier, entity: EntityData) {
+	export function ApplyStats(modifier: StatsModifier, entity: EntityData) {
 		if (modifier.speedMod) {
 			entity.speed *= modifier.speedMod;
 		}
 	}
 
-	public ApplyDamageTakenModifiers(data: EntityData, damageTaken: number) {
+	export function ApplyDamageTakenModifiers(data: EntityData, damageTaken: number) {
 		if (data.auras) {
 			const modifiers = data.auras.filter(x => isDamageTakenModifier(x));
 			for (const aura of modifiers) {
-				damageTaken = this.ApplyDamageTaken(aura, data, damageTaken);
+				damageTaken = AuraSystem.ApplyDamageTaken(aura, data, damageTaken);
 			}
 		}
 		return damageTaken;
 	}
 
-	private ApplyDamageTaken(modifier: DamageTakenModifier, entity: EntityData, damageTaken: number) {
+	export function ApplyDamageTaken(modifier: DamageTakenModifier, entity: EntityData, damageTaken: number) {
 		if (modifier.damageTakenMod)
 			damageTaken *= modifier.damageTakenMod;
 		return damageTaken;
 	}
 
-	public ApplyDamageDealtModifiers(data: EntityData, damageDealt: number) {
+	export function ApplyDamageDealtModifiers(data: EntityData, damageDealt: number) {
 		if (data.auras) {
 			const modifiers = data.auras.filter(x => isDamageDealtModifier(x));
 			for (const aura of modifiers) {
-				damageDealt = this.ApplyDamageDealt(aura, data, damageDealt);
+				damageDealt = AuraSystem.ApplyDamageDealt(aura, data, damageDealt);
 			}
 		}
 		return damageDealt;
 	}
 
-	private ApplyDamageDealt(modifier: DamageDealtModifier, entity: EntityData, damageDealt: number) {
+	export function ApplyDamageDealt(modifier: DamageDealtModifier, entity: EntityData, damageDealt: number) {
 		if (modifier.damageDealtMod) {
 			damageDealt *= modifier.damageDealtMod;
 		}
 		return damageDealt;
 	}
 
-	public ApplyWeaponModifiers(entity: EquipData) {
+	export function ApplyWeaponModifiers(entity: EquipData) {
 		const equipData = GetEquipmentData(entity.type);
 		if (!equipData.weapon)
 			return undefined;
@@ -134,9 +133,9 @@ export class AuraSystem {
 		if (entity.auras) {
 			const modifiers = entity.auras.filter(x => isWeaponModifier(x));
 			if (modifiers.length > 0) {
-				const weapon = structuredClone(equipData.weapon);
+				const weapon = JSON.parse(JSON.stringify(equipData.weapon));
 				for (const mod of modifiers) {
-					this.ApplyWeapon(mod, weapon);
+					AuraSystem.ApplyWeapon(mod, weapon);
 				}
 			}
 		}
@@ -144,7 +143,7 @@ export class AuraSystem {
 		return equipData.weapon;
 	}
 
-	private ApplyWeapon(mod: WeaponModifier, weapon: WeaponEquipmentData) {
+	export function ApplyWeapon(mod: WeaponModifier, weapon: WeaponEquipmentData) {
 		if (mod.weaponDamageMod && weapon.projectile)
 			weapon.projectile.damage *= mod.weaponDamageMod;
 

@@ -1,4 +1,4 @@
-import { GameState, Phase, Systems } from "../game/game";
+import { GameState, Phase } from "../game/game";
 import { GlobalGameParameters } from "../game/static";
 import { Vector2 } from "../math/vector";
 import { Screen } from "../rendering/screen";

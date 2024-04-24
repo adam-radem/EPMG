@@ -1,5 +1,5 @@
 import { PlayerId } from "rune-games-sdk";
-import { PlayerSystem, PlayerEntityData, isPlayer } from "../entity/player";
+import { PlayerEntityData } from "../entity/player";
 import { GlobalGameParameters } from "./static";
 import { EnemySystem, EnemyEntityData, Path } from "../entity/enemy";
 import { GetShipType, SetSlot, ShipSlot, Ships, WeaponProjectileData } from "../types/shipdata";
@@ -10,10 +10,8 @@ import { GetShipData } from "../databases/shipdatabase";
 import { CircBody } from "../entity/transform";
 import { Screen } from "../rendering/screen";
 import { GetEquipmentData } from "../databases/equipdatabase";
-import { CollisionSystem } from "./collision";
-import { Aura, AuraSystem } from "../aura/aura";
+import { Aura } from "../aura/aura";
 import { Phases } from "../phases/Phases";
-import { Level } from "../phases/LevelPhase";
 
 export enum Phase {
 	None,
@@ -31,28 +29,8 @@ export enum TeamId {
 	Neither = 0
 }
 
-class SystemSet {
-	player: PlayerSystem;
-	enemy: EnemySystem;
-	equip: EquipSystem;
-	projectile: ProjectileSystem;
-	collision: CollisionSystem;
-	aura: AuraSystem;
-
-	public constructor() {
-		this.player = new PlayerSystem();
-		this.enemy = new EnemySystem();
-		this.equip = new EquipSystem();
-		this.projectile = new ProjectileSystem();
-		this.collision = new CollisionSystem();
-		this.aura = new AuraSystem();
-	}
-}
-
-export const Systems: SystemSet = new SystemSet();
-
 export function NextEntityId(state: GameState) { return ++state.entityCount; };
-export function Destroy(entity: EntityId) { Level.DestroyGameEntity(entity); }
+export function Destroy(state: GameState, entity: EntityId) { state.removed.push(entity); }
 export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	const dt = Rune.gameTime() - state.time;
 	state.time = Rune.gameTime();
@@ -61,7 +39,7 @@ export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 }
 
 export function CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, owner: EntityId, state: GameState) {
-	Systems.projectile.CreateProjectile(proj, position, target, owner, state);
+	ProjectileSystem.CreateProjectile(proj, position, target, owner, state);
 }
 
 export function EquipPlayer(state: GameState, playerId: string, equip: number, slot: ShipSlot) {
@@ -69,7 +47,7 @@ export function EquipPlayer(state: GameState, playerId: string, equip: number, s
 	if ((equipData.slot & slot) !== 0) {
 		const playerData = state.players[playerId];
 		playerData.shipData = SetSlot(playerData.shipData, slot, equip);
-		Systems.equip.CreateEquipment(equipData, playerId, state);
+		EquipSystem.CreateEquipment(equipData, playerId, state);
 	}
 }
 
@@ -92,7 +70,7 @@ export function CreatePlayer(state: GameState, playerId: string) {
 		idx: idx,
 		shipData: ship,
 		transform: {
-			position: { x: startPos.x, y: yPosOffscreen },
+			position: Vector2.makeVector(startPos.x, yPosOffscreen),
 			angle: 180,
 			scale: 1
 		},
@@ -146,7 +124,8 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		enemyPathData: {},
 		equipment: {},
 		projectiles: {},
-		auras: {}
+		auras: {},
+		removed: []
 	};
 
 	let cnt = 0;
@@ -243,4 +222,5 @@ export interface GameState {
 	equipment: Record<EntityId, EquipData>;
 	projectiles: Record<EntityId, ProjectileData>;
 	auras: Record<EntityId, Aura>;
+	removed: EntityId[];
 }

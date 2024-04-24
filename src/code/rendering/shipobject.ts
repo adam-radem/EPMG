@@ -68,7 +68,9 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 				this.debug.drawCircle(0, 0, 5);
 
 				const angle = Math.PI / 2;
-				const fwd = new Vector2(Math.cos(angle), Math.sin(angle)).normalize().multiplyScalar(entity.speed / 6);
+				let fwd = Vector2.makeVector(Math.cos(angle), Math.sin(angle));
+				fwd = Vector2.normalize(fwd);
+				fwd = Vector2.multiplyScalar(fwd, entity.speed / 6);
 				this.debug.drawCircle(fwd.x, fwd.y, 5);
 
 				this.debug.endFill();

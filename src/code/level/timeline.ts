@@ -1,5 +1,6 @@
 import { GetTimeline } from "../databases/timelinedatabase";
-import { GameState, Phase, Systems } from "../game/game";
+import { EnemySystem } from "../entity/enemy";
+import { GameState, Phase } from "../game/game";
 import { Phases } from "../phases/Phases";
 import { Ships } from "../types/shipdata";
 
@@ -24,7 +25,7 @@ export interface LevelTimeline {
 
 export class LevelRunner {
 	public Run(state: GameState, dt: number) {
-		const timeline = this.GetTimeline(state.level.id);
+		const timeline = LevelRunner.GetTimeline(state.level.id);
 		const eventIdx = state.level.eventIdx;
 		const prevProgress = state.level.progress;
 
@@ -52,13 +53,13 @@ export class LevelRunner {
 
 		state.level.progress += dt;
 		const eventData = timeline.events[eventIdx];
-		this.ProcessEvent(state, eventData, prevProgress);
+		LevelRunner.ProcessEvent(state, eventData, prevProgress);
 
 		if (state.level.eventIdx >= timeline.events.length)
 			state.level.progress = 0;
 	}
 
-	private ProcessEvent(state: GameState, event: TimelineEvent, prevTime: number) {
+	private static ProcessEvent(state: GameState, event: TimelineEvent, prevTime: number) {
 		const startTime = event.startTime;
 		//Not yet started! Ignore everything else
 		if (state.level.progress < startTime)
@@ -74,20 +75,20 @@ export class LevelRunner {
 		for (var i = 0; i < event.count; ++i) {
 			const startTime = (i * event.interval) + event.startTime;
 			if (prevTime < startTime && state.level.progress >= startTime) {
-				this.InvokeEvent(state, event);
+				LevelRunner.InvokeEvent(state, event);
 			}
 		}
 	}
 
-	private InvokeEvent(state: GameState, event: TimelineEvent) {
+	private static InvokeEvent(state: GameState, event: TimelineEvent) {
 		if (isSpawnEnemyEvent(event)) {
 			const randomEnemyIdx = Math.floor(Math.random() * event.enemies.length);
 			const enemyId = event.enemies[randomEnemyIdx];
-			Systems.enemy.CreateEnemy(Ships.Enemies[enemyId], state);
+			EnemySystem.CreateEnemy(Ships.Enemies[enemyId], state);
 		}
 	}
 
-	private GetTimeline(id: number): LevelTimeline {
+	private static GetTimeline(id: number): LevelTimeline {
 		return GetTimeline(id);
 	}
 }

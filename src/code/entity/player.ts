@@ -1,13 +1,11 @@
 import { Screen } from "../rendering/screen";
 import { EntityData, EntitySystem, ShipEntity } from "./entity";
 import { V2, Vector2 } from "../math/vector";
-import { CircBody, RectBody } from "./transform";
-import { PlayerId } from "rune-games-sdk";
-import { Destroy, GameState, Systems } from "../game/game";
-import { ShipSlot, Ships } from "../types/shipdata";
-import { GetShipData } from "../databases/shipdatabase";
+import { CircBody } from "./transform";
+import { GameState } from "../game/game";
 import { isEnemy } from "./enemy";
 import { GlobalGameParameters } from "../game/static";
+import { AuraSystem } from "../aura/aura";
 
 export interface PlayerEntityData extends ShipEntity {
 	target: V2;
@@ -19,29 +17,32 @@ export function isPlayer(object: EntityData): object is PlayerEntityData {
 	return (object as PlayerEntityData).idx !== undefined;
 }
 
-export class PlayerSystem extends EntitySystem<PlayerEntityData> {
-	public onUpdate(entity: PlayerEntityData, state: GameState, dt: number): void {
+export module PlayerSystem {
+	export function onUpdate(entity: PlayerEntityData, state: GameState, dt: number): void {
 		if (entity.health <= 0) {
 			return;
 		}
-		this.updateData(entity, dt);
+		updateData(entity, dt);
 	}
 
-	public updateData(data: PlayerEntityData, dt: number): void {
+	function updateData(data: PlayerEntityData, dt: number): void {
 		if (!data.target)
 			return;
-		const targetVector = Vector2.asVector2(data.target);
-		if (targetVector.isZero() || targetVector.equals(data.transform.position))
+		const targetVector = Vector2.clone(data.target);
+		if (Vector2.isZero(targetVector) || Vector2.equals(targetVector, data.transform.position))
 			return;
 
-		const positionVector = Vector2.asVector2(data.transform.position);
+		const positionVector = Vector2.clone(data.transform.position);
 
-		const diffVector = targetVector.clone().subtract(positionVector);
+		let diffVector = Vector2.clone(targetVector);
+		diffVector = Vector2.subtract(diffVector, positionVector);
 
 		const shipSpeed = data.speed;
 
-		const vel = diffVector.clone().normalize().multiplyScalar(shipSpeed * dt / 1000);
-		if (diffVector.sqrMagnitude() <= vel.sqrMagnitude()) {
+		let vel = Vector2.clone(diffVector);
+		vel = Vector2.normalize(vel);
+		vel = Vector2.multiplyScalar(vel, shipSpeed * dt / 1000);
+		if (Vector2.sqrMagnitude(diffVector) <= Vector2.sqrMagnitude(vel)) {
 			data.transform.position = targetVector;
 			return;
 		}
@@ -56,16 +57,15 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 		const minY = data.collider.radius;
 		const maxY = WorldSize.y - data.collider.radius;
 
-		const position = Vector2.asVector2(data.transform.position);
-		position.add(vel);
-		position.clamp(minX, maxX, minY, maxY);
+		let p = Vector2.addVector(data.transform.position, vel);
+		p = Vector2.clamp(vel, minX, maxX, minY, maxY);
 
-		data.transform.position = position;
+		data.transform.position = p;
 	}
 
-	public onTakeDamage(entityData: PlayerEntityData, src: EntityData, damage: number, state: GameState) {
-		damage = Systems.aura.ApplyDamageDealtModifiers(src, damage);
-		damage = Systems.aura.ApplyDamageTakenModifiers(entityData, damage);
+	export function onTakeDamage(entityData: PlayerEntityData, src: EntityData, damage: number, state: GameState) {
+		damage = AuraSystem.ApplyDamageDealtModifiers(src, damage);
+		damage = AuraSystem.ApplyDamageTakenModifiers(entityData, damage);
 
 		entityData.health -= damage;
 		if (isEnemy(src))
@@ -74,13 +74,13 @@ export class PlayerSystem extends EntitySystem<PlayerEntityData> {
 			entityData.collider.disabledUntil = state.time + GlobalGameParameters.PlayerInvulnerabilityTimer.projectile;
 	}
 
-	public onCollide(entityData: PlayerEntityData, other: EntityData, state: GameState): void {
+	export function onCollide(entityData: PlayerEntityData, other: EntityData, state: GameState): void {
 		if (isEnemy(other)) {
-			this.onTakeDamage(entityData, other, GlobalGameParameters.EnemyCollisionDamage, state);
+			PlayerSystem.onTakeDamage(entityData, other, GlobalGameParameters.EnemyCollisionDamage, state);
 		}
 	}
 
-	public levelTransition(entityData: PlayerEntityData) {
-		
+	export function levelTransition(entityData: PlayerEntityData) {
+
 	}
 }

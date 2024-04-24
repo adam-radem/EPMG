@@ -1,98 +1,85 @@
+/* eslint-disable no-restricted-syntax */
+
 export interface V2 {
 	x: number;
 	y: number;
 }
 
-export class Vector2 implements V2 {
-	public x: number = 0;
-	public y: number = 0;
+export module Vector2 {
 
-	public constructor(x: number, y: number) {
-		this.x = x;
-		this.y = y;
+	export function makeVector(x: number, y: number): V2 {
+		return { x: x, y: y };
 	}
 
-	static asVector2(other: V2): Vector2 {
-		return new Vector2(other.x, other.y);
+	export function clone(other: Readonly<V2>): V2 {
+		return { x: other.x, y: other.y };
 	}
 
-	static zero(): Vector2 {
-		return new Vector2(0, 0);
+	export function zero(): V2 {
+		return { x: 0, y: 0 };
 	}
 
-	static one(): Vector2 {
-		return new Vector2(1, 1);
+	export function one(): V2 {
+		return { x: 1, y: 1 };
 	}
 
-	public isZero(): boolean {
-		return this.x === 0 && this.y === 0;
+	export function isZero(vector: Readonly<V2>): boolean {
+		return vector.x === 0 && vector.y === 0;
 	}
 
-	public clone(): Vector2 {
-		return new Vector2(this.x, this.y);
+	export function equals(a: Readonly<V2>, b: Readonly<V2>): boolean {
+		return a.x === b.x && a.y === b.y;
 	}
 
-	public equals(other: V2): boolean {
-		return this.x === other.x && this.y === other.y;
+	export function sqrMagnitude(vector: Readonly<V2>): number {
+		return (vector.x * vector.x) + (vector.y * vector.y);
+	}
+	export function magnitude(vector: Readonly<V2>): number {
+		return Math.sqrt(Vector2.sqrMagnitude(vector));
 	}
 
-	public sqrMagnitude(): number {
-		return (this.x * this.x) + (this.y * this.y);
-	}
-	public magnitude(): number {
-		return Math.sqrt(this.sqrMagnitude());
+	export function normalize(vector: Readonly<V2>): V2 {
+		return Vector2.divideScalar(vector, Vector2.magnitude(vector));
 	}
 
-	public normalize(): Vector2 {
-		return this.divideScalar(this.magnitude());
+	export function clamp(vector: Readonly<V2>, minX: number, maxX: number, minY: number, maxY: number): V2 {
+		const x = Math.min(Math.max(vector.x, minX), maxX);
+		const y = Math.min(Math.max(vector.y, minY), maxY);
+		return Vector2.makeVector(x, y);
 	}
 
-	public clamp(minX: number, maxX: number, minY: number, maxY: number): Vector2 {
-		this.x = Math.min(Math.max(this.x, minX), maxX);
-		this.y = Math.min(Math.max(this.y, minY), maxY);
-		return this;
+	export function addVector(a: Readonly<V2>, b: Readonly<V2>): V2 {
+		return Vector2.makeVector(a.x + b.x, a.y + b.y);
 	}
 
-	public add(other: V2): Vector2 {
-		this.x += other.x;
-		this.y += other.y;
-		return this;
+	export function subtract(a: Readonly<V2>, b: Readonly<V2>): V2 {
+		return Vector2.makeVector(a.x - b.x, a.y - b.y);
 	}
 
-	public subtract(other: V2): Vector2 {
-		this.x -= other.x;
-		this.y -= other.y;
-		return this;
+	export function multiplyScalar(vector: Readonly<V2>, scalar: number): V2 {
+		return Vector2.makeVector(vector.x * scalar, vector.y * scalar);
 	}
 
-	public multiplyScalar(scalar: number): Vector2 {
-		this.x *= scalar;
-		this.y *= scalar;
-		return this;
+	export function divideScalar(vector: Readonly<V2>, scalar: number): V2 {
+		return Vector2.makeVector(vector.x / scalar, vector.y / scalar);
 	}
 
-	public divideScalar(scalar: number): Vector2 {
-		this.x /= scalar;
-		this.y /= scalar;
-		return this;
+	export function vectorAngle(vector: Readonly<V2>): number {
+		return Math.atan2(vector.y, vector.x);
 	}
 
-	public angle(): number {
-		return Math.atan2(this.y, this.x);
-	}
-
-	public static dot(a: V2, b: V2): number {
+	export function dot(a: Readonly<V2>, b: Readonly<V2>): number {
 		return a.x * b.x + a.y * b.y;
 	}
 
-	public static lerp(a: V2, b: V2, t: number): Vector2 {
+	export function lerp(a: Readonly<V2>, b: Readonly<V2>, t: number): V2 {
 		const x = a.x * (1 - t) + b.x * t;
 		const y = a.y * (1 - t) + b.y * t;
-		return new Vector2(x,y);
+		return Vector2.makeVector(x, y);
 	}
 
-	public static angle(a: V2, b: V2): number {
-		const diffVector = Vector2.asVector2(a).subtract(Vector2.asVector2(b));
-		return Math.atan2(diffVector.y, diffVector.x);
+	export function angleBetween(a: Readonly<V2>, b: Readonly<V2>): number {
+		const diffVector = Vector2.subtract(a, b);
+		return Vector2.vectorAngle(diffVector);
 	}
 }

@@ -1,11 +1,11 @@
 import { GetEquipmentData } from "../databases/equipdatabase";
-import { Destroy, GameState, NextEntityId, Systems, TeamId } from "../game/game";
+import { Destroy, GameState, NextEntityId, TeamId } from "../game/game";
 import { V2, Vector2 } from "../math/vector";
 import { Screen } from "../rendering/screen";
 import { WeaponProjectileData } from "../types/shipdata";
-import { EnemyEntityData, isEnemy } from "./enemy";
+import { EnemyEntityData, EnemySystem, isEnemy } from "./enemy";
 import { EntityData, EntitySystem } from "./entity";
-import { PlayerEntityData, isPlayer } from "./player";
+import { PlayerEntityData, PlayerSystem, isPlayer } from "./player";
 import { Body } from "./transform";
 
 export interface ProjectileData extends EntityData {
@@ -29,9 +29,9 @@ export function isProjectile(object: any): object is ProjectileData {
 	return (object as ProjectileData).team !== undefined;
 }
 
-export class ProjectileSystem extends EntitySystem<ProjectileData> {
+export module ProjectileSystem {
 
-	public CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, owner: EntityId, state: GameState) {
+	export function CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, owner: EntityId, state: GameState) {
 
 		let team = TeamId.Neither;
 		let targetEntity: EntityData;
@@ -48,11 +48,12 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 			return;
 
 		const angle = (targetEntity.transform.angle + 90) * Math.PI / 180;
-		const fwd = new Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(64);
-		const fwdPos = fwd.clone().add(targetEntity.transform.position);
+		const fwd = Vector2.multiplyScalar(Vector2.makeVector(Math.cos(angle), Math.sin(angle)), 64);
+		const targetPos = Vector2.clone(targetEntity.transform.position);
+		const fwdPos = Vector2.addVector(fwd, targetPos);
 
 		const spread = ((Math.random() * 2 - 1) * proj.spread * Math.PI / 180);
-		const spawnAngle = Vector2.asVector2(fwdPos).subtract(position).angle() + spread;
+		const spawnAngle = Vector2.vectorAngle(Vector2.subtract(fwdPos, position)) + spread;
 
 		const id = NextEntityId(state);
 		const newProjectile = {
@@ -79,52 +80,52 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 		state.projectiles[id] = newProjectile;
 	}
 
-	public onUpdate(entityData: ProjectileData, state: GameState, dt: number) {
+	export function onUpdate(entityData: ProjectileData, state: GameState, dt: number) {
 		entityData.life -= dt;
 		if (entityData.life <= 0) {
-			Destroy(entityData.id);
+			Destroy(state, entityData.id);
 			return;
 		}
 
 		if (entityData.motion == ProjectileMotion.Tracked) {
 			const target = entityData.target;
 			if (target) {
-				let targetPos: Vector2;
+				let targetPos: V2;
 				if (target in state.enemies) {
-					targetPos = Vector2.asVector2(state.enemies[target].transform.position);
+					targetPos = Vector2.clone(state.enemies[target].transform.position);
 				}
 				else if (target in state.players) {
-					targetPos = Vector2.asVector2(state.players[target].transform.position);
+					targetPos = Vector2.clone(state.players[target].transform.position);
 				}
 				else {
 					entityData.motion = ProjectileMotion.Flat;
 					return;
 				}
 
-				const theta = targetPos.subtract(entityData.transform.position).angle();
+				const theta = Vector2.angleBetween(targetPos, entityData.transform.position);
 				entityData.transform.angle = theta;
 			}
 		}
 
 		const ang = entityData.transform.angle;
-		const dir = new Vector2(Math.cos(ang), Math.sin(ang)).multiplyScalar((dt * entityData.speed) / 1000);
-		const pos = Vector2.asVector2(entityData.transform.position).add(dir);
+		const dir = Vector2.multiplyScalar(Vector2.makeVector(Math.cos(ang), Math.sin(ang)), (dt * entityData.speed) / 1000);
+		const pos = Vector2.addVector(entityData.transform.position, dir);
 
 		const bounds = Screen.PlayableArea;
 		if (pos.x < 0 || pos.x > bounds.x || pos.y < 0 || pos.y > bounds.y) {
-			Destroy(entityData.id);
+			Destroy(state, entityData.id);
 			return;
 		}
 
 		entityData.transform.position = pos;
 	}
 
-	public onCollide(entityData: ProjectileData, other: EntityData, state: GameState): void {
+	export function onCollide(entityData: ProjectileData, other: EntityData, state: GameState): void {
 		if (isPlayer(other)) {
-			this.onPlayerCollide(entityData, other as PlayerEntityData, state);
+			onPlayerCollide(entityData, other as PlayerEntityData, state);
 		}
 		else if (isEnemy(other)) {
-			this.onEnemyCollide(entityData, other as EnemyEntityData, state);
+			onEnemyCollide(entityData, other as EnemyEntityData, state);
 		}
 
 		if (entityData.pierce && entityData.pierce > 0) {
@@ -133,22 +134,22 @@ export class ProjectileSystem extends EntitySystem<ProjectileData> {
 			return;
 		}
 
-		Destroy(entityData.id);
+		Destroy(state, entityData.id);
 	}
 
-	public onPlayerCollide(projectile: ProjectileData, player: PlayerEntityData, state: GameState) {
+	function onPlayerCollide(projectile: ProjectileData, player: PlayerEntityData, state: GameState) {
 		if (projectile.team === TeamId.Player)
 			return;
 
 		const data = GetEquipmentData(projectile.type).weapon?.projectile;
-		Systems.player.onTakeDamage(player, projectile, data!.damage, state);
+		PlayerSystem.onTakeDamage(player, projectile, data!.damage, state);
 	}
 
-	public onEnemyCollide(projectile: ProjectileData, enemy: EnemyEntityData, state: GameState) {
+	function onEnemyCollide(projectile: ProjectileData, enemy: EnemyEntityData, state: GameState) {
 		if (projectile.team === TeamId.Enemy)
 			return;
 
 		const data = GetEquipmentData(projectile.type).weapon?.projectile;
-		Systems.enemy.onTakeDamage(enemy, projectile, data!.damage, state);
+		EnemySystem.onTakeDamage(enemy, projectile, data!.damage, state);
 	}
 }

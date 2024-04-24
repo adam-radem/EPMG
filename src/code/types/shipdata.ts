@@ -65,7 +65,7 @@ export class Ships {
 	static Enemies: ShipEquipment[] = [16, 20, 24, 28, 32];
 
 	static RandomColor(): number {
-		return this.Colors[Math.floor(Math.random() * this.Colors.length)];
+		return Ships.Colors[Math.floor(Math.random() * Ships.Colors.length)];
 	}
 }
 

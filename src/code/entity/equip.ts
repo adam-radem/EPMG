@@ -1,8 +1,9 @@
-import { CreateProjectile, Destroy, GameState, NextEntityId, Systems } from "../game/game";
+import { CreateProjectile, Destroy, GameState, NextEntityId } from "../game/game";
 import { EntityData, EntitySystem } from "./entity";
 import { GetEquipmentData } from "../databases/equipdatabase";
 import { ShipEquipmentData, WeaponEquipmentData } from "../types/shipdata";
 import { V2, Vector2 } from "../math/vector";
+import { AuraSystem } from "../aura/aura";
 
 export interface EquipData extends EntityData {
 	type: number;
@@ -11,16 +12,39 @@ export interface EquipData extends EntityData {
 	lastTarget: EntityId;
 }
 
-export class EquipSystem extends EntitySystem<EquipData> {
-	public CreateEquipment(equipData: ShipEquipmentData, ownerId: EntityId, state: GameState) {
+function distanceTo(weaponPosition: V2, targetPosition: V2) {
+	const vec = Vector2.subtract(Vector2.clone(weaponPosition), targetPosition);
+	return Vector2.sqrMagnitude(vec);
+}
+
+function weaponInRange(weaponPosition: V2, targetPosition: V2, range: number) {
+	const dist = distanceTo(weaponPosition, targetPosition);
+	return inRange(dist, range);
+}
+
+function inRange(distance: number, range: number) {
+	return distance < (range * range);
+}
+
+function fireWeapon(entityData: EquipData, weaponData: WeaponEquipmentData, target: EntityId, owner: EntityId, state: GameState) {
+	entityData.lastTarget = target;
+	entityData.time = weaponData.cooldown;
+
+	if (weaponData.projectile) {
+		CreateProjectile(weaponData.projectile, entityData.transform.position, target, owner, state);
+	}
+}
+
+export module EquipSystem {
+	export function CreateEquipment(equipData: ShipEquipmentData, ownerId: EntityId, state: GameState) {
 		const id = NextEntityId(state);
 		const parent = state.players[ownerId] || state.enemies[ownerId];
-		const parentPos = Vector2.asVector2(parent.transform.position);
+		const parentPos = Vector2.clone(parent.transform.position);
 
 		state.equipment[id] = {
 			id: id,
 			transform: {
-				position: parentPos.add(equipData.anchor),
+				position: Vector2.addVector(parentPos, equipData.anchor),
 				angle: 0,
 				scale: 1
 			},
@@ -33,47 +57,47 @@ export class EquipSystem extends EntitySystem<EquipData> {
 	}
 
 
-	public onUpdate(entityData: EquipData, state: GameState, dt: number) {
+	export function onUpdate(entityData: EquipData, state: GameState, dt: number) {
 		const equipData = GetEquipmentData(entityData.type);
 
 		const parent = state.players[entityData.owner] || state.enemies[entityData.owner];
 		if (!parent) {
-			Destroy(entityData.id);
+			Destroy(state, entityData.id);
 			return;
 		}
-		const parentPos = Vector2.asVector2(parent.transform.position);
-		entityData.transform.position = parentPos.add(equipData.anchor);
+		const parentPos = Vector2.clone(parent.transform.position);
+		entityData.transform.position = Vector2.addVector(parentPos, equipData.anchor);
 
 		if (entityData.time > 0) {
 			entityData.time -= dt;
 			return;
 		}
 
-		this.updateWeapon(entityData, equipData, state, dt);
+		EquipSystem.updateWeapon(entityData, equipData, state, dt);
 	}
 
-	private updateWeapon(entityData: EquipData, equipData: ShipEquipmentData, state: GameState, dt: number) {
-		const weapon = Systems.aura.ApplyWeaponModifiers(entityData);
+	export function updateWeapon(entityData: EquipData, equipData: ShipEquipmentData, state: GameState, dt: number) {
+		const weapon = AuraSystem.ApplyWeaponModifiers(entityData);
 		if (!weapon)
 			return;
 
 		if (entityData.owner in state.players) {
-			this.updatePlayerWeapon(entityData, weapon, state);
+			EquipSystem.updatePlayerWeapon(entityData, weapon, state);
 			return;
 		}
 
 		if (entityData.owner in state.enemies) {
-			this.updateEnemyWeapon(entityData, weapon, state);
+			EquipSystem.updateEnemyWeapon(entityData, weapon, state);
 			return;
 		}
 	}
 
-	private updatePlayerWeapon(entityData: EquipData, weaponData: WeaponEquipmentData, state: GameState) {
+	export function updatePlayerWeapon(entityData: EquipData, weaponData: WeaponEquipmentData, state: GameState) {
 		const playerData = state.players[entityData.owner];
 
 		//this player left the game
 		if (!playerData) {
-			Destroy(entityData.id);
+			Destroy(state, entityData.id);
 			return;
 		}
 
@@ -85,8 +109,8 @@ export class EquipSystem extends EntitySystem<EquipData> {
 		const target = entityData.lastTarget;
 		if (target && target in state.enemies) {
 			const enemyData = state.enemies[target];
-			if (this.weaponInRange(entityData.transform.position, enemyData.transform.position, weaponData.range)) {
-				this.fireWeapon(entityData, weaponData, target, entityData.owner, state);
+			if (weaponInRange(entityData.transform.position, enemyData.transform.position, weaponData.range)) {
+				fireWeapon(entityData, weaponData, target, entityData.owner, state);
 				return;
 			}
 		}
@@ -95,8 +119,8 @@ export class EquipSystem extends EntitySystem<EquipData> {
 		const minDist = { target: "", dist: Infinity };
 		for (const enemyId in state.enemies) {
 			const enemyData = state.enemies[enemyId];
-			const dist = this.distanceTo(entityData.transform.position, enemyData.transform.position);
-			if (dist < minDist.dist && this.inRange(dist, weaponData.range)) {
+			const dist = distanceTo(entityData.transform.position, enemyData.transform.position);
+			if (dist < minDist.dist && inRange(dist, weaponData.range)) {
 				minDist.target = enemyId;
 				minDist.dist = dist;
 			}
@@ -104,15 +128,15 @@ export class EquipSystem extends EntitySystem<EquipData> {
 
 		//Found a new target to fire at
 		if (minDist.target) {
-			this.fireWeapon(entityData, weaponData, minDist.target, entityData.owner, state);
+			fireWeapon(entityData, weaponData, minDist.target, entityData.owner, state);
 		}
 	}
 
-	private updateEnemyWeapon(entityData: EquipData, weaponData: WeaponEquipmentData, state: GameState) {
+	export function updateEnemyWeapon(entityData: EquipData, weaponData: WeaponEquipmentData, state: GameState) {
 		const enemyData = state.enemies[entityData.owner];
 		//Enemy is dead or removed from the map
 		if (!enemyData || enemyData.health <= 0) {
-			Destroy(entityData.id);
+			Destroy(state, entityData.id);
 			return;
 		}
 
@@ -122,7 +146,7 @@ export class EquipSystem extends EntitySystem<EquipData> {
 			const playerData = state.players[playerId];
 			if (playerData.health <= 0)
 				continue;
-			const dist = this.distanceTo(entityData.transform.position, playerData.transform.position);
+			const dist = distanceTo(entityData.transform.position, playerData.transform.position);
 			if (dist < minDist.dist) {
 				minDist.target = playerId;
 				minDist.dist = dist;
@@ -130,29 +154,7 @@ export class EquipSystem extends EntitySystem<EquipData> {
 		}
 
 		if (minDist.target) {
-			this.fireWeapon(entityData, weaponData, minDist.target, entityData.owner, state);
-		}
-	}
-
-	private distanceTo(weaponPosition: V2, targetPosition: V2) {
-		return Vector2.asVector2(weaponPosition).subtract(targetPosition).sqrMagnitude();
-	}
-
-	private weaponInRange(weaponPosition: V2, targetPosition: V2, range: number) {
-		const dist = this.distanceTo(weaponPosition, targetPosition);
-		return this.inRange(dist, range);
-	}
-
-	private inRange(distance: number, range: number) {
-		return distance < (range * range);
-	}
-
-	private fireWeapon(entityData: EquipData, weaponData: WeaponEquipmentData, target: EntityId, owner: EntityId, state: GameState) {
-		entityData.lastTarget = target;
-		entityData.time = weaponData.cooldown;
-
-		if (weaponData.projectile) {
-			CreateProjectile(weaponData.projectile, entityData.transform.position, target, owner, state);
+			fireWeapon(entityData, weaponData, minDist.target, entityData.owner, state);
 		}
 	}
 }

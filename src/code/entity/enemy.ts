@@ -1,29 +1,31 @@
 import * as Game from "../game/game";
 import { CircBody } from "./transform";
-import { EntityData, EntitySystem, ShipEntity } from "./entity";
+import { EntityData, ShipEntity } from "./entity";
+import { Curve } from "./Curve";
 import { V2, Vector2 } from "../math/vector";
 import { GetShipType, ShipEquipment } from "../types/shipdata";
 import { GameState } from "../game/game";
 import { GetShipData } from "../databases/shipdatabase";
-import { getCurvePoints } from "cardinal-spline-js";
 import { GlobalGameParameters } from "../game/static";
-import { PlayerEntityData, isPlayer } from "./player";
+import { isPlayer } from "./player";
 import { ProjectileData, isProjectile } from "./projectile";
 import { GetEquipmentData } from "../databases/equipdatabase";
+import { AuraSystem } from "../aura/aura";
+import { EquipSystem } from "./equip";
 
-const pathCache: any = {};
+// const pathCache: any = {};
 function GetPointsForPath(path: Path) {
-	if (pathCache[path.idx]) {
-		return pathCache[path.idx];
-	}
+	// if (pathCache[path.idx]) {
+	// 	return pathCache[path.idx];
+	// }
 
 	let pathPoints = [];
 	for (let i = 0; i < path.Path.length; ++i) {
 		pathPoints.push(path.Path[i].x, path.Path[i].y);
 	}
 
-	const pts = getCurvePoints(pathPoints);
-	pathCache[path.idx] = pts;
+	const pts = Curve.getCurvePoints(pathPoints);
+	// pathCache[path.idx] = pts;
 
 	return pts;
 }
@@ -44,7 +46,7 @@ function dist(x1: any, y1: any, x2: any, y2: any): number {
 		dy = y2 - y1;
 	return Math.sqrt(dx * dx + dy * dy);
 }
-function getXY(points: any, pos: any) {
+function getXY(points: any, pos: any): V2 {
 	var len = 0, lastLen, i, l = points.length;
 
 	// find segment
@@ -63,7 +65,7 @@ function getXY(points: any, pos: any) {
 		}
 	}
 
-	return null;
+	return Vector2.zero();
 }
 export class EnemyPath {
 
@@ -77,7 +79,7 @@ export class EnemyPath {
 			path.push(points[i].x, points[i].y);
 		}
 
-		const pts = getCurvePoints(path);
+		const pts = Curve.getCurvePoints(path);
 
 		for (var len = 0, i = 0; i < pts.length - 2; i += 2) {
 			len += dist(pts[i], pts[i + 1], pts[i + 2], pts[i + 3]);
@@ -97,13 +99,14 @@ export class EnemyPath {
 		const pts = GetPointsForPath(path);
 
 		let pathPos = getXY(pts, distance);
-		pathPos = Vector2.asVector2(pathPos!).add({ x: 0, y: Math.sin(seed + distance / 1000) * 100 });
+		pathPos = Vector2.addVector(pathPos, { x: 0, y: Math.sin(seed + distance / 1000) * 100 });
 
 		let nextPos = getXY(pts, Math.min(distance + 10, path.TotalDistance - 1));
-		nextPos = Vector2.asVector2(nextPos!).add({ x: 0, y: Math.sin(seed + (distance + 10) / 1000) * 100 });
+		nextPos = Vector2.addVector(nextPos, { x: 0, y: Math.sin(seed + (distance + 10) / 1000) * 100 });
 
-		const vec = new Vector2(nextPos?.x, nextPos?.y);
-		vec.subtract(new Vector2(pathPos?.x, pathPos?.y)).normalize();
+		let vec = Vector2.makeVector(nextPos.x, nextPos.y);
+		vec = Vector2.subtract(vec, Vector2.makeVector(pathPos?.x, pathPos?.y));
+		vec = Vector2.normalize(vec);
 		const theta = Math.atan2(vec.y, vec.x);
 		heading = Math.floor(theta * (180 / Math.PI) - 90);
 
@@ -122,10 +125,21 @@ export function isEnemy(object: EntityData): object is EnemyEntityData {
 	return (object as EnemyEntityData).path !== undefined;
 }
 
-export class EnemySystem extends EntitySystem<EnemyEntityData> {
-	public onUpdate(entityData: EnemyEntityData, state: GameState, dt: number): void {
+function ResetPath(entityData: EnemyEntityData, state: GameState) {
+	const newSeed = Math.random();
+	entityData.seed = Math.floor(newSeed * 65535);
+
+	const paths = Object.keys(state.enemyPathData);
+	const path = Math.floor(newSeed * paths.length);
+
+	entityData.path = parseInt(paths[path]);
+	entityData.time = 0;
+}
+
+export module EnemySystem {
+	export function onUpdate(entityData: EnemyEntityData, state: GameState, dt: number): void {
 		if (entityData.health <= 0) {
-			Game.Destroy(entityData.id);
+			Game.Destroy(state, entityData.id);
 			return;
 		}
 
@@ -141,7 +155,7 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		}
 
 		if (distance >= path.TotalDistance) {
-			this.ResetPath(entityData, state);
+			ResetPath(entityData, state);
 			return;
 		}
 
@@ -151,9 +165,9 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		entityData.transform.angle = pos.Heading;
 	}
 
-	public onTakeDamage(entityData: EnemyEntityData, src: EntityData, damage: number, state: GameState) {
-		damage = Game.Systems.aura.ApplyDamageDealtModifiers(src, damage);
-		damage = Game.Systems.aura.ApplyDamageTakenModifiers(entityData, damage);
+	export function onTakeDamage(entityData: EnemyEntityData, src: EntityData, damage: number, state: GameState) {
+		damage = AuraSystem.ApplyDamageDealtModifiers(src, damage);
+		damage = AuraSystem.ApplyDamageTakenModifiers(entityData, damage);
 
 		entityData.health -= damage;
 
@@ -172,23 +186,17 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 			if (entityPlayer)
 				state.scores[entityPlayer] += 100;
 
-			Game.Destroy(entityData.id);
+			Game.Destroy(state, entityData.id);
 			return;
 		}
 	}
 
-	public ResetPath(entityData: EnemyEntityData, state: GameState) {
-		const newSeed = Math.random();
-		entityData.seed = Math.floor(newSeed * 65535);
+	export function onCollide(entityData: EnemyEntityData, other: EntityData, state: GameState): void {
 
-		const paths = Object.keys(state.enemyPathData);
-		const path = Math.floor(newSeed * paths.length);
-
-		entityData.path = parseInt(paths[path]);
-		entityData.time = 0;
 	}
 
-	public static CreatePath(state: GameState, points: V2[]): number {
+
+	export function CreatePath(state: GameState, points: V2[]): number {
 		const idx = Game.NextEntityId(state);
 		const path = EnemyPath.GetPath(points);
 		path.idx = idx;
@@ -196,7 +204,7 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		return idx;
 	}
 
-	public CreateEnemy(ship: ShipEquipment, state: GameState) {
+	export function CreateEnemy(ship: ShipEquipment, state: GameState) {
 		const shipData = GetShipData(GetShipType(ship));
 
 		const id = Game.NextEntityId(state);
@@ -226,6 +234,6 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 		state.enemies[entityData.id] = entityData;
 
 		const equipData = GetEquipmentData(shipData.defaultWeapon!);
-		Game.Systems.equip.CreateEquipment(equipData, id, state);
+		EquipSystem.CreateEquipment(equipData, id, state);
 	}
 }

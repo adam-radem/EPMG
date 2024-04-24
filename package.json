@@ -12,7 +12,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "cardinal-spline-js": "^2.3.10",
     "pixi.js": "^8.1.0",
     "rune-games-sdk": "^4.17.0"
   },

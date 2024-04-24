@@ -1,21 +1,15 @@
-import { Vector2 } from "../math/vector";
+import { V2, Vector2 } from "../math/vector";
 
 export class Screen {
-
-	// private static _ScreenSize: Vector2 = new Vector2(570, 1024);
-	// //The total area of the screen canvas (including all UI)
-	// static get ScreenSize(): Vector2 {
-	// 	return this._ScreenSize;
-	// }
-
-	private static _WorldSize: Vector2 = new Vector2(720, 1152);
+	
+	private static _WorldSize: V2 = Vector2.makeVector(720, 1152);
 	//The area of the playable world on screen (minus the top UI)
-	static get WorldSize(): Vector2 {
-		return this._WorldSize;
+	static get WorldSize(): V2 {
+		return Vector2.clone(Screen._WorldSize);
 	}
 
-	private static _PlayableSize: Vector2 = new Vector2(720, 1080);
-	static get PlayableArea(): Vector2 {
-		return this._PlayableSize;
+	private static _PlayableSize: V2 = Vector2.makeVector(720, 1080);
+	static get PlayableArea(): V2 {
+		return Vector2.clone(Screen._PlayableSize);
 	}
 }

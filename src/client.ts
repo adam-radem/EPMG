@@ -22,7 +22,7 @@ export class GameClient {
 	interval: number = -1;
 	localPlayerPosition: V2 = Vector2.zero();
 	directionChanged: boolean = false;
-	lastInputDirection: Vector2 = Vector2.zero();
+	lastInputDirection: V2 = Vector2.zero();
 	renderEntities: EntityList = {};
 
 	public registerInput(keyboard: Keyboard) {
@@ -57,8 +57,9 @@ export class GameClient {
 			if (!this.localPlayerId) //ignore this from spectators
 				return;
 
-			const projected = Vector2.asVector2(Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) }));
-			if (projected.clone().subtract(this.lastInputDirection).sqrMagnitude() > 10) {
+			let projected = Vector2.clone(Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) }));
+			projected = Vector2.subtract(projected, this.lastInputDirection);
+			if (Vector2.sqrMagnitude(projected) > 10) {
 				this.directionChanged = true;
 				this.lastInputDirection = projected;
 			}

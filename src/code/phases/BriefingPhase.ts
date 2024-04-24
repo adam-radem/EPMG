@@ -1,6 +1,7 @@
-import { GameState, Phase, Systems, SetPlayerShip } from "../game/game";
+import { GameState, Phase, SetPlayerShip } from "../game/game";
 import { GlobalGameParameters } from "../game/static";
 import { Phases } from "./Phases";
+import { PlayerSystem } from "../entity/player";
 
 export module Briefing {
 	export function Enter(state: GameState) {
@@ -9,7 +10,7 @@ export module Briefing {
 		
 		for (var pid in state.players) {
 			const playerData = state.players[pid];
-			Systems.player.levelTransition(playerData);
+			PlayerSystem.levelTransition(playerData);
 		}
 	}
 
