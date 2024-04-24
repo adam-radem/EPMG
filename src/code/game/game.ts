@@ -2,7 +2,7 @@ import { PlayerId } from "rune-games-sdk";
 import { PlayerSystem, PlayerEntityData, isPlayer } from "../entity/player";
 import { GlobalGameParameters } from "./static";
 import { EnemySystem, EnemyEntityData, Path } from "../entity/enemy";
-import { ShipSlot, Ships, WeaponProjectileData } from "../types/shipdata";
+import { GetShipType, SetSlot, ShipSlot, Ships, WeaponProjectileData } from "../types/shipdata";
 import { V2, Vector2 } from "../math/vector";
 import { EquipData, EquipSystem } from "../entity/equip";
 import { ProjectileData, ProjectileSystem } from "../entity/projectile";
@@ -68,8 +68,7 @@ export function EquipPlayer(state: GameState, playerId: string, equip: number, s
 	const equipData = GetEquipmentData(equip);
 	if ((equipData.slot & slot) !== 0) {
 		const playerData = state.players[playerId];
-		playerData.shipData.SetSlot(slot, equip);
-		state.players[playerId] = playerData;
+		playerData.shipData = SetSlot(playerData.shipData, slot, equip);
 		Systems.equip.CreateEquipment(equipData, playerId, state);
 	}
 }
@@ -111,7 +110,7 @@ export function CreatePlayer(state: GameState, playerId: string) {
 export function SetPlayerShip(state: GameState, playerId: string, shipID: number) {
 	const playerData = state.players[playerId];
 	const ship = Ships.Players[shipID] + playerData.idx;
-	const shipData = GetShipData(ship.GetShipType());
+	const shipData = GetShipData(GetShipType(ship));
 
 	playerData.shipData = ship;
 	playerData.collider = (shipData.collider as CircBody);

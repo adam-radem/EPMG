@@ -5,17 +5,16 @@ import AtlasImage from "../../assets/space/assets.png";
 export class Sprites {
 	Spritesheet: Pixi.Spritesheet | undefined;
 
-	public constructor() {
-	}
-
-	async Init() {
-		await Pixi.Assets.load(AtlasImage);
-
-		this.Spritesheet = new Pixi.Spritesheet(
-			Pixi.Texture.from(AtlasImage),
-			AtlasData);
-
-		await this.Spritesheet.parse();
+	Init() {
+		return new Promise((resolve) => {
+			Pixi.Assets.load(AtlasImage)
+				.then(() => {
+					this.Spritesheet = new Pixi.Spritesheet(
+						Pixi.Texture.from(AtlasImage),
+						AtlasData);
+					this.Spritesheet.parse().then(() => resolve(2));
+				});
+		});
 	}
 
 	public GetSprite(spriteID: string): Pixi.Sprite {

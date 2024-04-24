@@ -1,6 +1,6 @@
 import * as Pixi from "pixi.js";
 import * as ShipDatabase from "../databases/shipdatabase.ts";
-import { ShipData, ShipEquipment, Ships } from "../types/shipdata.ts";
+import { GetShipType, GetSlot, ShipData, ShipEquipment, ShipSlot, Ships } from "../types/shipdata.ts";
 import { Scene, SpriteData } from "./renderer.ts";
 import { RenderEntity } from "./renderEntity.ts";
 import { ShipEntity } from "../entity/entity.ts";
@@ -49,7 +49,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 
 		if (shipData !== this.shipData) {
 			this.shipData = shipData;
-			const data = ShipDatabase.GetShipData(shipData.GetShipType());
+			const data = ShipDatabase.GetShipData(GetShipType(shipData));
 			if (data) {
 				this.updateSprite(data.sprite);
 			}
@@ -93,7 +93,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 				}
 
 				//Weapon Debug View
-				const leftWeapon = shipData.GetLeftSlot();
+				const leftWeapon = GetSlot(shipData, ShipSlot.Left);
 				if (leftWeapon) {
 					const weaponData = GetEquipmentData(leftWeapon);
 					if (weaponData && weaponData.weapon) {
@@ -103,7 +103,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 						this.debug.endFill();
 					}
 				}
-				const rightWeapon = shipData.GetRightSlot();
+				const rightWeapon = GetSlot(shipData, ShipSlot.Right);
 				if (rightWeapon) {
 					const weaponData = GetEquipmentData(rightWeapon);
 					if (weaponData && weaponData.weapon) {

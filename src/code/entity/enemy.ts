@@ -2,7 +2,7 @@ import * as Game from "../game/game";
 import { CircBody } from "./transform";
 import { EntityData, EntitySystem, ShipEntity } from "./entity";
 import { V2, Vector2 } from "../math/vector";
-import { ShipEquipment } from "../types/shipdata";
+import { GetShipType, ShipEquipment } from "../types/shipdata";
 import { GameState } from "../game/game";
 import { GetShipData } from "../databases/shipdatabase";
 import { getCurvePoints } from "cardinal-spline-js";
@@ -197,7 +197,7 @@ export class EnemySystem extends EntitySystem<EnemyEntityData> {
 	}
 
 	public CreateEnemy(ship: ShipEquipment, state: GameState) {
-		const shipData = GetShipData(ship.GetShipType());
+		const shipData = GetShipData(GetShipType(ship));
 
 		const id = Game.NextEntityId(state);
 		const seed = Math.random();

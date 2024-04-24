@@ -26,7 +26,7 @@ const pixiOptions = {
 export const App = new Pixi.Application();
 export const Scene = new Pixi.Container();
 export const Background = new Pixi.Graphics();
-export const SpriteData = await new Sprites();
+export const SpriteData = new Sprites();
 
 let starfield: Starfield;
 
@@ -58,10 +58,16 @@ if (GlobalGameParameters.Debug) {
 	version.innerHTML = GlobalGameParameters.Version;
 	footer?.appendChild(version);
 }
+export function Init() {
+	return new Promise((resolve) => {
+		App.init(pixiOptions)
+			.then(() => Configure())
+			.then(() => SpriteData.Init())
+			.then(() => resolve(1));
+	});
+}
 
-export async function Init() {
-	await App.init(pixiOptions);
-
+function Configure() {
 	App.ticker.maxFPS = 60;
 	App.ticker.minFPS = 15;
 	App.ticker.add(tick);
@@ -94,10 +100,9 @@ export async function Init() {
 	Scene.sortableChildren = true;
 
 	gameDiv?.appendChild((App.canvas as any));
-	await SpriteData.Init();
-
 	resize();
 }
+
 
 function tick(ticker: Pixi.Ticker) {
 	if (starfield)
