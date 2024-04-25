@@ -6,7 +6,7 @@ const StartPosY: number = Playable.y - 48;
 
 export class GlobalGameParameters {
 	static readonly Debug: boolean = false;
-	static readonly Version: string = "Pre-Alpha v0.4.0";
+	static readonly Version: string = "Pre-Alpha v0.5.2";
 
 	static readonly GameLevelCount: number = 3;
 	static readonly SegmentsPerLevel: number[] = [10, 12, 14];
@@ -22,7 +22,7 @@ export class GlobalGameParameters {
 	static readonly EnemyInvulnerabilityTime = { projectile: 500, collision: 750 };
 	static readonly PlayerInvulnerabilityTimer = { projectile: 800, collision: 1900 };
 
-	static readonly MaxShoppingTime: number = 30000;
+	static readonly MaxShoppingTime: number = 900000;
 
 	static GetStartPosition(idx: number): V2 {
 		return Vector2.clone(GlobalGameParameters.StartPositions[idx]);

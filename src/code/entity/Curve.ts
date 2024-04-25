@@ -8,7 +8,13 @@ export module Curve {
 		numOfSeg = typeof numOfSeg === "number" ? numOfSeg : 25;
 
 		var pts, // for cloning point array
-			i = 1, l = points.length, rPos = 0, rLen = (l - 2) * numOfSeg + 2 + (close ? 2 * numOfSeg : 0), res = new Array<number>(rLen), cache = Array<number>((numOfSeg + 2) << 2), cachePtr = 4;
+			i = 1,
+			l = points.length,
+			rPos = 0,
+			rLen = (l - 2) * numOfSeg + 2 + (close ? 2 * numOfSeg : 0),
+			res = new Array<number>(rLen).fill(0),
+			cache = new Array<number>((numOfSeg = 2) << 2).fill(0),
+			cachePtr = 4;
 
 		pts = points.slice(0);
 

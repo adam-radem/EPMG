@@ -14,6 +14,22 @@
 					"enemies": [
 						0
 					]
+				},
+				{
+					"startTime": 2500,
+					"interval": 900,
+					"count": 4,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 8000,
+					"interval": 800,
+					"count": 6,
+					"enemies": [
+						0
+					]
 				}
 			]
 		},
@@ -22,32 +38,32 @@
 			"events": [
 				{
 					"startTime": 500,
-					"interval": 400,
-					"count": 7,
+					"interval": 1000,
+					"count": 4,
 					"enemies": [
 						0
 					]
 				},
 				{
-					"startTime": 4000,
-					"interval": 250,
-					"count": 10,
+					"startTime": 7000,
+					"interval": 1000,
+					"count": 6,
 					"enemies": [
 						0
 					]
 				},
 				{
-					"startTime": 7500,
-					"interval": 300,
+					"startTime": 12000,
+					"interval": 900,
 					"count": 8,
 					"enemies": [
 						0
 					]
 				},
 				{
-					"startTime": 10000,
-					"interval": 500,
-					"count": 1,
+					"startTime": 22000,
+					"interval": 1000,
+					"count": 8,
 					"enemies": [
 						0
 					]
@@ -60,7 +76,7 @@
 				{
 					"startTime": 500,
 					"interval": 400,
-					"count": 7,
+					"count": 6,
 					"enemies": [
 						0
 					]
@@ -68,23 +84,31 @@
 				{
 					"startTime": 4000,
 					"interval": 250,
-					"count": 10,
+					"count": 6,
 					"enemies": [
 						0
 					]
 				},
 				{
-					"startTime": 7500,
-					"interval": 300,
+					"startTime": 8000,
+					"interval": 1000,
 					"count": 8,
 					"enemies": [
 						0
 					]
 				},
 				{
-					"startTime": 10000,
-					"interval": 500,
-					"count": 1,
+					"startTime": 20000,
+					"interval": 250,
+					"count": 8,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 25000,
+					"interval": 200,
+					"count": 10,
 					"enemies": [
 						0
 					]
@@ -97,7 +121,7 @@
 				{
 					"startTime": 500,
 					"interval": 400,
-					"count": 7,
+					"count": 8,
 					"enemies": [
 						0
 					]
@@ -120,8 +144,8 @@
 				},
 				{
 					"startTime": 10000,
-					"interval": 500,
-					"count": 1,
+					"interval": 100,
+					"count": 8,
 					"enemies": [
 						0
 					]
@@ -156,9 +180,33 @@
 					]
 				},
 				{
-					"startTime": 10000,
+					"startTime": 11000,
+					"interval": 100,
+					"count": 10,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 14000,
 					"interval": 500,
-					"count": 1,
+					"count": 8,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 20000,
+					"interval": 200,
+					"count": 10,
+					"enemies": [
+						0
+					]
+				},
+				{
+					"startTime": 23000,
+					"interval": 500,
+					"count": 16,
 					"enemies": [
 						0
 					]

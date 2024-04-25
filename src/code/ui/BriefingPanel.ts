@@ -90,7 +90,7 @@ export class BriefingPanel implements UIPanel {
 			return;
 		}
 
-		let timeout = (GlobalGameParameters.MaxShoppingTime - state.time) / 1000;
+		let timeout = (GlobalGameParameters.MaxShoppingTime - (Rune.gameTime() - state.level.startTime)) / 1000;
 		this.briefingStatus.innerHTML = timeout.toFixed(1);
 	}
 

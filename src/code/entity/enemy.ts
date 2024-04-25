@@ -214,6 +214,9 @@ export module EnemySystem {
 		const paths = Object.keys(state.enemyPathData);
 		const path = Math.floor(seed * paths.length);
 
+		const playerCount = Object.keys(state.players).length;
+		const hp = (shipData.baseHealth || 50) * (playerCount * 0.9);
+
 		const entityData: EnemyEntityData = {
 			id: id,
 			transform: {
@@ -222,8 +225,8 @@ export module EnemySystem {
 				scale: 1,
 			},
 			shipData: ship,
-			health: shipData.baseHealth!,
-			maxHealth: shipData.baseHealth!,
+			health: hp,
+			maxHealth: hp,
 			collider: (shipData.collider as CircBody),
 			path: parseInt(paths[path]),
 			time: 0,

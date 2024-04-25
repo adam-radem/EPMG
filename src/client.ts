@@ -47,6 +47,7 @@ export class GameClient {
 
 			const projected = Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) });
 			Rune.actions.setTarget({ newTarget: projected });
+			this.lastInputDirection = projected;
 
 			window.addEventListener('pointermove', cbMove);
 
@@ -57,9 +58,9 @@ export class GameClient {
 			if (!this.localPlayerId) //ignore this from spectators
 				return;
 
-			let projected = Vector2.clone(Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) }));
-			projected = Vector2.subtract(projected, this.lastInputDirection);
-			if (Vector2.sqrMagnitude(projected) > 10) {
+			const projected = Vector2.clone(Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) }));
+			let diff = Vector2.subtract(projected, this.lastInputDirection);
+			if (Vector2.sqrMagnitude(diff) > 10) {
 				this.directionChanged = true;
 				this.lastInputDirection = projected;
 			}

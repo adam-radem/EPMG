@@ -32,7 +32,7 @@ export enum TeamId {
 export function NextEntityId(state: GameState) { return ++state.entityCount; };
 export function Destroy(state: GameState, entity: EntityId) { state.removed.push(entity); }
 export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
-	const dt = Rune.gameTime() - state.time;
+	const dt = 33;
 	state.time = Rune.gameTime();
 
 	Phases.RunPhase(state, dt);
@@ -114,6 +114,7 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 			seed: Math.floor(Math.random() * 65535),
 			eventIdx: 0,
 			progress: 0,
+			startTime: 0,
 			ready: 1
 		},
 		entityCount: 0,
@@ -208,12 +209,13 @@ export interface GameLevelState {
 	id: number;
 	eventIdx: number;
 	progress: number;
+	startTime: number;
 	ready: number;
 }
 
 export interface GameState {
-	level: GameLevelState;
 	time: number;
+	level: GameLevelState;
 	entityCount: number;
 	scores: Record<PlayerId, number>;
 	players: Record<PlayerId, PlayerEntityData>;

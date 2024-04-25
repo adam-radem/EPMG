@@ -409,7 +409,7 @@ button:focus-visible {
 	display: block;
 	background-color: #41007e33;
 	height: 20vh;
-	width: 60vh;
+	width: 58vh;
 	margin: 13px auto;
 
 	backdrop-filter: blur(4px);
@@ -419,23 +419,24 @@ button:focus-visible {
 .shop-option .shop-icon {
 	display: inline-block;
 	background-color: #11111199;
-	width: 16vh;
-	height: 16vh;
+	width: 20vh;
+	height: 20vh;
 	margin: 0;
 	padding: 0;
 	position: relative;
-	top: 2vh;
-	left: 2vh;
+	top: 0vh;
+	left: -3vh;
 }
 
 .shop-option .ship-stats {
 	display: inline-block;
-	width: 40vh;
+	width: 30vh;
 	height: 16vh;
 	position: relative;
 	margin: 0 0 0 1vh;
 	padding: 0;
-	top: 2vh;
+	top: -2vh;
+	left: -4.5vh;
 	border-left: 2px solid #00F4E966;
 }
 

@@ -58,7 +58,7 @@ export module PlayerSystem {
 		const maxY = WorldSize.y - data.collider.radius;
 
 		let p = Vector2.addVector(data.transform.position, vel);
-		p = Vector2.clamp(vel, minX, maxX, minY, maxY);
+		p = Vector2.clamp(p, minX, maxX, minY, maxY);
 
 		data.transform.position = p;
 	}
