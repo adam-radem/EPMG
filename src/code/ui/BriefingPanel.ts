@@ -65,7 +65,7 @@ export class BriefingPanel implements UIPanel {
 				const child = children[i] as HTMLDivElement;
 				if (child.classList.contains('ship-speed')) {
 					//0% => 300, 100% => 600
-					const speedValue = 100*((data.speed - 300)/300);
+					const speedValue = 100 * ((data.speed - 300) / 300);
 					child.style.setProperty('--ship-stat-value', `${speedValue}%`);
 				}
 				else if (child.classList.contains('ship-damage')) {
@@ -73,7 +73,7 @@ export class BriefingPanel implements UIPanel {
 					child.style.setProperty('--ship-stat-value', `${damageValue}%`);
 				}
 				else if (child.classList.contains('ship-health')) {
-					const healthValue = 100*((data.baseHealth) - 50)/60;
+					const healthValue = 100 * ((data.baseHealth) - 50) / 60;
 					child.style.setProperty('--ship-stat-value', `${healthValue}%`);
 				}
 			}
@@ -97,6 +97,17 @@ export class BriefingPanel implements UIPanel {
 	public Present(state: GameState, localPlayer: PlayerId) {
 		this.setupShips(state, localPlayer);
 		this.element.classList.remove('hidden');
+
+		if (state.level.ready) {
+			this.HideShipSelection();
+		}
+		else {
+			this.ShowShipSelection();
+		}
+	}
+
+	public ShowShipSelection() {
+		document.getElementById('briefing-selection')?.classList.remove('hidden');
 	}
 
 	public HideShipSelection() {

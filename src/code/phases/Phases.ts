@@ -59,6 +59,9 @@ function Run(state: GameState, dt: number) {
 		case Phase.Defeat:
 			EndGame.Run(state, dt);
 			break;
+		case Phase.None:
+			Phases.SetPhase(state, Phase.Briefing);
+			break;
 	}
 }
 

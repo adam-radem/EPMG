@@ -109,7 +109,7 @@ export function DeletePlayer(state: GameState, playerId: string) {
 export function NewGameState(allPlayerIds: string[]): GameState {
 	const state: GameState = {
 		level: {
-			phase: Phase.Level,
+			phase: Phase.None,
 			id: 0,
 			seed: Math.floor(Math.random() * 65535),
 			eventIdx: 0,
@@ -142,8 +142,6 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		CreateRandomPath(state);
 	}
 	CreateAsteroidPaths(state);
-
-	Phases.SetPhase(state, Phase.Briefing);
 
 	console.log(`Game has been initialized with ${allPlayerIds.length} players`);
 	return state;
