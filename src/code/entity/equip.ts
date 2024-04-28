@@ -1,15 +1,27 @@
-import { CreateProjectile, Destroy, GameState, NextEntityId } from "../game/game";
-import { EntityData, EntitySystem } from "./entity";
+import { Destroy, GameState, NextEntityId, TeamId } from "../game/game";
+import { EntityData } from "./entity";
 import { GetEquipmentData } from "../databases/equipdatabase";
 import { ShipEquipmentData, WeaponEquipmentData } from "../types/shipdata";
 import { V2, Vector2 } from "../math/vector";
-import { AuraSystem } from "../aura/aura";
+import { ProjectileCreationData, ProjectileSystem } from "./projectile";
+
+export interface EquipmentModifierData {
+
+}
+
+export interface WeaponModifierData extends EquipmentModifierData {
+	damageMod?: number;
+	intervalMod?: number;
+	spreadMod?: number;
+	pierceMod?: number;
+}
 
 export interface EquipData extends EntityData {
 	type: number;
 	time: number;
 	owner: EntityId;
 	lastTarget: EntityId;
+	modifiers: EquipmentModifierData;
 }
 
 function distanceTo(weaponPosition: V2, targetPosition: V2) {
@@ -28,10 +40,21 @@ function inRange(distance: number, range: number) {
 
 function fireWeapon(entityData: EquipData, weaponData: WeaponEquipmentData, target: EntityId, owner: EntityId, state: GameState) {
 	entityData.lastTarget = target;
-	entityData.time = weaponData.cooldown;
+
+	const mods = entityData.modifiers as WeaponModifierData;
+	const intervalMod = mods?.intervalMod || 1;
+	entityData.time = weaponData.cooldown / intervalMod;
 
 	if (weaponData.projectile) {
-		CreateProjectile(weaponData.projectile, entityData.transform.position, target, owner, state);
+		const proj: ProjectileCreationData = {
+			proj: weaponData.projectile,
+			mods: mods,
+			position: entityData.transform.position,
+			target: target,
+			owner: owner,
+			team: TeamId.Neither
+		};
+		ProjectileSystem.CreateProjectile(proj, state);
 	}
 }
 
@@ -52,6 +75,7 @@ export module EquipSystem {
 			type: equipData.type,
 			time: 0,
 			owner: ownerId,
+			modifiers: {},
 			lastTarget: 0
 		};
 	}
@@ -77,7 +101,7 @@ export module EquipSystem {
 	}
 
 	export function updateWeapon(entityData: EquipData, equipData: ShipEquipmentData, state: GameState, dt: number) {
-		const weapon = AuraSystem.ApplyWeaponModifiers(entityData);
+		const weapon = equipData.weapon;
 		if (!weapon)
 			return;
 

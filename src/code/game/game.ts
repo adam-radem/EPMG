@@ -10,7 +10,7 @@ import { GetShipData } from "../databases/shipdatabase";
 import { CircBody } from "../entity/transform";
 import { Screen } from "../rendering/screen";
 import { GetEquipmentData } from "../databases/equipdatabase";
-import { Aura } from "../aura/aura";
+import { DropEntityData } from "../entity/drop";
 import { Phases } from "../phases/Phases";
 
 export enum Phase {
@@ -36,10 +36,6 @@ export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	state.time = Rune.gameTime();
 
 	Phases.RunPhase(state, dt);
-}
-
-export function CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, owner: EntityId, state: GameState) {
-	ProjectileSystem.CreateProjectile(proj, position, target, owner, state);
 }
 
 export function EquipPlayer(state: GameState, playerId: string, equip: number, slot: ShipSlot) {
@@ -78,7 +74,8 @@ export function CreatePlayer(state: GameState, playerId: string) {
 		target: Vector2.zero(),
 		health: 0,
 		maxHealth: 0,
-		speed: 0
+		speed: 0,
+		auras: []
 	};
 	state.players[playerId] = player;
 	state.scores[playerId] = 0;
@@ -125,7 +122,7 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		enemyPathData: {},
 		equipment: {},
 		projectiles: {},
-		auras: {},
+		drops: {},
 		removed: []
 	};
 
@@ -134,7 +131,6 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		if (!playerId) //Spectator playerIds are null
 			continue;
 		CreatePlayer(state, playerId);
-		// EquipPlayer(state, playerId, 1, ShipSlot.Left);
 		++cnt;
 	}
 
@@ -218,9 +214,9 @@ export interface GameState {
 	scores: Record<PlayerId, number>;
 	players: Record<PlayerId, PlayerEntityData>;
 	enemies: Record<EntityId, EnemyEntityData>;
-	enemyPathData: Record<number, Path>;
 	equipment: Record<EntityId, EquipData>;
 	projectiles: Record<EntityId, ProjectileData>;
-	auras: Record<EntityId, Aura>;
+	drops: Record<EntityId, DropEntityData>;
+	enemyPathData: Record<number, Path>;
 	removed: EntityId[];
 }

@@ -12,6 +12,8 @@ import { ProjectileData, isProjectile } from "./projectile";
 import { GetEquipmentData } from "../databases/equipdatabase";
 import { AuraSystem } from "../aura/aura";
 import { EquipSystem } from "./equip";
+import { DropTable } from "../databases/dropdatabase";
+import { DropSystem } from "./drop";
 
 // const pathCache: any = {};
 function GetPointsForPath(path: Path) {
@@ -166,9 +168,6 @@ export module EnemySystem {
 	}
 
 	export function onTakeDamage(entityData: EnemyEntityData, src: EntityData, damage: number, state: GameState) {
-		damage = AuraSystem.ApplyDamageDealtModifiers(src, damage);
-		damage = AuraSystem.ApplyDamageTakenModifiers(entityData, damage);
-
 		entityData.health -= damage;
 
 		if (isPlayer(src))
@@ -183,8 +182,10 @@ export module EnemySystem {
 				entityPlayer = src.id;
 			}
 
-			if (entityPlayer)
+			if (entityPlayer) {
 				state.scores[entityPlayer] += 100;
+				DropSystem.tryCreateDrop(entityData, state);
+			}
 
 			Game.Destroy(state, entityData.id);
 			return;
@@ -231,7 +232,8 @@ export module EnemySystem {
 			path: parseInt(paths[path]),
 			time: 0,
 			seed: shortSeed,
-			speed: shipData.speed!
+			speed: shipData.speed!,
+			auras: []
 		};
 
 		state.enemies[entityData.id] = entityData;

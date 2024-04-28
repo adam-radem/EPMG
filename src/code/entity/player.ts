@@ -1,11 +1,11 @@
 import { Screen } from "../rendering/screen";
-import { EntityData, EntitySystem, ShipEntity } from "./entity";
+import { EntityData, ShipEntity } from "./entity";
 import { V2, Vector2 } from "../math/vector";
 import { CircBody } from "./transform";
 import { GameState } from "../game/game";
 import { isEnemy } from "./enemy";
 import { GlobalGameParameters } from "../game/static";
-import { AuraSystem } from "../aura/aura";
+import { Aura, AuraSystem } from "../aura/aura";
 
 export interface PlayerEntityData extends ShipEntity {
 	target: V2;
@@ -22,6 +22,7 @@ export module PlayerSystem {
 		if (entity.health <= 0) {
 			return;
 		}
+
 		updateData(entity, dt);
 	}
 
@@ -64,9 +65,6 @@ export module PlayerSystem {
 	}
 
 	export function onTakeDamage(entityData: PlayerEntityData, src: EntityData, damage: number, state: GameState) {
-		damage = AuraSystem.ApplyDamageDealtModifiers(src, damage);
-		damage = AuraSystem.ApplyDamageTakenModifiers(entityData, damage);
-
 		entityData.health -= damage;
 		if (isEnemy(src))
 			entityData.collider.disabledUntil = state.time + GlobalGameParameters.PlayerInvulnerabilityTimer.collision;

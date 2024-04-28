@@ -1,3 +1,4 @@
+import { DropTable } from "../databases/dropdatabase";
 import { ProjectileMotion } from "../entity/projectile";
 import { CircBody, RectBody, Body } from "../entity/transform";
 import { V2 } from "../math/vector";
@@ -16,6 +17,7 @@ export interface ShipData {
 		front: V2;
 		back: V2;
 	};
+	drops: DropTable | undefined;
 }
 
 export interface ShipEquipmentData {
@@ -38,7 +40,6 @@ export interface WeaponProjectileData {
 	motion: ProjectileMotion;
 	life: number;
 	spread: number;
-	pierce?: number;
 }
 
 export interface WeaponEquipmentData {

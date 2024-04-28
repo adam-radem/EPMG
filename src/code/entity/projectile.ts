@@ -4,7 +4,8 @@ import { V2, Vector2 } from "../math/vector";
 import { Screen } from "../rendering/screen";
 import { WeaponProjectileData } from "../types/shipdata";
 import { EnemyEntityData, EnemySystem, isEnemy } from "./enemy";
-import { EntityData, EntitySystem } from "./entity";
+import { EntityData } from "./entity";
+import { WeaponModifierData } from "./equip";
 import { PlayerEntityData, PlayerSystem, isPlayer } from "./player";
 import { Body } from "./transform";
 
@@ -29,19 +30,27 @@ export function isProjectile(object: any): object is ProjectileData {
 	return (object as ProjectileData).team !== undefined;
 }
 
+export interface ProjectileCreationData {
+	proj: WeaponProjectileData,
+	mods: WeaponModifierData,
+	position: V2,
+	target: EntityId,
+	owner: EntityId;
+	team: TeamId,
+}
+
 export module ProjectileSystem {
 
-	export function CreateProjectile(proj: WeaponProjectileData, position: V2, target: EntityId, owner: EntityId, state: GameState) {
+	export function CreateProjectile(data: ProjectileCreationData, state: GameState) {
+		const target = data.target;
 
-		let team = TeamId.Neither;
 		let targetEntity: EntityData;
-
 		if (target in state.players) {
-			team = TeamId.Enemy;
+			data.team = TeamId.Enemy;
 			targetEntity = state.players[target];
 		}
 		else if (target in state.enemies) {
-			team = TeamId.Player;
+			data.team = TeamId.Player;
 			targetEntity = state.enemies[target];
 		}
 		else
@@ -50,28 +59,40 @@ export module ProjectileSystem {
 		const angle = (targetEntity.transform.angle + 90) * Math.PI / 180;
 		const fwd = Vector2.multiplyScalar(Vector2.makeVector(Math.cos(angle), Math.sin(angle)), 64);
 		const targetPos = Vector2.clone(targetEntity.transform.position);
-		const fwdPos = Vector2.addVector(fwd, targetPos);
 
-		const spread = ((Math.random() * 2 - 1) * proj.spread * Math.PI / 180);
-		const spawnAngle = Vector2.vectorAngle(Vector2.subtract(fwdPos, position)) + spread;
+		const numFired = data.mods?.spreadMod || 1;
+		const range = 15 * (numFired - 1);
+		for (let i = 0; i != numFired; ++i) {
+			const r = range * i;
+			const randSpread = ((Math.random() * 2 - 1) * data.proj.spread * Math.PI / 180);
+			const baseAngle = Vector2.vectorAngle(Vector2.subtract(targetPos, data.position));
+			const spawnAngle = baseAngle + randSpread + r - (range / 2);
 
+			makeProjectile(data, spawnAngle, state);
+		}
+	}
+
+	function makeProjectile(data: ProjectileCreationData, spawnAngle: number, state: GameState) {
+
+		const damageMod = data.mods?.damageMod || 1;
+		const pierceMod = data.mods?.pierceMod || 0;
 		const id = NextEntityId(state);
 		const newProjectile = {
 			id: id,
 			transform: {
-				position: position,
+				position: data.position,
 				angle: spawnAngle,
 				scale: 1
 			},
-			owner: owner,
-			team: team,
-			type: proj.type,
-			target: target,
-			life: proj.life,
-			motion: proj.motion,
-			speed: proj.speed,
-			damage: proj.damage,
-			pierce: proj.pierce,
+			owner: data.owner,
+			team: data.team,
+			type: data.proj.type,
+			target: data.target,
+			life: data.proj.life,
+			motion: data.proj.motion,
+			speed: data.proj.speed,
+			damage: data.proj.damage * damageMod,
+			pierce: pierceMod,
 			collider: {
 				center: Vector2.zero()
 			}

@@ -1,3 +1,4 @@
+import { DropSystem } from "../entity/drop";
 import { EnemySystem } from "../entity/enemy";
 import { PlayerSystem } from "../entity/player";
 import { ProjectileSystem } from "../entity/projectile";
@@ -129,8 +130,17 @@ export module CollisionSystem {
 			}
 		}
 
-		//Check for player <-> enemy collisions
 		for (const pid in players) {
+			//Check for player <-> pickup collisions
+			for (const did in state.drops) {
+				const drop = state.drops[did];
+				const dropCol = transformCollider(drop.transform, drop.collider);
+				if (overlap(players[pid], dropCol)) {
+					DropSystem.onCollect(drop, state.players[pid], state);
+				}
+			}
+
+			//Check for player <-> enemy collisions
 			for (const eid in enemies) {
 				if (overlap(players[pid], enemies[eid])) {
 					PlayerSystem.onCollide(state.players[pid], state.enemies[eid], state);
