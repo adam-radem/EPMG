@@ -22,8 +22,12 @@ export interface ProjectileData extends EntityData {
 }
 
 export enum ProjectileMotion {
+	//Projectile travels in a straight direction
 	Flat = 0,
-	Tracked = 1
+	//Projectile follows the enemy target
+	Tracked = 1,
+	//Projectile spawns between two entities instantly
+	Bridge = 2
 }
 
 export function isProjectile(object: any): object is ProjectileData {
@@ -57,8 +61,8 @@ export module ProjectileSystem {
 			return;
 
 		const angle = (targetEntity.transform.angle + 90) * Math.PI / 180;
-		const fwd = Vector2.multiplyScalar(Vector2.makeVector(Math.cos(angle), Math.sin(angle)), 64);
-		const targetPos = Vector2.clone(targetEntity.transform.position);
+		const fwd = Vector2.multiplyScalar(Vector2.makeVector(Math.cos(angle), Math.sin(angle)), 32);
+		const targetPos = Vector2.addVector(targetEntity.transform.position, fwd);
 
 		const numFired = data.mods?.spreadMod || 1;
 		const range = 15 * (numFired - 1);
@@ -73,7 +77,6 @@ export module ProjectileSystem {
 	}
 
 	function makeProjectile(data: ProjectileCreationData, spawnAngle: number, state: GameState) {
-
 		const damageMod = data.mods?.damageMod || 1;
 		const pierceMod = data.mods?.pierceMod || 0;
 		const id = NextEntityId(state);

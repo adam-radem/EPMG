@@ -15,4 +15,10 @@ export interface ShipEntity extends EntityData {
 	maxHealth: number;
 	collider: Collider;
 	auras: Aura[];
+
+	//Aura Buff Values
+	absorb?: number;
+	reflect?: number;
+	heal?: number;
+	armor?: number;
 }

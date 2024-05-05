@@ -5,7 +5,7 @@ import { EnemySystem, EnemyEntityData, Path } from "../entity/enemy";
 import { GetShipType, SetSlot, ShipSlot, Ships, WeaponProjectileData } from "../types/shipdata";
 import { V2, Vector2 } from "../math/vector";
 import { EquipData, EquipSystem } from "../entity/equip";
-import { ProjectileData, ProjectileSystem } from "../entity/projectile";
+import { ProjectileData } from "../entity/projectile";
 import { GetShipData } from "../databases/shipdatabase";
 import { CircBody } from "../entity/transform";
 import { Screen } from "../rendering/screen";
