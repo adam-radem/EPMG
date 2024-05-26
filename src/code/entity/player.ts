@@ -5,7 +5,7 @@ import { CircBody } from "./transform";
 import { GameState } from "../game/game";
 import { isEnemy } from "./enemy";
 import { GlobalGameParameters } from "../game/static";
-import { Aura, AuraSystem } from "../aura/aura";
+import { AuraSystem } from "../aura/aura";
 
 export interface PlayerEntityData extends ShipEntity {
 	target: V2;
@@ -22,7 +22,8 @@ export module PlayerSystem {
 		if (entity.health <= 0) {
 			return;
 		}
-
+		
+		AuraSystem.onUpdate(entity, state, dt);
 		updateData(entity, dt);
 	}
 
@@ -65,6 +66,30 @@ export module PlayerSystem {
 	}
 
 	export function onTakeDamage(entityData: PlayerEntityData, src: EntityData, damage: number, state: GameState) {
+		if (entityData.heal && entityData.heal > 0) {
+			if (damage > entityData.heal) {
+				damage -= entityData.heal;
+				entityData.health += entityData.heal;
+				entityData.heal = undefined;
+			}
+			else {
+				entityData.heal -= damage;
+				entityData.health += damage;
+				damage = 0;
+			}
+		}
+
+		if (entityData.absorb && entityData.absorb > 0) {
+			entityData.absorb -= damage;
+			if (entityData.absorb < 0) {
+				damage = -entityData.absorb;
+				entityData.absorb = undefined;
+			}
+		}
+
+		if (damage <= 0)
+			return;
+
 		entityData.health -= damage;
 		if (isEnemy(src))
 			entityData.collider.disabledUntil = state.time + GlobalGameParameters.PlayerInvulnerabilityTimer.collision;
@@ -74,7 +99,19 @@ export module PlayerSystem {
 
 	export function onCollide(entityData: PlayerEntityData, other: EntityData, state: GameState): void {
 		if (isEnemy(other)) {
-			PlayerSystem.onTakeDamage(entityData, other, GlobalGameParameters.EnemyCollisionDamage, state);
+			let damage = GlobalGameParameters.EnemyCollisionDamage;
+			if (entityData.armor && entityData.armor > 0) {
+				entityData.armor -= damage;
+				if (entityData.armor < 0) {
+					damage = -entityData.armor;
+					entityData.armor = undefined;
+				}
+			}
+
+			if (damage <= 0)
+				return;
+
+			PlayerSystem.onTakeDamage(entityData, other, damage, state);
 		}
 	}
 

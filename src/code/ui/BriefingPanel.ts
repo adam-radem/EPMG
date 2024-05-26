@@ -6,6 +6,7 @@ import { App, SpriteData } from "../rendering/renderer";
 import { ShipData, Ships } from "../types/shipdata";
 import { PanelType } from "./UIController";
 import { UIPanel } from "./UIPanel";
+import { GetEquipmentData } from "../databases/equipdatabase";
 
 
 export class BriefingPanel implements UIPanel {
@@ -69,11 +70,12 @@ export class BriefingPanel implements UIPanel {
 					child.style.setProperty('--ship-stat-value', `${speedValue}%`);
 				}
 				else if (child.classList.contains('ship-damage')) {
-					const damageValue = 50 + data.defaultWeapon * 10;
+					const weapon = GetEquipmentData(data.defaultWeapon).weapon;
+					const damageValue = 100 * (weapon?.projectile?.damage || 0) / 50;
 					child.style.setProperty('--ship-stat-value', `${damageValue}%`);
 				}
 				else if (child.classList.contains('ship-health')) {
-					const healthValue = 100 * ((data.baseHealth) - 50) / 60;
+					const healthValue = 100 * ((data.baseHealth) - 500) / 600;
 					child.style.setProperty('--ship-stat-value', `${healthValue}%`);
 				}
 			}

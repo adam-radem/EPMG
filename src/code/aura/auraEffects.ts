@@ -1,4 +1,4 @@
-import { DropType } from "../databases/dropdatabase";
+import { AbilityType } from "../databases/dropdatabase";
 import { ShipEntity } from "../entity/entity";
 import { GameState } from "../game/game";
 import { Aura } from "./aura";
@@ -7,7 +7,7 @@ import * as WeaponAuras from "./weapon";
 import * as BarrierAuras from "./barrier";
 import * as SpecialAuras from "./special";
 
-declare type AuraType = DropType;
+declare type AuraType = AbilityType;
 
 declare type AddAuraDelegate = (entity: ShipEntity, aura: Aura, state: GameState) => void;
 declare type RemoveAuraDelegate = AddAuraDelegate;
@@ -20,25 +20,25 @@ export interface AuraCallbacks {
 }
 
 const map: Record<AuraType, AuraCallbacks> = {
-	[DropType.None]: BasicAuras.EmptyAura,
+	[AbilityType.None]: BasicAuras.EmptyAura,
 
-	[DropType.Health]: BasicAuras.HealthAura,
-	[DropType.Score]: BasicAuras.ScoreAura,
-	[DropType.Regenerate]: BasicAuras.RegenerateAura,
+	[AbilityType.Health]: BasicAuras.HealthAura,
+	[AbilityType.Score]: BasicAuras.ScoreAura,
+	[AbilityType.Regenerate]: BasicAuras.RegenerateAura,
 
-	[DropType.WeaponDamage]: WeaponAuras.WeaponDamageAura,
-	[DropType.WeaponInterval]: WeaponAuras.WeaponIntervalAura,
-	[DropType.ShotPierce]: WeaponAuras.ShotPierceAura,
-	[DropType.ShotSpread]: WeaponAuras.ShotSpreadAura,
+	[AbilityType.WeaponDamage]: WeaponAuras.WeaponDamageAura,
+	[AbilityType.WeaponInterval]: WeaponAuras.WeaponIntervalAura,
+	[AbilityType.ShotPierce]: WeaponAuras.ShotPierceAura,
+	[AbilityType.ShotSpread]: WeaponAuras.ShotSpreadAura,
 
-	[DropType.BarrierAbsorb]: BarrierAuras.BarrierAbsorb,
-	[DropType.BarrierReflect]: BarrierAuras.BarrierReflect,
-	[DropType.BarrierHeal]: BarrierAuras.BarrierHeal,
-	[DropType.BarrierArmor]: BarrierAuras.BarrierArmor,
+	[AbilityType.BarrierAbsorb]: BarrierAuras.BarrierAbsorb,
+	[AbilityType.BarrierReflect]: BarrierAuras.BarrierReflect,
+	[AbilityType.BarrierHeal]: BarrierAuras.BarrierHeal,
+	[AbilityType.BarrierArmor]: BarrierAuras.BarrierArmor,
 
-	[DropType.ExtraLasers]: SpecialAuras.ExtraLasers,
-	[DropType.SpreadMissiles]: SpecialAuras.SpreadMissiles,
-	[DropType.ScreenNuke]: SpecialAuras.ScreenNuke
+	[AbilityType.ExtraLasers]: SpecialAuras.ExtraLasers,
+	[AbilityType.SpreadMissiles]: SpecialAuras.SpreadMissiles,
+	[AbilityType.ScreenNuke]: SpecialAuras.ScreenNuke
 };
 
 export function GetAuraEffects(type: AuraType): AuraCallbacks {

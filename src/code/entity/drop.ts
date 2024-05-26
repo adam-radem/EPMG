@@ -1,12 +1,13 @@
-import { Aura, AuraSystem } from "../aura/aura";
-import { DropType, EvaluateDrop, GetDrop } from "../databases/dropdatabase";
-import { Destroy, GameState, NextEntityId } from "../game/game";
+import { PlayerId } from "rune-games-sdk";
+import { EvaluateDrop, GetDrop } from "../databases/dropdatabase";
+import { AddPlayerAbility, Destroy, GameState, NextEntityId } from "../game/game";
 import { Vector2 } from "../math/vector";
 import { Screen } from "../rendering/screen";
 import { EnemyEntityData } from "./enemy";
 import { EntityData } from "./entity";
 import { PlayerEntityData } from "./player";
 import { CircBody } from "./transform";
+import { GetAbilityData } from "../aura/ability";
 
 export interface DropEntityData extends EntityData {
 	collider: CircBody;
@@ -54,39 +55,30 @@ export module DropSystem {
 	}
 
 	export function onCollect(entity: DropEntityData, player: PlayerEntityData, state: GameState) {
-		applyPickup(entity, player, state);
-		Destroy(state, entity.id);
+		if (applyPickup(entity, player, state))
+			Destroy(state, entity.id);
 	}
 
-	function applyPickup(entity: DropEntityData, player: PlayerEntityData, state: GameState) {
-		const dropData = GetDrop(entity.dropType);
-		switch (dropData.dropType) {
-			case DropType.None:
-				break;
-			case DropType.Health:
-				player.health = Math.min(player.health + dropData.value, player.maxHealth);
-				break;
-			case DropType.Score:
-				const score = state.scores[player.id] + dropData.value;
-				state.scores[player.id] = score;
-				break;
-			case DropType.Regenerate:
-				const aura = AuraSystem.AuraFromDrop(dropData);
-				AuraSystem.addAuraToEntity(player, aura, state);
-				break;
-			case DropType.WeaponDamage:
+	//returns true if the item was picked up properly
+	function applyPickup(entity: DropEntityData, player: PlayerEntityData, state: GameState): boolean {
+		const drop = GetDrop(entity.dropType);
 
-				break;
-			case DropType.WeaponInterval:
-			case DropType.ShotPierce:
-			case DropType.ShotSpread:
-			case DropType.BarrierAbsorb:
-			case DropType.BarrierReflect:
-			case DropType.BarrierHeal:
-			case DropType.BarrierArmor:
-			case DropType.ExtraLasers:
-			case DropType.SpreadMissiles:
-			case DropType.ScreenNuke:
+		let pickedUp = false;
+
+		if (drop.healthRestore) {
+			player.health = Math.min(player.health + drop.healthRestore, player.maxHealth);
+			pickedUp = true;
 		}
+		if (drop.scoreValue) {
+			state.scores[player.id] = state.scores[player.id] + drop.scoreValue;
+			pickedUp = true;
+		}
+
+		if (drop.ability) {
+			const ability = GetAbilityData(drop.ability);
+			pickedUp = AddPlayerAbility(state, player.id as PlayerId, ability) || pickedUp;
+		}
+
+		return pickedUp;
 	}
 }

@@ -1,4 +1,4 @@
-import { DropData, DropType } from "../databases/dropdatabase";
+import { AbilityData, AbilityType } from "../databases/dropdatabase";
 import { ShipEntity } from "../entity/entity";
 import { GameState } from "../game/game";
 import * as Effects from "./auraEffects";
@@ -6,23 +6,25 @@ import * as Effects from "./auraEffects";
 export interface Aura {
 	type: AuraType;
 	value: number;
+	flag?: number;
 	endsAt: number;
 }
 
-declare type AuraType = DropType;
+declare type AuraType = AbilityType;
 
 export module AuraSystem {
 
-	export function AuraFromDrop(drop: DropData): Aura {
+	export function AuraFromAbility(ability: AbilityData): Aura {
 		const aura: Aura = {
-			type: drop.dropType,
-			value: drop.value,
-			endsAt: drop.duration || 0
+			type: ability.abilityType,
+			value: ability.value,
+			endsAt: ability.duration || 0
 		};
 		return aura;
 	}
 
 	export function addAuraToEntity(entity: ShipEntity, aura: Aura, state: GameState) {
+		aura.endsAt += state.time;
 		entity.auras.push(aura);
 		applyAura(entity, aura, state);
 	}
@@ -33,7 +35,13 @@ export module AuraSystem {
 
 		for (let i = entity.auras.length - 1; i >= 0; --i) {
 			const aura = entity.auras[i];
-			if (aura.endsAt <= state.time) {
+
+			if (!aura) {
+				delete (entity.auras[i]);
+				continue;
+			}
+
+			if (aura && aura.endsAt <= state.time) {
 				removeAura(entity, aura, state);
 				delete entity.auras[i];
 				continue;

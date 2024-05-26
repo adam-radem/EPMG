@@ -10,6 +10,7 @@ export interface ShipData {
 	speed: number;
 	baseHealth: number;
 	defaultWeapon: number;
+	defaultAbility?: number;
 	collider: CircBody | RectBody | Body;
 	equipPositions: {
 		left: V2;

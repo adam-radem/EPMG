@@ -1,7 +1,9 @@
 export class UIElement<T> {
+	protected data: T | null;
 	protected element: HTMLElement | null;
 
 	public constructor(elementID: string) {
+		this.data = null;
 		this.element = document.getElementById(elementID);
 	}
 

@@ -4,7 +4,7 @@ import { V2, Vector2 } from "../math/vector";
 import { Screen } from "../rendering/screen";
 import { WeaponProjectileData } from "../types/shipdata";
 import { EnemyEntityData, EnemySystem, isEnemy } from "./enemy";
-import { EntityData } from "./entity";
+import { EntityData, ShipEntity } from "./entity";
 import { WeaponModifierData } from "./equip";
 import { PlayerEntityData, PlayerSystem, isPlayer } from "./player";
 import { Body } from "./transform";
@@ -61,7 +61,7 @@ export module ProjectileSystem {
 			return;
 
 		const angle = (targetEntity.transform.angle + 90) * Math.PI / 180;
-		const fwd = Vector2.multiplyScalar(Vector2.makeVector(Math.cos(angle), Math.sin(angle)), 32);
+		const fwd = Vector2.multiplyScalar(Vector2.makeVector(Math.cos(angle), Math.sin(angle)), targetEntity.speed / 6);
 		const targetPos = Vector2.addVector(targetEntity.transform.position, fwd);
 
 		const numFired = data.mods?.spreadMod || 1;
@@ -126,7 +126,7 @@ export module ProjectileSystem {
 					return;
 				}
 
-				const theta = Vector2.angleBetween(targetPos, entityData.transform.position);
+				const theta = Vector2.angleBetween(targetPos, targetPos);
 				entityData.transform.angle = theta;
 			}
 		}
@@ -144,21 +144,44 @@ export module ProjectileSystem {
 		entityData.transform.position = pos;
 	}
 
-	export function onCollide(entityData: ProjectileData, other: EntityData, state: GameState): void {
+	export function onCollide(projectile: ProjectileData, other: EntityData, state: GameState): void {
 		if (isPlayer(other)) {
-			onPlayerCollide(entityData, other as PlayerEntityData, state);
+			if (reflectProjectile(projectile, other)) {
+				projectile.team = TeamId.Player;
+				return;
+			}
+			onPlayerCollide(projectile, other as PlayerEntityData, state);
 		}
 		else if (isEnemy(other)) {
-			onEnemyCollide(entityData, other as EnemyEntityData, state);
+			if (reflectProjectile(projectile, other)) {
+				projectile.team = TeamId.Enemy;
+				return;
+			}
+			onEnemyCollide(projectile, other as EnemyEntityData, state);
 		}
 
-		if (entityData.pierce && entityData.pierce > 0) {
-			entityData.pierce -= 1;
-			entityData.damage *= 0.6;
+		if (projectile.pierce && projectile.pierce > 0) {
+			projectile.pierce -= 1;
+			projectile.damage *= 0.6;
 			return;
 		}
 
-		Destroy(state, entityData.id);
+		Destroy(state, projectile.id);
+	}
+
+	function reflectProjectile(projectile: ProjectileData, entity: ShipEntity) {
+		if (!entity.reflect || entity.reflect <= 0)
+			return false;
+
+		entity.reflect -= 1;
+		projectile.motion = ProjectileMotion.Flat;
+		projectile.owner = entity.id;
+
+		projectile.speed *= 1.5;
+		projectile.life = 5000;
+
+		projectile.transform.angle = projectile.transform.angle + Math.PI;
+		return true;
 	}
 
 	function onPlayerCollide(projectile: ProjectileData, player: PlayerEntityData, state: GameState) {

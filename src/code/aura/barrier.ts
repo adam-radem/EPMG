@@ -1,4 +1,4 @@
-import { DropType } from "../databases/dropdatabase";
+import { AbilityType } from "../databases/dropdatabase";
 import { ShipEntity } from "../entity/entity";
 import { GameState } from "../game/game";
 import { Aura } from "./aura";
@@ -7,7 +7,7 @@ import { AuraCallbacks } from "./auraEffects";
 function AbsorbCreate(entity: ShipEntity, aura: Aura, state: GameState) {
 	for (let i = 0; i != entity.auras.length; ++i) {
 		const aura = entity.auras[i];
-		if (aura.type === DropType.BarrierAbsorb) {
+		if (aura && aura.type === AbilityType.BarrierAbsorb) {
 			delete entity.auras[i];
 			break;
 		}
@@ -22,7 +22,7 @@ function AbsorbRemove(entity: ShipEntity, aura: Aura, state: GameState) {
 function ReflectCreate(entity: ShipEntity, aura: Aura, state: GameState) {
 	for (let i = 0; i != entity.auras.length; ++i) {
 		const aura = entity.auras[i];
-		if (aura.type === DropType.BarrierReflect) {
+		if (aura && aura.type === AbilityType.BarrierReflect) {
 			delete entity.auras[i];
 			break;
 		}
@@ -37,7 +37,7 @@ function ReflectRemove(entity: ShipEntity, aura: Aura, state: GameState) {
 function HealCreate(entity: ShipEntity, aura: Aura, state: GameState) {
 	for (let i = 0; i != entity.auras.length; ++i) {
 		const aura = entity.auras[i];
-		if (aura.type === DropType.BarrierHeal) {
+		if (aura && aura.type === AbilityType.BarrierHeal) {
 			delete entity.auras[i];
 			break;
 		}
@@ -52,7 +52,7 @@ function HealRemove(entity: ShipEntity, aura: Aura, state: GameState) {
 function ArmorCreate(entity: ShipEntity, aura: Aura, state: GameState) {
 	for (let i = 0; i != entity.auras.length; ++i) {
 		const aura = entity.auras[i];
-		if (aura.type === DropType.BarrierArmor) {
+		if (aura && aura.type === AbilityType.BarrierArmor) {
 			delete entity.auras[i];
 			break;
 		}

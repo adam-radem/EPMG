@@ -68,10 +68,7 @@ function ApplyShotPierce(entity: ShipEntity, aura: Aura, state: GameState) {
 		if (equipData.owner === entity.id) {
 			const mod = (equipData.modifiers as WeaponModifierData);
 			let modValue = mod.pierceMod;
-			if (modValue)
-				modValue *= aura.value;
-			else
-				modValue = aura.value;
+			modValue = modValue ? modValue + aura.value : aura.value;
 
 			mod.pierceMod = modValue;
 		}
@@ -84,7 +81,7 @@ function RemoveShotPierce(entity: ShipEntity, aura: Aura, state: GameState) {
 			const mod = (equipData.modifiers as WeaponModifierData);
 			let modValue = mod.pierceMod;
 			if (modValue)
-				modValue /= aura.value;
+				modValue -= aura.value;
 
 			mod.pierceMod = modValue;
 		}

@@ -5,7 +5,6 @@ import { PlayerId, Players } from "rune-games-sdk";
 import { GameState, Phase } from "./code/game/game";
 import { Keyboard, KeyState } from "./code/input/keyboard";
 import { RenderEntity } from "./code/rendering/renderEntity";
-import { EntitySystem, ShipEntity } from "./code/entity/entity";
 import { V2, Vector2 } from './code/math/vector';
 import { ShipObject } from './code/rendering/shipobject';
 import { PlayerEntityData } from './code/entity/player';
@@ -25,22 +24,11 @@ export class GameClient {
 	lastInputDirection: V2 = Vector2.zero();
 	renderEntities: EntityList = {};
 
-	public registerInput(keyboard: Keyboard) {
-		//debug keys
-		const pressedKey = (event: KeyboardEvent) => {
-			const map: Record<string, number> = { '1': 1, '2': 2, '3': 3, '4': 4 };
-			const idx = map[event.key];
-			if (idx && idx >= 0) {
-				const footer = UI.GetFooterElement(idx - 1);
-				if (footer) {
-					footer.setData({ cooldown: idx, icon: '' });
-					footer.setVisible(!footer.isVisible());
-					UI.UpdateFooterPositions();
-				}
-			}
-		};
-		keyboard.subscribe(KeyState.KeyDown, pressedKey);
+	public static sendAbility(abilityId: number) {
+		Rune.actions.activateAbility({ abilityId: abilityId });
+	}
 
+	public registerInput() {
 		const onPointerDown = (ev: PointerEvent) => {
 			if (!this.localPlayerId) //ignore this from spectators
 				return;
@@ -116,19 +104,24 @@ export class GameClient {
 			switch (state.level.phase) {
 				case Phase.None:
 					UI.SwitchUI(UI.PanelType.None, state, localPlayer);
+					UI.HideFooter();
 					break;
 				case Phase.Briefing:
 					UI.SwitchUI(UI.PanelType.Briefing, state, localPlayer);
+					UI.HideFooter();
 					break;
 				case Phase.Level:
 					UI.SwitchUI(UI.PanelType.GameHUD, state, localPlayer);
+					UI.UpdateFooter(state, localPlayer);
 					break;
 				case Phase.Shop:
 					UI.SwitchUI(UI.PanelType.Shop, state, localPlayer);
+					UI.HideFooter();
 					break;
 				case Phase.Victory:
 				case Phase.Defeat:
 					UI.SwitchUI(UI.PanelType.GameOver, state, localPlayer);
+					UI.HideFooter();
 					break;
 			}
 

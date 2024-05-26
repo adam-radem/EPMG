@@ -1,4 +1,5 @@
 import { drops } from "../../data/dropdata.json";
+import { GetAbilityData } from "../aura/ability";
 import { DropEntityData } from "../entity/drop";
 import { EnemyEntityData } from "../entity/enemy";
 import { GetShipType } from "../types/shipdata";
@@ -13,7 +14,7 @@ export interface DropTable {
 	drops: Array<WeightedDrop>;
 }
 
-export enum DropType {
+export enum AbilityType {
 	//Nothing dropped!
 	None = 0,
 
@@ -42,21 +43,41 @@ export enum DropType {
 	ScreenNuke = 31,		//Hits every enemy screen for massive damage
 
 }
-export interface DropData {
-	id: number,
-	name: string,
-	dropType: DropType,
-	value: number;
-	duration: number | undefined;
-	sprite: string | undefined,
+export interface Drop {
+	id: number;
+	name: string;
+	sprite?: string;
+	ability?: number;
+	healthRestore?: number;
+	scoreValue?: number;
 }
 
-const map: Record<number, Partial<DropData>> = {};
+export interface AbilityData {
+	value: number;
+	abilityType: AbilityType;
+	duration?: number;
+	charges?: number;
+	cooldown?: number;
+}
+
+export interface Ability {
+	id: number;
+	sprite: string | undefined;
+	charges: number;
+	cooldown: number;
+	auraList: AbilityData[];
+}
+
+export interface AbilitySet {
+	abilities: Ability[];
+}
+
+const map: Record<number, Partial<Drop>> = {};
 for (const [, v] of Object.entries(drops)) {
 	map[v.id] = v;
 }
-export function GetDrop(id: number): DropData {
-	return map[id] as DropData;
+export function GetDrop(id: number): Drop {
+	return map[id] as Drop;
 }
 
 export function EvaluateDrop(enemy: EnemyEntityData) {

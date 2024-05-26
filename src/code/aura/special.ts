@@ -33,6 +33,9 @@ function FireWeaponAtAllInRange(entity: ShipEntity, aura: Aura, state: GameState
 }
 
 function ExtraLasersUpdate(entity: ShipEntity, aura: Aura, state: GameState, dt: number) {
+	if (aura.flag && aura.flag < state.time)
+		return;
+
 	const srcPos = entity.transform.position;
 	const weaponData = GetEquipmentData(aura.value).weapon;
 	if (!weaponData || !weaponData.projectile) {
@@ -61,6 +64,8 @@ function ExtraLasersUpdate(entity: ShipEntity, aura: Aura, state: GameState, dt:
 			team: TeamId.Player
 		};
 		ProjectileSystem.CreateProjectile(proj, state);
+
+		aura.flag = state.time + weaponData.cooldown;
 	}
 }
 

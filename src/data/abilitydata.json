@@ -1,0 +1,53 @@
+{
+	"abilities": {
+		"empty": {
+			"id": 0,
+			"name": "none",
+			"abilityType": 0,
+			"value": 0,
+			"duration": 0,
+			"auraList": []
+		},
+		"barrier": {
+			"id": 1,
+			"name": "Plasma Barrier",
+			"cooldown": 1000,
+			"auraList": [
+				{
+					"abilityType": 17,
+					"value": 50,
+					"duration": 30000
+				}
+			]
+		},
+		"damage": {
+			"id": 2,
+			"name": "Railgun",
+			"cooldown": 9000,
+			"auraList": [
+				{
+					"abilityType": 8,
+					"value": 4,
+					"duration": 3000
+				},
+				{
+					"abilityType": 10,
+					"value": 2,
+					"duration": 3000
+				}
+			]
+		},
+		"haste": {
+			"id": 3,
+			"name": "Overdrive",
+			"cooldown": 8000,
+			"auraList": [
+				{
+					"abilityType": 9,
+					"value": 4,
+					"duration": 2500
+				}
+			]
+		}
+	}
+}

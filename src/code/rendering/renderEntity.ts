@@ -1,4 +1,4 @@
-import { EntitySystem, EntityData } from "../entity/entity";
+import { EntityData } from "../entity/entity";
 import { GameState } from "../game/game";
 
 export interface RenderEntity<T extends EntityData> {

@@ -18,8 +18,8 @@ Rune.initLogic({
 		setShip: ({ id }, { game, playerId }) => {
 			if (game.level.phase !== Game.Phase.Briefing)
 				throw Rune.invalidAction();
-			
-			if(game.players[playerId].shipData > 0)
+
+			if (game.players[playerId].shipData > 0)
 				throw Rune.invalidAction();
 
 			Game.SetPlayerShip(game, playerId, id);
@@ -30,6 +30,11 @@ Rune.initLogic({
 
 			const playerData = game.players[playerId];
 			playerData.target = newTarget;
+		},
+		activateAbility: ({ abilityId: abilityId }, { game, playerId }) => {
+			if (!Game.ActivatePlayerAbility(game, playerId, abilityId)) {
+				throw Rune.invalidAction();
+			}
 		},
 		endScene: ({ }, { game }) => {
 			game.level.progress = 0;

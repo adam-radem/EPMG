@@ -6,6 +6,7 @@ import { UIElement } from "./UIElement";
 import { UIPanel } from "./UIPanel";
 import { BriefingPanel } from "./BriefingPanel";
 import { EmptyPanel } from "./EmptyPanel";
+import { GetAbilityData } from "../aura/ability";
 
 const UIHeaderElements = [
 	new HeaderElement('ui_header_player_one'),
@@ -61,16 +62,44 @@ export const SetUIPanel = (panel: PanelType) => {
 	CurrentUIPanel = Panels[panel];
 };
 
-export const PresentCurrentUI = (state: GameState, localPlayer:PlayerId) => {
+export const PresentCurrentUI = (state: GameState, localPlayer: PlayerId) => {
 	CurrentUIPanel.Present?.(state, localPlayer);
 };
 
-export const DismissCurrentUI = (state: GameState, localPlayer:PlayerId) => {
+export const DismissCurrentUI = (state: GameState, localPlayer: PlayerId) => {
 	CurrentUIPanel.Dismiss?.(state, localPlayer);
 };
 
-export const UpdateUIPanel = (state: GameState, localPlayer:PlayerId) => {
+export const UpdateUIPanel = (state: GameState, localPlayer: PlayerId) => {
 	CurrentUIPanel.Update?.(state, localPlayer);
+};
+
+export const HideFooter = () => {
+	for (let i = 0; i != UIFooterElements.length; ++i) {
+		UIFooterElements[i].setVisible(false);
+	}
+};
+
+export const UpdateFooter = (state: GameState, localPlayer: PlayerId) => {
+	const playerAbilities = state.playerAbilities[localPlayer].abilities;
+	for (let i = 0; i != UIFooterElements.length; ++i) {
+		if (i in playerAbilities) {
+			const ability = GetAbilityData(playerAbilities[i].id);
+			UIFooterElements[i].setData(ability);
+			if (!UIFooterElements[i].isVisible()) {
+				UIFooterElements[i].setVisible(true);
+
+				if (playerAbilities[i].cooldown > 0)
+					UIFooterElements[i].abilityActivated(playerAbilities[i].cooldown);
+			}
+			
+			UIFooterElements[i].setEnabled(playerAbilities[i].cooldown <= 0);
+			if(playerAbilities[i].cooldown <= 0)
+				UIFooterElements[i].abilityReady();
+			continue;
+		}
+		UIFooterElements[i].setVisible(false);
+	}
 };
 
 export const GetHeaderElement = (idx: number) => {

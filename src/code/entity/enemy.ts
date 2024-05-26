@@ -10,10 +10,9 @@ import { GlobalGameParameters } from "../game/static";
 import { isPlayer } from "./player";
 import { ProjectileData, isProjectile } from "./projectile";
 import { GetEquipmentData } from "../databases/equipdatabase";
-import { AuraSystem } from "../aura/aura";
 import { EquipSystem } from "./equip";
-import { DropTable } from "../databases/dropdatabase";
 import { DropSystem } from "./drop";
+import { AuraSystem } from "../aura/aura";
 
 // const pathCache: any = {};
 function GetPointsForPath(path: Path) {
@@ -145,6 +144,8 @@ export module EnemySystem {
 			return;
 		}
 
+		AuraSystem.onUpdate(entityData, state, dt);
+
 		const speed = entityData.speed;
 		entityData.time += dt * speed;
 
@@ -168,6 +169,30 @@ export module EnemySystem {
 	}
 
 	export function onTakeDamage(entityData: EnemyEntityData, src: EntityData, damage: number, state: GameState) {
+		if (entityData.heal && entityData.heal > 0) {
+			if (damage > entityData.heal) {
+				damage -= entityData.heal;
+				entityData.health += entityData.heal;
+				entityData.heal = undefined;
+			}
+			else {
+				entityData.heal -= damage;
+				entityData.health += damage;
+				damage = 0;
+			}
+		}
+
+		if (entityData.absorb && entityData.absorb > 0) {
+			entityData.absorb -= damage;
+			if (entityData.absorb < 0) {
+				damage = -entityData.absorb;
+				entityData.absorb = undefined;
+			}
+		}
+
+		if (damage <= 0)
+			return;
+
 		entityData.health -= damage;
 
 		if (isPlayer(src))
@@ -195,7 +220,6 @@ export module EnemySystem {
 	export function onCollide(entityData: EnemyEntityData, other: EntityData, state: GameState): void {
 
 	}
-
 
 	export function CreatePath(state: GameState, points: V2[]): number {
 		const idx = Game.NextEntityId(state);

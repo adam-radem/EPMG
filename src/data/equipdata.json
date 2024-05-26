@@ -24,10 +24,10 @@
 				"projectile": {
 					"type": 1,
 					"speed": 1080,
-					"damage": 25,
+					"damage": 50,
 					"motion": 0,
 					"life": 1000,
-					"spread": 3
+					"spread": 0
 				}
 			}
 		},
@@ -49,7 +49,7 @@
 					"damage": 30,
 					"motion": 0,
 					"life": 1000,
-					"spread": 4
+					"spread": 0
 				}
 			}
 		},
@@ -71,7 +71,7 @@
 					"damage": 35,
 					"motion": 0,
 					"life": 1000,
-					"spread": 2
+					"spread": 0
 				}
 			}
 		},
@@ -90,7 +90,7 @@
 				"projectile": {
 					"type": 100,
 					"speed": 500,
-					"damage": 5,
+					"damage": 60,
 					"motion": 0,
 					"life": 1500,
 					"spread": 4

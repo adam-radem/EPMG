@@ -12,6 +12,11 @@ export module Shop {
 			const playerData = state.players[pid];
 			playerData.target = Vector2.zero();
 			playerData.transform.angle = 180;
+
+			//If players are damaged, heal them as far as half-health
+			if (playerData.health < playerData.maxHealth / 2) {
+				playerData.health = playerData.maxHealth / 2;
+			}
 		}
 	}
 

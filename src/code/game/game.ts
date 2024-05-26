@@ -2,7 +2,7 @@ import { PlayerId } from "rune-games-sdk";
 import { PlayerEntityData } from "../entity/player";
 import { GlobalGameParameters } from "./static";
 import { EnemySystem, EnemyEntityData, Path } from "../entity/enemy";
-import { GetShipType, SetSlot, ShipSlot, Ships, WeaponProjectileData } from "../types/shipdata";
+import { GetShipType, SetSlot, ShipSlot, Ships } from "../types/shipdata";
 import { V2, Vector2 } from "../math/vector";
 import { EquipData, EquipSystem } from "../entity/equip";
 import { ProjectileData } from "../entity/projectile";
@@ -12,6 +12,8 @@ import { Screen } from "../rendering/screen";
 import { GetEquipmentData } from "../databases/equipdatabase";
 import { DropEntityData } from "../entity/drop";
 import { Phases } from "../phases/Phases";
+import { Ability, AbilityData, AbilitySet } from "../databases/dropdatabase";
+import { AbilitySystem } from "../aura/ability";
 
 export enum Phase {
 	None,
@@ -47,6 +49,35 @@ export function EquipPlayer(state: GameState, playerId: string, equip: number, s
 	}
 }
 
+export function AddInitialPlayerAbility(state: GameState, playerId: string, abilityId: number) {
+	const ability = AbilitySystem.createInitialAbility(abilityId, state);
+	if (ability.id > 0)
+		state.playerAbilities[playerId].abilities.push(ability);
+}
+
+export function AddPlayerAbility(state: GameState, playerId: string, data: Ability) {
+	const playerAbilityList = state.playerAbilities[playerId].abilities;
+	if (data && playerAbilityList.length < 4) {
+		state.playerAbilities[playerId].abilities.push(data);
+		return true;
+	}
+	return false;
+}
+
+export function ActivatePlayerAbility(state: GameState, playerId: string, id: number) {
+	const playerAbilityList = state.playerAbilities[playerId].abilities;
+	const idx = playerAbilityList.findIndex(x => x.id == id);
+	const data = playerAbilityList[idx];
+	if (data && data.cooldown <= 0 && data.charges != 0) {
+		AbilitySystem.activate(state, playerId, data);
+		if (data.charges == 0) {
+			delete playerAbilityList[idx];
+		}
+		return true;
+	}
+	return false;
+}
+
 export function CreatePlayer(state: GameState, playerId: string) {
 	const assignedPlayers = [];
 	for (const pid in state.players) {
@@ -58,7 +89,7 @@ export function CreatePlayer(state: GameState, playerId: string) {
 			break;
 	}
 
-	const ship = 0;//Ships.Players[0] + idx;
+	const ship = 0;
 	const startPos = GlobalGameParameters.GetStartPosition(idx);
 	const yPosOffscreen = Screen.PlayableArea.y + 200;
 	const player: PlayerEntityData = {
@@ -79,6 +110,10 @@ export function CreatePlayer(state: GameState, playerId: string) {
 	};
 	state.players[playerId] = player;
 	state.scores[playerId] = 0;
+
+	state.playerAbilities[playerId] = {
+		abilities: []
+	};
 	return player;
 }
 
@@ -95,6 +130,7 @@ export function SetPlayerShip(state: GameState, playerId: string, shipID: number
 	console.log(`Player ${playerData.idx} has chosen ${ship}`);
 	state.players[playerId] = playerData;
 
+	AddInitialPlayerAbility(state, playerId, shipData.defaultAbility || 0);
 	EquipPlayer(state, playerId, shipData.defaultWeapon!, ShipSlot.Front);
 }
 
@@ -117,6 +153,7 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		entityCount: 0,
 		time: 0,
 		scores: {},
+		playerAbilities: {},
 		players: {},
 		enemies: {},
 		enemyPathData: {},
@@ -212,11 +249,18 @@ export interface GameState {
 	level: GameLevelState;
 	entityCount: number;
 	scores: Record<PlayerId, number>;
+
 	players: Record<PlayerId, PlayerEntityData>;
+	playerAbilities: Record<PlayerId, AbilitySet>;
+
 	enemies: Record<EntityId, EnemyEntityData>;
+	enemyPathData: Record<number, Path>;
+
+	drops: Record<EntityId, DropEntityData>;
+
 	equipment: Record<EntityId, EquipData>;
 	projectiles: Record<EntityId, ProjectileData>;
-	drops: Record<EntityId, DropEntityData>;
-	enemyPathData: Record<number, Path>;
+
+
 	removed: EntityId[];
 }

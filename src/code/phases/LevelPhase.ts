@@ -9,6 +9,7 @@ import { ProjectileSystem } from "../entity/projectile";
 import { EnemySystem } from "../entity/enemy";
 import { AuraSystem } from "../aura/aura";
 import { CollisionSystem } from "../game/collision";
+import { AbilitySystem } from "../aura/ability";
 
 const runner: LevelRunner = new LevelRunner();
 
@@ -18,6 +19,9 @@ export function RunGamePhase(state: GameState, dt: number) {
 
 	//Update player state first
 	for (const playerId in state.players) {
+		const abilityData = state.playerAbilities[playerId];
+		AbilitySystem.onUpdate(abilityData, state, dt);
+
 		const playerData = state.players[playerId];
 		PlayerSystem.onUpdate(playerData, state, dt);
 	}
@@ -38,12 +42,6 @@ export function RunGamePhase(state: GameState, dt: number) {
 	for (const projectileId in state.projectiles) {
 		const projectileData = state.projectiles[projectileId];
 		ProjectileSystem.onUpdate(projectileData, state, dt);
-	}
-
-	//Update global aura state
-	for (const auraId in state.auras) {
-		const auraData = state.auras[auraId];
-		AuraSystem.onUpdate(auraData, state, dt);
 	}
 
 	CollisionSystem.onUpdate(state);
@@ -74,8 +72,6 @@ function Cleanup(state: GameState) {
 			delete state.equipment[id];
 		else if (id in state.projectiles)
 			delete state.projectiles[id];
-		else if (id in state.auras)
-			delete state.auras[id];
 	}
 	state.removed.length = 0;
 }
@@ -96,12 +92,6 @@ export module Level {
 
 			playerData.transform.angle = 180;
 			playerData.target = Vector2.zero();
-
-			//If players are damaged, heal them as far as half-health
-			if (playerData.health < playerData.maxHealth / 2) {
-				playerData.health = playerData.maxHealth / 2;
-			}
-
 		}
 	}
 	export function Exit(state: GameState) {

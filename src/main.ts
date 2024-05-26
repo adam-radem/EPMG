@@ -6,8 +6,7 @@ import * as Renderer from "./code/rendering/renderer";
 const client = new GameClient();
 
 Renderer.Init().then(() => {
-	const keyboard = new Keyboard();
-	client.registerInput(keyboard);
+	client.registerInput();
 	Rune.initClient({
 		onChange: (params) => {
 			Renderer.updateLevelParameters(params.game);
