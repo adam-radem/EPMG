@@ -23,6 +23,8 @@ export enum AbilityType {
 	Health = 1, 			//Restores health instantly
 	Score = 2, 				//Adds score immediately
 	Regenerate = 3, 		//Restores health over time for [duration]
+	OneCooldown = 4,		//Reduces cooldown of one ability by [value]
+	AllCooldowns = 5,		//Reduces cooldown of all abilities by [value]
 
 	/* Activated */
 	//Weapon Buffs: 8 - 15
@@ -50,6 +52,7 @@ export interface Drop {
 	ability?: number;
 	healthRestore?: number;
 	scoreValue?: number;
+	cooldownValue?: number;
 }
 
 export interface AbilityData {
@@ -65,6 +68,7 @@ export interface Ability {
 	sprite: string | undefined;
 	charges: number;
 	cooldown: number;
+	endTime: number;
 	auraList: AbilityData[];
 }
 

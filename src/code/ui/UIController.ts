@@ -1,12 +1,13 @@
 import { HeaderElement } from "./HeaderElement";
 import { FooterElement } from "./FooterElement";
 import { Player, PlayerId, Players } from "rune-games-sdk";
-import { GameState } from "../game/game";
+import { GameState, ScoreData } from "../game/game";
 import { UIElement } from "./UIElement";
 import { UIPanel } from "./UIPanel";
 import { BriefingPanel } from "./BriefingPanel";
 import { EmptyPanel } from "./EmptyPanel";
 import { GetAbilityData } from "../aura/ability";
+import { UIScoreDropElement } from "./UIScoreDropElement";
 
 const UIHeaderElements = [
 	new HeaderElement('ui_header_player_one'),
@@ -23,6 +24,15 @@ const UIFooterElements = [
 	new FooterElement('ui_footer_btn_three'),
 	new FooterElement('ui_footer_btn_four')
 ];
+
+const UIScoreDrops: UIScoreDropElement[] = [];
+for (let i = 0; i != 32; ++i) {
+	var div = document.createElement('div');
+	div.id = `ui_score_drop_${i}`;
+	div.className = 'ui-score-drop';
+	document.getElementById('ui-game')?.appendChild(div);
+	UIScoreDrops[i] = new UIScoreDropElement(`ui_score_drop_${i}`);
+}
 
 const CachedPlayerData: Record<PlayerId, Player> = {};
 
@@ -90,11 +100,14 @@ export const UpdateFooter = (state: GameState, localPlayer: PlayerId) => {
 				UIFooterElements[i].setVisible(true);
 
 				if (playerAbilities[i].cooldown > 0)
-					UIFooterElements[i].abilityActivated(playerAbilities[i].cooldown);
+					UIFooterElements[i].abilityActivated();
 			}
-			
+			var timeLeft = playerAbilities[i].endTime - state.time;
+			UIFooterElements[i].setActiveState(timeLeft);
+			UIFooterElements[i].setCooldownState(playerAbilities[i].cooldown, ability.cooldown);
+
 			UIFooterElements[i].setEnabled(playerAbilities[i].cooldown <= 0);
-			if(playerAbilities[i].cooldown <= 0)
+			if (playerAbilities[i].cooldown <= 0)
 				UIFooterElements[i].abilityReady();
 			continue;
 		}
@@ -120,6 +133,26 @@ export const UpdatePlayerScores = (scores: Record<string, number>) => {
 	}
 };
 
+export const UpdateScoreDrops = (scores: ScoreData[], state: GameState) => {
+	for (let i = 0; i != UIScoreDrops.length; ++i) {
+		let element = UIScoreDrops[i];
+		if (i < scores.length) {
+			let score = scores[i];
+			if (score && score.expires > state.time) {
+				element.setData(score);
+				element.setElementColor(UIHeaderColors[state.players[score.player].idx])
+				element.setVisible(true);
+			}
+			else {
+				element.setVisible(false);
+			}
+		}
+		else
+			element.setVisible(false);
+	}
+
+};
+
 export const UpdatePlayers = (state: GameState, players: PlayerId[], localPlayerId: PlayerId | undefined) => {
 	for (const pid of players) {
 		if (pid in CachedPlayerData)
@@ -138,10 +171,8 @@ export const UpdatePlayers = (state: GameState, players: PlayerId[], localPlayer
 		const ui = UIHeaderElements[i];
 		if (ui.PlayerID) {
 			if (ui.PlayerID === localPlayerId) {
-				// ui.Element!.style.borderColor = `#${UIHeaderColors[i]}${AlphaMine}`;
 				ui.Element!.style.color = `#${UIHeaderColors[i]}`;
 			} else {
-				// ui.Element!.style.borderColor = `#${UIHeaderColors[i]}${AlphaOthers}`;
 				ui.Element!.style.color = `#${UIHeaderColors[i]}`;
 			}
 

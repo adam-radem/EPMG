@@ -7,32 +7,15 @@ import { GetShipType, ShipEquipment } from "../types/shipdata";
 import { GameState } from "../game/game";
 import { GetShipData } from "../databases/shipdatabase";
 import { GlobalGameParameters } from "../game/static";
-import { isPlayer } from "./player";
+import { PlayerSystem, isPlayer } from "./player";
 import { ProjectileData, isProjectile } from "./projectile";
 import { GetEquipmentData } from "../databases/equipdatabase";
 import { EquipSystem } from "./equip";
 import { DropSystem } from "./drop";
 import { AuraSystem } from "../aura/aura";
 
-// const pathCache: any = {};
-function GetPointsForPath(path: Path) {
-	// if (pathCache[path.idx]) {
-	// 	return pathCache[path.idx];
-	// }
-
-	let pathPoints = [];
-	for (let i = 0; i < path.Path.length; ++i) {
-		pathPoints.push(path.Path[i].x, path.Path[i].y);
-	}
-
-	const pts = Curve.getCurvePoints(pathPoints);
-	// pathCache[path.idx] = pts;
-
-	return pts;
-}
-
 export interface Path {
-	Path: V2[];
+	Path: number[];
 	idx: number;
 	TotalDistance: number;
 }
@@ -72,32 +55,34 @@ export class EnemyPath {
 
 	public static GetPath(points: V2[]): Path {
 		if (points.length == 1) {
-			return { Path: points, TotalDistance: 0, idx: -1 };
+			return { Path: [points[0].x, points[0].y], TotalDistance: 0, idx: -1 };
 		}
 
 		let path = [];
 		for (let i = 0; i < points.length; ++i) {
 			path.push(points[i].x, points[i].y);
 		}
-
 		const pts = Curve.getCurvePoints(path);
 
 		for (var len = 0, i = 0; i < pts.length - 2; i += 2) {
+			if (pts[i] === 0 && pts[i + 1] === 0)
+				break;
 			len += dist(pts[i], pts[i + 1], pts[i + 2], pts[i + 3]);
 		}
 
-		return { Path: points, TotalDistance: len, idx: 0 };
+		return { Path: pts, TotalDistance: len, idx: 0 };
 	}
 
 	public static GetPoint(path: Path, distance: number, seed: number): PathPoint {
-		let pos = path.Path[0];
+		let posX = path.Path[0];
+		let posY = path.Path[1];
 		let heading = 270;
 
 		if (path.Path.length == 1 || distance === 0) {
-			return { Position: pos, Heading: heading };
+			return { Position: { x: posX, y: posY }, Heading: heading };
 		}
 
-		const pts = GetPointsForPath(path);
+		const pts = path.Path;
 
 		let pathPos = getXY(pts, distance);
 		pathPos = Vector2.addVector(pathPos, { x: 0, y: Math.sin(seed + distance / 1000) * 100 });
@@ -208,7 +193,7 @@ export module EnemySystem {
 			}
 
 			if (entityPlayer) {
-				state.scores[entityPlayer] += 100;
+				PlayerSystem.enemyKilled(entityPlayer, entityData, state);
 				DropSystem.tryCreateDrop(entityData, state);
 			}
 

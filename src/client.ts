@@ -157,6 +157,9 @@ export class GameClient {
 
 		//Update UI
 		UI.UpdatePlayerScores(state.scores);
+		
+		//Score drops
+		UI.UpdateScoreDrops(state.scoreDrops, state);
 	}
 
 	private syncEntityList(state: GameState): void {

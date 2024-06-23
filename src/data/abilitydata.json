@@ -23,29 +23,29 @@
 		"damage": {
 			"id": 2,
 			"name": "Railgun",
-			"cooldown": 9000,
+			"cooldown": 12000,
 			"auraList": [
 				{
 					"abilityType": 8,
-					"value": 4,
-					"duration": 3000
+					"value": 1,
+					"duration": 5000
 				},
 				{
 					"abilityType": 10,
-					"value": 2,
-					"duration": 3000
+					"value": 3,
+					"duration": 5000
 				}
 			]
 		},
 		"haste": {
 			"id": 3,
 			"name": "Overdrive",
-			"cooldown": 8000,
+			"cooldown": 15000,
 			"auraList": [
 				{
 					"abilityType": 9,
-					"value": 4,
-					"duration": 2500
+					"value": 5,
+					"duration": 5000
 				}
 			]
 		}

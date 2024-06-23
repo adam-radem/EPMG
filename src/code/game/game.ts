@@ -160,6 +160,7 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		equipment: {},
 		projectiles: {},
 		drops: {},
+		scoreDrops: [],
 		removed: []
 	};
 
@@ -178,6 +179,13 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 
 	console.log(`Game has been initialized with ${allPlayerIds.length} players`);
 	return state;
+}
+
+export function AddScoreToPlayer(playerId: EntityId, scoreValue: number, position: V2, state: GameState) {
+	if (playerId in state.scores) {
+		state.scores[playerId] += scoreValue;
+		state.scoreDrops.push({ player: playerId, value: scoreValue, position: position, expires: state.time + 2000 });
+	}
 }
 
 function CreateRandomPath(state: GameState) {
@@ -244,6 +252,13 @@ export interface GameLevelState {
 	ready: number;
 }
 
+export interface ScoreData {
+	player: EntityId,
+	value: number,
+	position: V2,
+	expires: number;
+}
+
 export interface GameState {
 	time: number;
 	level: GameLevelState;
@@ -261,6 +276,6 @@ export interface GameState {
 	equipment: Record<EntityId, EquipData>;
 	projectiles: Record<EntityId, ProjectileData>;
 
-
+	scoreDrops: ScoreData[];
 	removed: EntityId[];
 }

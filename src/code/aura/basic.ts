@@ -1,5 +1,5 @@
 import { ShipEntity } from "../entity/entity";
-import { GameState } from "../game/game";
+import { AddScoreToPlayer, GameState } from "../game/game";
 import { Aura } from "./aura";
 import { AuraCallbacks } from "./auraEffects";
 
@@ -8,11 +8,7 @@ function Health(entity: ShipEntity, aura: Aura, state: GameState) {
 }
 
 function Score(entity: ShipEntity, aura: Aura, state: GameState) {
-	const id = entity.id;
-	if (id in state.scores) {
-		const pscore = state.scores[id] + aura.value;
-		state.scores[id] = pscore;
-	}
+	AddScoreToPlayer(entity.id, aura.value, entity.transform.position, state);
 }
 
 function Regenerate(entity: ShipEntity, aura: Aura, state: GameState, dt: number) {

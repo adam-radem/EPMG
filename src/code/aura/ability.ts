@@ -39,12 +39,16 @@ export module AbilitySystem {
 	export function activate(state: GameState, playerId: PlayerId, data: Ability) {
 		const abilityData = GetAbilityData(data.id);
 		if (abilityData) {
-			for(let i = 0; i != abilityData.auraList.length; ++i){
+			for (let i = 0; i != abilityData.auraList.length; ++i) {
 				const aura = AuraSystem.AuraFromAbility(abilityData.auraList[i]);
 				AuraSystem.addAuraToEntity(state.players[playerId], aura, state);
 			}
 
+			let maxDuration = 0;
+			abilityData.auraList.map(el => maxDuration = Math.max(maxDuration, el.duration ?? 0));
+
 			data.cooldown = abilityData.cooldown || DefaultAbilityCooldown;
+			data.endTime = state.time + maxDuration;
 			if (data.charges > 0) {
 				data.charges -= 1;
 			}

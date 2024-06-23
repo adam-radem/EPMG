@@ -44,6 +44,9 @@ export function RunGamePhase(state: GameState, dt: number) {
 		ProjectileSystem.onUpdate(projectileData, state, dt);
 	}
 
+	while (state.scoreDrops.length > 0 && state.scoreDrops[0].expires < state.time)
+		state.scoreDrops.shift();
+
 	CollisionSystem.onUpdate(state);
 
 	Cleanup(state);
@@ -98,6 +101,7 @@ export module Level {
 		for (const pid in state.projectiles) {
 			Destroy(state, pid);
 		}
+		state.scoreDrops = [];
 	}
 
 	export function Run(state: GameState, dt: number): void { RunGamePhase(state, dt); }

@@ -2,8 +2,8 @@ import { Screen } from "../rendering/screen";
 import { EntityData, ShipEntity } from "./entity";
 import { V2, Vector2 } from "../math/vector";
 import { CircBody } from "./transform";
-import { GameState } from "../game/game";
-import { isEnemy } from "./enemy";
+import { AddScoreToPlayer, GameState } from "../game/game";
+import { EnemyEntityData, isEnemy } from "./enemy";
 import { GlobalGameParameters } from "../game/static";
 import { AuraSystem } from "../aura/aura";
 
@@ -22,7 +22,7 @@ export module PlayerSystem {
 		if (entity.health <= 0) {
 			return;
 		}
-		
+
 		AuraSystem.onUpdate(entity, state, dt);
 		updateData(entity, dt);
 	}
@@ -116,6 +116,16 @@ export module PlayerSystem {
 	}
 
 	export function levelTransition(entityData: PlayerEntityData) {
+	}
 
+	export function enemyKilled(playerId: EntityId, enemyEntity: EnemyEntityData, state: GameState) {
+		const scoreGain = Math.floor(enemyEntity.maxHealth / 2);
+		AddScoreToPlayer(playerId, scoreGain, enemyEntity.transform.position, state);
+
+		var abilities = state.playerAbilities[playerId].abilities.filter(x => x.cooldown > 0);
+		if (abilities.length > 0) {
+			var active = Math.floor(Math.random() * abilities.length);
+			abilities[active].cooldown -= 500;
+		}
 	}
 }

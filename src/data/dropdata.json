@@ -21,24 +21,34 @@
 			"healthRestore": 100
 		},
 		{
-			"id": 4,
+			"id": 10,
 			"name": "Mini Score",
 			"scoreValue": 100
 		},
 		{
-			"id": 5,
-			"name": "Big Score",
+			"id": 11,
+			"name": "Little Score",
 			"scoreValue": 250
 		},
 		{
-			"id": 6,
-			"name": "Mega Score",
+			"id": 12,
+			"name": "Big Score",
 			"scoreValue": 500
 		},
 		{
-			"id": 7,
-			"name": "Giga Score",
+			"id": 13,
+			"name": "Mega Score",
 			"scoreValue": 1000
+		},
+		{
+			"id": 20,
+			"name": "Mini Cooldown",
+			"cooldownValue": 1000
+		},
+		{
+			"id": 21,
+			"name": "Big Cooldown",
+			"cooldownValue": 2000
 		}
 	]
 }

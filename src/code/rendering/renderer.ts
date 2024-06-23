@@ -143,13 +143,13 @@ export function updateLevelParameters(state: GameState) {
 		debug = new Pixi.Graphics();
 		for (const pid in state.enemyPathData) {
 			const path = state.enemyPathData[pid];
-			for (let i = 0; i < path.Path.length; ++i) {
-				debug.circle(path.Path[i].x, path.Path[i].y, 10)
+			for (let i = 0; i < path.Path.length; i += 2) {
+				debug.circle(path.Path[i], path.Path[i + 1], 10)
 					.fill(0xFFFFFFFF)
 					.stroke({ color: 0xFFFFFF, alpha: 0.6, width: 2 });
 				if (i + 1 < path.Path.length) {
-					debug.moveTo(path.Path[i].x, path.Path[i].y)
-						.lineTo(path.Path[i + 1].x, path.Path[i + 1].y)
+					debug.moveTo(path.Path[i], path.Path[i + 1])
+						.lineTo(path.Path[i + 2], path.Path[i + 3])
 						.stroke({ color: 0xFFFFFF, alpha: 0.5, width: 4 });
 				}
 			}

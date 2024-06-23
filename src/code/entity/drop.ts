@@ -1,6 +1,6 @@
 import { PlayerId } from "rune-games-sdk";
 import { EvaluateDrop, GetDrop } from "../databases/dropdatabase";
-import { AddPlayerAbility, Destroy, GameState, NextEntityId } from "../game/game";
+import { AddPlayerAbility, AddScoreToPlayer, Destroy, GameState, NextEntityId } from "../game/game";
 import { Vector2 } from "../math/vector";
 import { Screen } from "../rendering/screen";
 import { EnemyEntityData } from "./enemy";
@@ -65,18 +65,40 @@ export module DropSystem {
 
 		let pickedUp = false;
 
+		let scoreGain = 0;
+
 		if (drop.healthRestore) {
-			player.health = Math.min(player.health + drop.healthRestore, player.maxHealth);
+			const newHealth = player.health + drop.healthRestore;
+			if (player.maxHealth < newHealth) {
+				scoreGain += Math.floor((newHealth - player.maxHealth) / 2);
+			}
+			player.health = Math.min(newHealth, player.maxHealth);
 			pickedUp = true;
 		}
+
 		if (drop.scoreValue) {
-			state.scores[player.id] = state.scores[player.id] + drop.scoreValue;
+			scoreGain += drop.scoreValue;
 			pickedUp = true;
+		}
+
+		if (drop.cooldownValue) {
+			var abilities = state.playerAbilities[player.id].abilities.filter(x => x.cooldown > 0);
+			if (abilities.length > 0) {
+				var active = Math.floor(Math.random() * abilities.length);
+				abilities[active].cooldown -= 500;
+			}
+			else {
+				scoreGain += Math.floor(drop.cooldownValue / 2);
+			}
 		}
 
 		if (drop.ability) {
 			const ability = GetAbilityData(drop.ability);
 			pickedUp = AddPlayerAbility(state, player.id as PlayerId, ability) || pickedUp;
+		}
+
+		if (scoreGain > 0) {
+			AddScoreToPlayer(player.id, scoreGain, entity.transform.position, state);
 		}
 
 		return pickedUp;

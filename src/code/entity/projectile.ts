@@ -5,7 +5,7 @@ import { Screen } from "../rendering/screen";
 import { WeaponProjectileData } from "../types/shipdata";
 import { EnemyEntityData, EnemySystem, isEnemy } from "./enemy";
 import { EntityData, ShipEntity } from "./entity";
-import { WeaponModifierData } from "./equip";
+import { EquipSystem, WeaponModifierData } from "./equip";
 import { PlayerEntityData, PlayerSystem, isPlayer } from "./player";
 import { Body } from "./transform";
 
@@ -14,6 +14,7 @@ export interface ProjectileData extends EntityData {
 	type: number;
 	team: TeamId;
 	owner: EntityId;
+	lastHit: EntityId;
 	damage: number;
 	life: number;
 	motion: ProjectileMotion;
@@ -88,6 +89,7 @@ export module ProjectileSystem {
 				scale: 1
 			},
 			owner: data.owner,
+			lastHit: 0,
 			team: data.team,
 			type: data.proj.type,
 			target: data.target,
@@ -126,7 +128,7 @@ export module ProjectileSystem {
 					return;
 				}
 
-				const theta = Vector2.angleBetween(targetPos, targetPos);
+				const theta = Vector2.angleBetween(targetPos, entityData.transform.position);
 				entityData.transform.angle = theta;
 			}
 		}
@@ -145,6 +147,9 @@ export module ProjectileSystem {
 	}
 
 	export function onCollide(projectile: ProjectileData, other: EntityData, state: GameState): void {
+		if (projectile.lastHit === other.id)
+			return;
+
 		if (isPlayer(other)) {
 			if (reflectProjectile(projectile, other)) {
 				projectile.team = TeamId.Player;
@@ -161,12 +166,52 @@ export module ProjectileSystem {
 		}
 
 		if (projectile.pierce && projectile.pierce > 0) {
+			console.log(`Pierce projectile hit ${other.id} -- last hit: ${projectile.lastHit}`);
 			projectile.pierce -= 1;
-			projectile.damage *= 0.6;
+			projectile.damage *= 0.5;
+			projectile.lastHit = other.id;
+
+			if (projectile.motion === ProjectileMotion.Tracked) {
+				//Find a new target
+				updateTarget(projectile, state);
+			}
 			return;
 		}
 
 		Destroy(state, projectile.id);
+	}
+
+	function updateTarget(projectile: ProjectileData, state: GameState) {
+		const minDist = { target: "", dist: Infinity };
+		for (const enemyId in state.enemies) {
+			if (enemyId === projectile.lastHit)
+				continue;
+			const enemyData = state.enemies[enemyId];
+			if (enemyData.health <= 0)
+				continue;
+
+			const dist = distanceTo(projectile.transform.position, enemyData.transform.position);
+			if (dist < minDist.dist && inRange(dist, 500)) {
+				minDist.target = enemyId;
+				minDist.dist = dist;
+			}
+		}
+		if (minDist.target && minDist.target !== projectile.target) {
+			projectile.target = minDist.target;
+		}
+		else {
+			projectile.motion = ProjectileMotion.Flat;
+			projectile.target = undefined;
+		}
+	}
+
+	function inRange(distance: number, range: number) {
+		return distance < (range * range);
+	}
+
+	function distanceTo(weaponPosition: V2, targetPosition: V2) {
+		const vec = Vector2.subtract(Vector2.clone(weaponPosition), targetPosition);
+		return Vector2.sqrMagnitude(vec);
 	}
 
 	function reflectProjectile(projectile: ProjectileData, entity: ShipEntity) {

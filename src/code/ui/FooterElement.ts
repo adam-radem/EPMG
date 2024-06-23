@@ -5,6 +5,7 @@ import { UIElement } from "./UIElement";
 
 export class FooterElement extends UIElement<Ability> {
 	cooldownMask: HTMLDivElement | undefined = undefined;
+	activeMask: HTMLDivElement | undefined = undefined;
 	onCooldown: boolean = false;
 
 	public setPosition(position: string) {
@@ -26,12 +27,30 @@ export class FooterElement extends UIElement<Ability> {
 				if (child.classList.contains('cooldown-mask')) {
 					this.cooldownMask = child as HTMLDivElement;
 				}
+				if (child.classList.contains('active-mask')) {
+					this.activeMask = child as HTMLDivElement;
+				}
 				if (child.classList.contains('icon')) {
 					(child.children[0] as HTMLImageElement).src = `/assets/${data.sprite}.png`;
 				}
 			}
 		}
+	}
 
+	public setCooldownState(currentTime: number, max: number) {
+		if (this.cooldownMask)
+			this.cooldownMask.style.height = (currentTime / max).toLocaleString(undefined, { style: 'percent', minimumFractionDigits: 0 });
+	}
+
+	public setActiveState(timeLeft: number) {
+		if (this.activeMask) {
+			if (timeLeft > 0) {
+				this.activeMask.style.visibility = 'visible';
+			}
+			else {
+				this.activeMask.style.visibility = 'hidden';
+			}
+		}
 	}
 
 	public buttonPressed(): void {
@@ -43,18 +62,16 @@ export class FooterElement extends UIElement<Ability> {
 
 		GameClient.sendAbility(this.data.id);
 
-		const cooldown = this.data.cooldown || AbilitySystem.DefaultAbilityCooldown;
-		this.abilityActivated(cooldown);
+		this.abilityActivated();
 	}
 
-	public abilityActivated(cooldown: number): void {
+	public abilityActivated(): void {
 		this.setEnabled(false);
 
 		this.onCooldown = true;
 		if (this.cooldownMask) {
 			this.cooldownMask.style.visibility = 'visible';
-			this.cooldownMask.style.transition = `height ${cooldown}ms`;
-			this.cooldownMask.style.height = 'inherit';
+			this.cooldownMask.style.height = '100%';
 		}
 
 		if (this.element)
@@ -66,8 +83,7 @@ export class FooterElement extends UIElement<Ability> {
 
 		this.setEnabled(true);
 		if (this.cooldownMask) {
-			this.cooldownMask.style.height = '0';
-			this.cooldownMask.style.transition = `height 0s`;
+			this.cooldownMask.style.height = '0%';
 		}
 
 		if (this.element && this.isVisible()) {

@@ -93,27 +93,34 @@
 						id="briefing-countdown">3</span></div>
 				<div id="briefing-status" class="briefing-header">Preparing...<span id="briefing-timeout"></span></div>
 			</div>
+			<!-- Game -->
+			 <div id="ui-game" class="ui-game">
+			 </div>
 		<!--Ability Buttons [Footer]-->
 			<div id="ui-footer">
 				<div class="ui-container">
 					<div id="ui_footer_btn_one" class="footer-button hidden"
 						onclick="Callbacks.FooterButtonPressed(event,1);">
 						<div class="cooldown-mask hidden"></div>
+						<div class="active-mask hidden"></div>
 						<span class="quantity">1</span>
 					</div>
 					<div id="ui_footer_btn_two" class="footer-button hidden"
 						onclick="Callbacks.FooterButtonPressed(event,2);">
 						<div class="cooldown-mask hidden"></div>
+						<div class="active-mask"></div>
 						<span class="quantity">2</span>
 					</div>
 					<div id="ui_footer_btn_three" class="footer-button hidden"
 						onclick="Callbacks.FooterButtonPressed(event,3);">
 						<div class="cooldown-mask hidden"></div>
+						<div class="active-mask"></div>
 						<span class="quantity">3</span>
 					</div>
 					<div id="ui_footer_btn_four" class="footer-button hidden"
 						onclick="Callbacks.FooterButtonPressed(event,4);">
 						<div class="cooldown-mask hidden"></div>
+						<div class="active-mask"></div>
 						<span class="quantity">4</span>
 					</div>
 				</div>
