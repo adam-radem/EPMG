@@ -14,13 +14,13 @@ export module EndGame {
 		if (state.level.progress > 2500) {
 			//defeat state
 			if (state.level.phase == Phase.Defeat) {
-				Rune.gameOver({
+				Dusk.gameOver({
 					everyone: "LOST"
 				});
 				return;
 			}
 
-			Rune.gameOver({
+			Dusk.gameOver({
 				players: state.scores
 			});
 		}

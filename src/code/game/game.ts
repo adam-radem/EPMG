@@ -1,4 +1,4 @@
-import { PlayerId } from "rune-games-sdk";
+import { PlayerId } from "dusk-games-sdk";
 import { PlayerEntityData } from "../entity/player";
 import { GlobalGameParameters } from "./static";
 import { EnemySystem, EnemyEntityData, Path } from "../entity/enemy";
@@ -35,7 +35,7 @@ export function NextEntityId(state: GameState) { return ++state.entityCount; };
 export function Destroy(state: GameState, entity: EntityId) { state.removed.push(entity); }
 export function UpdateGameState(state: GameState, allPlayerIds: PlayerId[]) {
 	const dt = 33;
-	state.time = Rune.gameTime();
+	state.time = Dusk.gameTime();
 
 	Phases.RunPhase(state, dt);
 }
@@ -110,6 +110,7 @@ export function CreatePlayer(state: GameState, playerId: string) {
 	};
 	state.players[playerId] = player;
 	state.scores[playerId] = 0;
+	state.playerCount++;
 
 	state.playerAbilities[playerId] = {
 		abilities: []
@@ -137,6 +138,7 @@ export function SetPlayerShip(state: GameState, playerId: string, shipID: number
 export function DeletePlayer(state: GameState, playerId: string) {
 	delete state.players[playerId];
 	delete state.scores[playerId];
+	state.playerCount--;
 }
 
 export function NewGameState(allPlayerIds: string[]): GameState {
@@ -152,6 +154,8 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		},
 		entityCount: 0,
 		time: 0,
+		pathCount: 0,
+		playerCount: 0,
 		scores: {},
 		playerAbilities: {},
 		players: {},
@@ -266,10 +270,12 @@ export interface GameState {
 	scores: Record<PlayerId, number>;
 
 	players: Record<PlayerId, PlayerEntityData>;
+	playerCount: number;
 	playerAbilities: Record<PlayerId, AbilitySet>;
 
 	enemies: Record<EntityId, EnemyEntityData>;
 	enemyPathData: Record<number, Path>;
+	pathCount: number;
 
 	drops: Record<EntityId, DropEntityData>;
 

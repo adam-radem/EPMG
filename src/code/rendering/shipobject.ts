@@ -64,16 +64,13 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 				this.debug.pivot.set(0.5, 0.5);
 				this.shipContainer.addChild(this.debug);
 
-				this.debug.beginFill(0xFFFFFF, 1);
-				this.debug.drawCircle(0, 0, 5);
+				this.debug.circle(0, 0, 5);
 
 				const angle = Math.PI / 2;
 				let fwd = Vector2.makeVector(Math.cos(angle), Math.sin(angle));
 				fwd = Vector2.normalize(fwd);
 				fwd = Vector2.multiplyScalar(fwd, entity.speed / 6);
-				this.debug.drawCircle(fwd.x, fwd.y, 5);
-
-				this.debug.endFill();
+				this.debug.circle(fwd.x, fwd.y, 5);
 
 				//Collider debug view
 				if (data.collider) {
@@ -165,7 +162,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 			this.updateHealthBar(ratio);
 			if (data.health <= 0) {
 				if (this.shipContainer && this.shipContainer.alpha > 0)
-					this.shipContainer.alpha -= Rune.msPerUpdate / 500;
+					this.shipContainer.alpha -= Dusk.msPerUpdate / 500;
 			}
 			else if (data.collider.disabledUntil && data.collider.disabledUntil > state.time) {
 				const blinkPeriod = 210;

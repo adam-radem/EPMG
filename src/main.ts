@@ -7,7 +7,7 @@ const client = new GameClient();
 
 Renderer.Init().then(() => {
 	client.registerInput();
-	Rune.initClient({
+	Dusk.initClient({
 		onChange: (params) => {
 			Renderer.updateLevelParameters(params.game);
 			client.updateState(params.game, params.allPlayerIds, params.yourPlayerId);

@@ -1,4 +1,4 @@
-import { PlayerId } from "rune-games-sdk";
+import { PlayerId } from "dusk-games-sdk";
 import { GameState } from "../game/game";
 import { PanelType } from "./UIController";
 

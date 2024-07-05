@@ -2,7 +2,7 @@ import { GameState } from "../game/game";
 
 import { abilities } from "../../data/abilitydata.json";
 import { Ability, AbilitySet } from "../databases/dropdatabase";
-import { PlayerId } from "rune-games-sdk";
+import { PlayerId } from "dusk-games-sdk";
 import { AuraSystem } from "./aura";
 
 

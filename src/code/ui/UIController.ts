@@ -1,6 +1,6 @@
 import { HeaderElement } from "./HeaderElement";
 import { FooterElement } from "./FooterElement";
-import { Player, PlayerId, Players } from "rune-games-sdk";
+import { Player, PlayerId, Players } from "dusk-games-sdk";
 import { GameState, ScoreData } from "../game/game";
 import { UIElement } from "./UIElement";
 import { UIPanel } from "./UIPanel";
@@ -157,7 +157,7 @@ export const UpdatePlayers = (state: GameState, players: PlayerId[], localPlayer
 	for (const pid of players) {
 		if (pid in CachedPlayerData)
 			continue;
-		CachedPlayerData[pid] = Rune.getPlayerInfo(pid);
+		CachedPlayerData[pid] = Dusk.getPlayerInfo(pid);
 	}
 
 	const orderedPlayers = [];

@@ -1,7 +1,7 @@
 import * as UI from './code/ui/UIController';
 import * as RenderFactory from "./code/rendering/renderFactory";
 import { App, Scene } from './code/rendering/renderer';
-import { PlayerId, Players } from "rune-games-sdk";
+import { PlayerId, Players } from "dusk-games-sdk";
 import { GameState, Phase } from "./code/game/game";
 import { Keyboard, KeyState } from "./code/input/keyboard";
 import { RenderEntity } from "./code/rendering/renderEntity";
@@ -25,7 +25,7 @@ export class GameClient {
 	renderEntities: EntityList = {};
 
 	public static sendAbility(abilityId: number) {
-		Rune.actions.activateAbility({ abilityId: abilityId });
+		Dusk.actions.activateAbility({ abilityId: abilityId });
 	}
 
 	public registerInput() {
@@ -34,7 +34,7 @@ export class GameClient {
 				return;
 
 			const projected = Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) });
-			Rune.actions.setTarget({ newTarget: projected });
+			Dusk.actions.setTarget({ newTarget: projected });
 			this.lastInputDirection = projected;
 
 			window.addEventListener('pointermove', cbMove);
@@ -58,7 +58,7 @@ export class GameClient {
 			if (!this.localPlayerId)
 				return;
 
-			Rune.actions.setTarget({ newTarget: Vector2.zero() });
+			Dusk.actions.setTarget({ newTarget: Vector2.zero() });
 			this.lastInputDirection = Vector2.zero();
 
 			window.removeEventListener('pointermove', cbMove);
@@ -69,7 +69,7 @@ export class GameClient {
 			if (!this.directionChanged || !this.control)
 				return;
 			const pos = this.lastInputDirection;
-			Rune.actions.setTarget({ newTarget: pos });
+			Dusk.actions.setTarget({ newTarget: pos });
 			this.directionChanged = false;
 		};
 
@@ -85,7 +85,7 @@ export class GameClient {
 	}
 
 	public shipSelected(idx: number) {
-		Rune.actions.setShip({ id: idx });
+		Dusk.actions.setShip({ id: idx });
 		(UI.GetCurrentPanel() as BriefingPanel).HideShipSelection();
 	}
 

@@ -1,4 +1,4 @@
-import { PlayerId } from "rune-games-sdk";
+import { PlayerId } from "dusk-games-sdk";
 import { EvaluateDrop, GetDrop } from "../databases/dropdatabase";
 import { AddPlayerAbility, AddScoreToPlayer, Destroy, GameState, NextEntityId } from "../game/game";
 import { Vector2 } from "../math/vector";

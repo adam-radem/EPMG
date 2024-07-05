@@ -1,4 +1,4 @@
-import { Player } from "rune-games-sdk";
+import { Player } from "dusk-games-sdk";
 import { UIElement } from "./UIElement";
 
 export class HeaderElement extends UIElement<Player> {

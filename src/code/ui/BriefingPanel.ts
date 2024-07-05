@@ -1,4 +1,4 @@
-import { PlayerId } from "rune-games-sdk";
+import { PlayerId } from "dusk-games-sdk";
 import { GetShipData } from "../databases/shipdatabase";
 import { GameState } from "../game/game";
 import { GlobalGameParameters } from "../game/static";
@@ -92,7 +92,7 @@ export class BriefingPanel implements UIPanel {
 			return;
 		}
 
-		let timeout = (GlobalGameParameters.MaxShoppingTime - (Rune.gameTime() - state.level.startTime)) / 1000;
+		let timeout = (GlobalGameParameters.MaxShoppingTime - (Dusk.gameTime() - state.level.startTime)) / 1000;
 		this.briefingStatus.innerHTML = timeout.toFixed(1);
 	}
 

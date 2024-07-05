@@ -32,7 +32,7 @@ let starfield: Starfield;
 
 let debug: Pixi.Graphics | undefined = undefined;
 
-if (GlobalGameParameters.Debug) {
+if (GlobalGameParameters.FPSCounter) {
 	const footer = document.getElementById('ui-footer');
 	const FPS = document.createElement('div');
 	FPS.id = "FPS";
@@ -40,8 +40,10 @@ if (GlobalGameParameters.Debug) {
 	footer?.appendChild(FPS);
 	if (FPS) {
 		let time = 0, frame = 0;
-		App.ticker.add((dt) => {
-			time += App.ticker.elapsedMS;
+		const ticker = new Pixi.Ticker();
+		ticker.stop();
+		ticker.add((dt) => {
+			time += ticker.elapsedMS;
 			++frame;
 			if (time > 1000) {
 				const avgFT = 1000 / frame;
@@ -51,6 +53,7 @@ if (GlobalGameParameters.Debug) {
 				frame = 0;
 			}
 		});
+		ticker.start();
 	}
 
 	const version = document.createElement('div');
@@ -145,7 +148,7 @@ export function updateLevelParameters(state: GameState) {
 			const path = state.enemyPathData[pid];
 			for (let i = 0; i < path.Path.length; i += 2) {
 				debug.circle(path.Path[i], path.Path[i + 1], 10)
-					.fill(0xFFFFFFFF)
+					.fill(0xFFFFFF, 1)
 					.stroke({ color: 0xFFFFFF, alpha: 0.6, width: 2 });
 				if (i + 1 < path.Path.length) {
 					debug.moveTo(path.Path[i], path.Path[i + 1])

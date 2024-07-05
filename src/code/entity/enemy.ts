@@ -207,10 +207,11 @@ export module EnemySystem {
 	}
 
 	export function CreatePath(state: GameState, points: V2[]): number {
-		const idx = Game.NextEntityId(state);
+		const idx = state.pathCount;
 		const path = EnemyPath.GetPath(points);
-		path.idx = idx;
+		path.idx = state.pathCount;
 		state.enemyPathData[idx] = path;
+		state.pathCount = idx + 1;
 		return idx;
 	}
 
@@ -221,11 +222,10 @@ export module EnemySystem {
 		const seed = Math.random();
 		const shortSeed = Math.floor(seed * 65535);
 
-		const paths = Object.keys(state.enemyPathData);
-		const path = Math.floor(seed * paths.length);
+		const path = Math.floor(seed * state.pathCount);
 
-		const playerCount = Object.keys(state.players).length;
-		const hp = (shipData.baseHealth || 50) * (playerCount * 0.9);
+		const playerCount = state.playerCount;
+		const hp = (shipData.baseHealth || 50) * (1 + Math.max(0, (playerCount-1) * 0.5));
 
 		const entityData: EnemyEntityData = {
 			id: id,
@@ -238,7 +238,7 @@ export module EnemySystem {
 			health: hp,
 			maxHealth: hp,
 			collider: (shipData.collider as CircBody),
-			path: parseInt(paths[path]),
+			path: path,
 			time: 0,
 			seed: shortSeed,
 			speed: shipData.speed!,

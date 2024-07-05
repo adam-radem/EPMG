@@ -8,6 +8,7 @@ interface TimelineEvent {
 	startTime: number;
 	interval: number;
 	count: number;
+	parallel: number | undefined;
 }
 
 interface SpawnEnemyEvent extends TimelineEvent {
@@ -84,7 +85,12 @@ export class LevelRunner {
 		if (isSpawnEnemyEvent(event)) {
 			const randomEnemyIdx = Math.floor(Math.random() * event.enemies.length);
 			const enemyId = event.enemies[randomEnemyIdx];
-			EnemySystem.CreateEnemy(Ships.Enemies[enemyId], state);
+			let parallelCount = event.parallel || 1;
+			if(state.playerCount >= 3){
+				parallelCount += 1;
+			}
+			for(let i = 0; i != parallelCount; ++i)
+				EnemySystem.CreateEnemy(Ships.Enemies[enemyId], state);
 		}
 	}
 

@@ -6,7 +6,7 @@ import { PlayerSystem } from "../entity/player";
 export module Briefing {
 	export function Enter(state: GameState) {
 		state.level.progress = 0;
-		state.level.startTime = Rune.gameTime();
+		state.level.startTime = Dusk.gameTime();
 		
 		state.level.ready = 1;
 		for (var pid in state.players) {
@@ -23,7 +23,7 @@ export module Briefing {
 	}
 
 	export function Run(state: GameState, dt: number) {
-		if ((Rune.gameTime() - state.level.startTime) > GlobalGameParameters.MaxShoppingTime) {
+		if ((Dusk.gameTime() - state.level.startTime) > GlobalGameParameters.MaxShoppingTime) {
 			for (const pid in state.players) {
 				const playerData = state.players[pid];
 				if (playerData.shipData === 0) {
