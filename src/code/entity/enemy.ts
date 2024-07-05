@@ -112,14 +112,13 @@ export function isEnemy(object: EntityData): object is EnemyEntityData {
 }
 
 function ResetPath(entityData: EnemyEntityData, state: GameState) {
+	entityData.time = 0;
+	
 	const newSeed = Math.random();
 	entityData.seed = Math.floor(newSeed * 65535);
 
-	const paths = Object.keys(state.enemyPathData);
-	const path = Math.floor(newSeed * paths.length);
-
-	entityData.path = parseInt(paths[path]);
-	entityData.time = 0;
+	const pathIdx = Math.floor(newSeed * state.pathCount);
+	entityData.path = pathIdx;
 }
 
 export module EnemySystem {

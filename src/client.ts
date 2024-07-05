@@ -23,6 +23,7 @@ export class GameClient {
 	directionChanged: boolean = false;
 	lastInputDirection: V2 = Vector2.zero();
 	renderEntities: EntityList = {};
+	deletedEntities: EntityId[] = [];
 
 	public static sendAbility(abilityId: number) {
 		Dusk.actions.activateAbility({ abilityId: abilityId });
@@ -157,66 +158,64 @@ export class GameClient {
 
 		//Update UI
 		UI.UpdatePlayerScores(state.scores);
-		
+
 		//Score drops
 		UI.UpdateScoreDrops(state.scoreDrops, state);
 	}
 
 	private syncEntityList(state: GameState): void {
-		const removedEntities = Object.keys(this.renderEntities);
-
-		const players = Object.keys(state.players);
-		for (const playerId of players) {
-			if (removeFromArray(playerId, removedEntities))
+		for (const playerId in state.players) {
+			if (playerId in this.renderEntities)
 				continue;
 			//Player does not exist, so create a new ship entity for it 
 			const ship = RenderFactory.CreateShip(playerId, state.players[playerId]);
 			this.renderEntities[playerId] = ship;
 		}
 
-		const enemies = Object.keys(state.enemies);
-		for (const enemyId of enemies) {
-			if (removeFromArray(enemyId, removedEntities))
+		for (const enemyId in state.enemies) {
+			if (enemyId in this.renderEntities)
 				continue;
 
 			const ship = RenderFactory.CreateShip(enemyId, state.enemies[enemyId]);
 			this.renderEntities[enemyId] = ship;
 		}
 
-		const equipment = Object.keys(state.equipment);
-		for (const equipmentId of equipment) {
-			if (removeFromArray(equipmentId, removedEntities))
+		for (const equipmentId in state.equipment) {
+			if (equipmentId in this.renderEntities)
 				continue;
 
 			const equipment = RenderFactory.CreateEquipment(equipmentId, state.equipment[equipmentId]);
 			this.renderEntities[equipmentId] = equipment;
 		}
 
-		const projectiles = Object.keys(state.projectiles);
-		for (const projectileId of projectiles) {
-			if (removeFromArray(projectileId, removedEntities))
+		for (const projectileId in state.projectiles) {
+			if (projectileId in this.renderEntities)
 				continue;
 
 			const projectile = RenderFactory.CreateProjectile(projectileId, state.projectiles[projectileId]);
 			this.renderEntities[projectileId] = projectile;
 		}
 
-		for (const entityId of removedEntities) {
-			if (!entityId)
+		for (const id in this.renderEntities) {
+			if (id in state.players)
 				continue;
+			if (id in state.enemies)
+				continue;
+			if (id in state.equipment)
+				continue;
+			if (id in state.projectiles)
+				continue;
+
+			this.deletedEntities.push(id);
+		}
+
+		for (const entityId of this.deletedEntities) {
 			const entity = this.renderEntities[entityId];
 			if (entity)
 				entity.onDestroy?.();
 			delete this.renderEntities[entityId];
 		}
 
-		function removeFromArray(id: string, arr: string[]) {
-			const idx = arr.indexOf(id);
-			if (idx >= 0) {
-				delete arr[idx];
-				return true;
-			}
-			return false;
-		}
+		this.deletedEntities.length = 0;
 	}
 }

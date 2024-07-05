@@ -34,10 +34,9 @@ export class LevelRunner {
 		//No more events! Level is complete
 		if (eventIdx >= timeline.events.length) {
 			//Wait for enemies to be defeated.
-			if (Object.keys(state.enemies).length > 0) {
+			for(let _ in state.enemies)
 				return;
-			}
-
+			
 			state.level.progress += dt;
 			if (state.level.progress < 1000) {
 				return;
