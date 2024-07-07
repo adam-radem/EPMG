@@ -2,29 +2,16 @@
 	"ships": {
 		"empty": {
 			"type": 0,
-			"sprite": null,
-			"equipPositions": {
-				"left": {
-					"x": 0,
-					"y": 0
-				},
-				"right": {
-					"x": 0,
-					"y": 0
-				},
-				"front": {
-					"x": 0,
-					"y": 0
-				},
-				"back": {
-					"x": 0,
-					"y": 0
-				}
-			}
+			"sprites": []
 		},
-		"playerShipOneBlue": {
-			"type": 4,
-			"sprite": "playerShip1_blue",
+		"playerShipOne": {
+			"type": 1,
+			"sprites": [
+				"playerShip1_blue",
+				"playerShip1_green",
+				"playerShip1_orange",
+				"playerShip1_red"
+			],
 			"speed": 400,
 			"baseHealth": 1000,
 			"collider": {
@@ -34,186 +21,126 @@
 				},
 				"radius": 30
 			},
-			"defaultWeapon": 2,
-			"defaultAbility": 1
+			"weapon": 2,
+			"ability": 1
 		},
-		"playerShipOneGreen": {
+		"playerShipTwo": {
+			"type": 2,
+			"sprites": [
+				"playerShip2_blue",
+				"playerShip2_green",
+				"playerShip2_orange",
+				"playerShip2_red"
+			],
+			"speed": 480,
+			"baseHealth": 850,
+			"collider": {
+				"center": {
+					"x": 0,
+					"y": 0
+				},
+				"radius": 30
+			},
+			"weapon": 1,
+			"ability": 2
+		},
+		"playerShipThree": {
+			"type": 3,
+			"sprites": [
+				"playerShip3_blue",
+				"playerShip3_green",
+				"playerShip3_orange",
+				"playerShip3_red"
+			],
+			"speed": 540,
+			"baseHealth": 700,
+			"collider": {
+				"center": {
+					"x": 0,
+					"y": 0
+				},
+				"radius": 30
+			},
+			"weapon": 3,
+			"ability": 3
+		},
+		"playerShipFour": {
+			"type": 4
+		},
+		"basicEnemy": {
 			"type": 5,
-			"sprite": "playerShip1_green",
-			"speed": 400,
-			"baseHealth": 1000,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 2,
-			"defaultAbility": 1
-		},
-		"playerShipOneOrange": {
-			"type": 6,
-			"sprite": "playerShip1_orange",
-			"speed": 400,
-			"baseHealth": 1000,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 2,
-			"defaultAbility": 1
-		},
-		"playerShipOneRed": {
-			"type": 7,
-			"sprite": "playerShip1_red",
-			"speed": 400,
-			"baseHealth": 1000,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 2,
-			"defaultAbility": 1
-		},
-		"playerShipTwoBlue": {
-			"type": 8,
-			"sprite": "playerShip2_blue",
-			"speed": 480,
-			"baseHealth": 850,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 1,
-			"defaultAbility": 2
-		},
-		"playerShipTwoGreen": {
-			"type": 9,
-			"sprite": "playerShip2_green",
-			"speed": 480,
-			"baseHealth": 850,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 1,
-			"defaultAbility": 2
-		},
-		"playerShipTwoOrange": {
-			"type": 10,
-			"sprite": "playerShip2_orange",
-			"speed": 480,
-			"baseHealth": 850,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 1,
-			"defaultAbility": 2
-		},
-		"playerShipTwoRed": {
-			"type": 11,
-			"sprite": "playerShip2_red",
-			"speed": 480,
-			"baseHealth": 850,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 1,
-			"defaultAbility": 2
-		},
-		"playerShipThreeBlue": {
-			"type": 12,
-			"sprite": "playerShip3_blue",
-			"speed": 540,
-			"baseHealth": 700,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 3,
-			"defaultAbility": 3
-		},
-		"playerShipThreeGreen": {
-			"type": 13,
-			"sprite": "playerShip3_green",
-			"speed": 540,
-			"baseHealth": 700,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 3,
-			"defaultAbility": 2
-		},
-		"playerShipThreeOrange": {
-			"type": 14,
-			"sprite": "playerShip3_orange",
-			"speed": 540,
-			"baseHealth": 700,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 3,
-			"defaultAbility": 2
-		},
-		"playerShipThreeRed": {
-			"type": 15,
-			"sprite": "playerShip3_red",
-			"speed": 540,
-			"baseHealth": 700,
-			"collider": {
-				"center": {
-					"x": 0,
-					"y": 0
-				},
-				"radius": 30
-			},
-			"defaultWeapon": 3,
-			"defaultAbility": 2
-		},
-		"enemyOneBlack": {
-			"type": 16,
-			"sprite": "enemyBlack1",
+			"sprites": [
+				"enemyBlack1"
+			],
 			"speed": 360,
 			"baseHealth": 100,
-			"defaultWeapon": 100,
+			"weapon": 100,
+			"enemyMotion": 0,
 			"collider": {
 				"center": {
 					"x": 0,
 					"y": 0
 				},
 				"radius": 30
+			}
+		},
+		"ufoEnemy": {
+			"type": 6,
+			"sprites": [
+				"ufoBlue"
+			],
+			"speed": 340,
+			"baseHealth": 60,
+			"weapon": 101,
+			"enemyMotion": 1,
+			"scoreValue": 10,
+			"collider": {
+				"center": {
+					"x": 0,
+					"y": 0
+				},
+				"radius": 30
+			}
+		},
+		"bigAsteroid": {
+			"type": 7,
+			"sprites": [
+				"meteorBrown_big1",
+				"meteorBrown_big2",
+				"meteorBrown_big3",
+				"meteorBrown_big4"
+			],
+			"speed": 100,
+			"baseHealth": 60,
+			"weapon": 0,
+			"enemyMotion": 2,
+			"scoreValue": 5,
+			"collider": {
+				"center": {
+					"x": 0,
+					"y": 0
+				},
+				"radius": 30
+			},
+			"enemyDeath": 1
+		},
+		"smallAsteroid": {
+			"type": 8,
+			"sprites": [
+				"meteorBrown_med1",
+				"meteorBrown_med3"
+			],
+			"speed": 120,
+			"baseHealth": 20,
+			"weapon": 0,
+			"enemyMotion": 3,
+			"scoreValue": 10,
+			"collider": {
+				"center": {
+					"x": 0,
+					"y": 0
+				},
+				"radius": 20
 			}
 		}
 	}

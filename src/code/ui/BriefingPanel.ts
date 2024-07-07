@@ -29,8 +29,8 @@ export class BriefingPanel implements UIPanel {
 
 		const ids = ['ship_one', 'ship_two', 'ship_three'];
 		for (let i = 0; i < ids.length; ++i) {
-			const data = GetShipData(Ships.Players[i] + idx) as ShipData;
-			const sprite = data.sprite;
+			const data = GetShipData(Ships.Players[i]) as ShipData;
+			const sprite = data.sprites[idx];
 			if (sprite) {
 				this.setShipSprite(ids[i], data, sprite);
 			}
@@ -70,7 +70,7 @@ export class BriefingPanel implements UIPanel {
 					child.style.setProperty('--ship-stat-value', `${speedValue}%`);
 				}
 				else if (child.classList.contains('ship-damage')) {
-					const weapon = GetEquipmentData(data.defaultWeapon).weapon;
+					const weapon = GetEquipmentData(data.weapon).weapon;
 					const damageValue = 100 * (weapon?.projectile?.damage || 0) / 50;
 					child.style.setProperty('--ship-stat-value', `${damageValue}%`);
 				}

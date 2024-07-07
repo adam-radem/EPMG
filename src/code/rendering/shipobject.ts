@@ -11,6 +11,7 @@ import { GetEquipmentData } from "../databases/equipdatabase.ts";
 import { Vector2 } from "../math/vector.ts";
 
 export class ShipObject implements RenderEntity<ShipEntity> {
+	parentContainer: Pixi.Container;
 	shipContainer: Pixi.Container;
 	shipData: ShipEquipment;
 	debug: Pixi.Graphics | undefined;
@@ -21,18 +22,25 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 	public constructor(id: EntityId, data: ShipEntity) {
 		this.shipData = Ships.Empty;
 
+		this.parentContainer = new Pixi.Container();
+		this.parentContainer.pivot.set(0.5, 0.5);
+		this.parentContainer.x = data.transform.position.x;
+		this.parentContainer.y = data.transform.position.y;
+
 		this.shipContainer = new Pixi.Container();
 		this.shipContainer.sortableChildren = true;
 		this.shipContainer.pivot.set(0.5, 0.5);
 		this.shipContainer.angle = data.transform.angle;
-		this.shipContainer.x = data.transform.position.x;
-		this.shipContainer.y = data.transform.position.y;
+		// this.shipContainer.x = data.transform.position.x;
+		// this.shipContainer.y = data.transform.position.y;
 
 		const sortId = -id;
 		if (!isNaN(sortId))
 			this.shipContainer.zIndex = sortId;
 
-		Scene.addChild(this.shipContainer);
+		this.parentContainer.addChild(this.shipContainer);
+
+		Scene.addChild(this.parentContainer);
 
 		this.setShipData(data);
 	}
@@ -51,7 +59,8 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 			this.shipData = shipData;
 			const data = ShipDatabase.GetShipData(GetShipType(shipData));
 			if (data) {
-				this.updateSprite(data.sprite);
+				var spriteIdx = (entity.shipData >> 4) & 0xF;
+				this.updateSprite(data.sprites![spriteIdx]);
 			}
 
 			//debug: add collider visualization
@@ -92,31 +101,31 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 				}
 
 				//Weapon Debug View
-				const leftWeapon = GetSlot(shipData, ShipSlot.Left);
-				if (leftWeapon) {
-					const weaponData = GetEquipmentData(leftWeapon);
-					if (weaponData && weaponData.weapon) {
-						// this.debug.beginFill(0xFF00FF, 0);
-						this.debug.lineStyle(2, 0xFF00FF, 0.7);
-						this.debug.drawCircle(weaponData.anchor.x, weaponData.anchor.y, weaponData.weapon.range);
-						this.debug.endFill();
-					}
-				}
-				const rightWeapon = GetSlot(shipData, ShipSlot.Right);
-				if (rightWeapon) {
-					const weaponData = GetEquipmentData(rightWeapon);
-					if (weaponData && weaponData.weapon) {
-						// this.debug.beginFill(0xFFFF00, 0.05);
-						this.debug.lineStyle(2, 0xFFFF00, 0.7);
-						this.debug.drawCircle(weaponData.anchor.x, weaponData.anchor.y, weaponData.weapon.range);
-						this.debug.endFill();
-					}
-				}
+				// const leftWeapon = GetSlot(shipData, ShipSlot.Left);
+				// if (leftWeapon) {
+				// 	const weaponData = GetEquipmentData(leftWeapon);
+				// 	if (weaponData && weaponData.weapon) {
+				// 		// this.debug.beginFill(0xFF00FF, 0);
+				// 		this.debug.lineStyle(2, 0xFF00FF, 0.7);
+				// 		this.debug.drawCircle(weaponData.anchor.x, weaponData.anchor.y, weaponData.weapon.range);
+				// 		this.debug.endFill();
+				// 	}
+				// }
+				// const rightWeapon = GetSlot(shipData, ShipSlot.Right);
+				// if (rightWeapon) {
+				// 	const weaponData = GetEquipmentData(rightWeapon);
+				// 	if (weaponData && weaponData.weapon) {
+				// 		// this.debug.beginFill(0xFFFF00, 0.05);
+				// 		this.debug.lineStyle(2, 0xFFFF00, 0.7);
+				// 		this.debug.drawCircle(weaponData.anchor.x, weaponData.anchor.y, weaponData.weapon.range);
+				// 		this.debug.endFill();
+				// 	}
+				// }
 			}
 
 			if (entity.maxHealth > 0) {
 				this.healthBar = new HealthBar();
-				this.shipContainer.addChild(this.healthBar.Container);
+				this.parentContainer.addChild(this.healthBar.Container);
 			}
 		}
 	}
@@ -137,9 +146,9 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 	}
 
 	public setPosition(x: number, y: number) {
-		if (this.shipContainer) {
-			this.shipContainer.x = x;
-			this.shipContainer.y = y;
+		if (this.parentContainer) {
+			this.parentContainer.x = x;
+			this.parentContainer.y = y;
 		}
 	}
 
@@ -161,8 +170,8 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 			const ratio = data.health / data.maxHealth;
 			this.updateHealthBar(ratio);
 			if (data.health <= 0) {
-				if (this.shipContainer && this.shipContainer.alpha > 0)
-					this.shipContainer.alpha -= Dusk.msPerUpdate / 500;
+				if (this.parentContainer && this.parentContainer.alpha > 0)
+					this.parentContainer.alpha -= Dusk.msPerUpdate / 500;
 			}
 			else if (data.collider.disabledUntil && data.collider.disabledUntil > state.time) {
 				const blinkPeriod = 210;
@@ -186,7 +195,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 	public onDestroy() {
 		if (this.debug)
 			this.debug.destroy();
-		if (this.shipContainer)
-			this.shipContainer.destroy();
+		if (this.parentContainer)
+			this.parentContainer.destroy();
 	}
 }

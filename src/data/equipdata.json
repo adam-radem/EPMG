@@ -96,6 +96,28 @@
 					"spread": 4
 				}
 			}
+		},
+		"ufoLaser": {
+			"type": 101,
+			"sprite": null,
+			"slot": 4,
+			"anchor": {
+				"x": 0,
+				"y": 0
+			},
+			"weapon": {
+				"cooldown": 1000,
+				"range": 4000,
+				"special": 0,
+				"projectile": {
+					"type": 100,
+					"speed": 500,
+					"damage": 60,
+					"motion": 0,
+					"life": 2500,
+					"spread": 0
+				}
+			}
 		}
 	}
 }

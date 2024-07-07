@@ -120,7 +120,7 @@ export function CreatePlayer(state: GameState, playerId: string) {
 
 export function SetPlayerShip(state: GameState, playerId: string, shipID: number) {
 	const playerData = state.players[playerId];
-	const ship = Ships.Players[shipID] + playerData.idx;
+	const ship = Ships.Players[shipID] + (playerData.idx << 4);
 	const shipData = GetShipData(GetShipType(ship));
 
 	playerData.shipData = ship;
@@ -131,8 +131,8 @@ export function SetPlayerShip(state: GameState, playerId: string, shipID: number
 	console.log(`Player ${playerData.idx} has chosen ${ship}`);
 	state.players[playerId] = playerData;
 
-	AddInitialPlayerAbility(state, playerId, shipData.defaultAbility || 0);
-	EquipPlayer(state, playerId, shipData.defaultWeapon!, ShipSlot.Front);
+	AddInitialPlayerAbility(state, playerId, shipData.ability || 0);
+	EquipPlayer(state, playerId, shipData.weapon!, ShipSlot.Front);
 }
 
 export function DeletePlayer(state: GameState, playerId: string) {
@@ -176,10 +176,9 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		++cnt;
 	}
 
-	for (var i = 0; i != 4; ++i) {
+	for (var i = 0; i != 3; ++i) {
 		CreateRandomPath(state);
 	}
-	CreateAsteroidPaths(state);
 
 	console.log(`Game has been initialized with ${allPlayerIds.length} players`);
 	return state;
@@ -209,41 +208,6 @@ function CreateRandomPath(state: GameState) {
 	}
 
 	EnemySystem.CreatePath(state, pathPoints);
-}
-
-function CreateAsteroidPaths(state: GameState) {
-	const yStart = -100;
-	const yMid = Screen.PlayableArea.y / 2;
-	const yEnd = Screen.PlayableArea.y + 100;
-
-	//2 straight quadrant paths
-	const quadScreenX = Screen.PlayableArea.x / 4;
-	const halfScreenX = Screen.PlayableArea.x / 2;
-	for (let i = 0; i < 2; ++i) {
-		const xStart = (halfScreenX * i) + Math.random() * quadScreenX + (quadScreenX * i);
-		const xEnd = (halfScreenX * i) + Math.random() * quadScreenX + (quadScreenX * i);
-
-		EnemySystem.CreatePath(state, [{ x: xStart, y: yStart }, { x: xEnd, y: yEnd }]);
-	}
-
-	//4 diagonal paths Q1 -> Q3, Q2-> Q4, Q3 -> Q1, Q4 -> Q2 
-	for (let i = 0; i < 4; ++i) {
-		const iEnd = (i + 2) % 4;
-
-		const xStart = (quadScreenX * i) + Math.random() * quadScreenX / 2 + quadScreenX / 3;
-		const xEnd = (quadScreenX * iEnd) + Math.random() * quadScreenX / 2 + quadScreenX / 3;
-
-		EnemySystem.CreatePath(state, [{ x: xStart, y: yStart }, { x: xEnd, y: yEnd }]);
-	}
-
-	//3 curved paths Q1 -> Q1, etc
-	for (let i = 0; i < 3; ++i) {
-		const xStart = (quadScreenX * i) + Math.random() * quadScreenX + (quadScreenX / 3 * i);
-		const xEnd = (quadScreenX * i) + Math.random() * quadScreenX + (quadScreenX / 3 * i);
-		const xMid = quadScreenX / 2 + Math.random() * quadScreenX * 3;
-
-		EnemySystem.CreatePath(state, [{ x: xStart, y: yStart }, { x: xMid, y: yMid }, { x: xEnd, y: yEnd }]);
-	}
 }
 
 export interface GameLevelState {

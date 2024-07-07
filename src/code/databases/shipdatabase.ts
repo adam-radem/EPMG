@@ -7,5 +7,5 @@ for (const [, v] of Object.entries(ships)) {
 }
 
 export function GetShipData(type: number): Partial<ShipData> {
-	return map[type];
+	return map[type & 0xF];
 }

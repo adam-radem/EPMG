@@ -7,6 +7,7 @@ export interface EntityData {
 	id: EntityId,
 	transform: TransformData;
 	speed: number;
+	vel?: number;
 }
 
 export interface ShipEntity extends EntityData {

@@ -13,6 +13,7 @@ import { GetEquipmentData } from "../databases/equipdatabase";
 import { EquipSystem } from "./equip";
 import { DropSystem } from "./drop";
 import { AuraSystem } from "../aura/aura";
+import { Screen } from "../rendering/screen";
 
 export interface Path {
 	Path: number[];
@@ -102,9 +103,22 @@ export class EnemyPath {
 
 export interface EnemyEntityData extends ShipEntity {
 	collider: CircBody;
+	motion: number;
 	path: number;
 	time: number;
 	seed: number;
+}
+
+enum EnemyMotion {
+	Path = 0,
+	Horizontal = 1,
+	Vertical = 2,
+	Forward = 3
+}
+
+enum EnemyDeathEffect {
+	None = 0,
+	Asteroid = 1
 }
 
 export function isEnemy(object: EntityData): object is EnemyEntityData {
@@ -113,7 +127,7 @@ export function isEnemy(object: EntityData): object is EnemyEntityData {
 
 function ResetPath(entityData: EnemyEntityData, state: GameState) {
 	entityData.time = 0;
-	
+
 	const newSeed = Math.random();
 	entityData.seed = Math.floor(newSeed * 65535);
 
@@ -133,6 +147,30 @@ export module EnemySystem {
 		const speed = entityData.speed;
 		entityData.time += dt * speed;
 
+		switch (entityData.motion) {
+			case EnemyMotion.Path:
+				updatePath(entityData, state, dt);
+				break;
+			case EnemyMotion.Horizontal:
+				if (entityData.seed < (65535 / 2))
+					moveVector(entityData, state, dt, { x: -1, y: 0 });
+				else
+					moveVector(entityData, state, dt, { x: 1, y: 0 });
+				moveAngle(entityData, state, dt);
+				break;
+			case EnemyMotion.Vertical:
+				moveVector(entityData, state, dt, { x: 0, y: 1 });
+				moveAngle(entityData, state, dt);
+				break;
+			case EnemyMotion.Forward:
+				const angle = entityData.transform.angle;
+				const fwd = Vector2.makeVector(Math.cos(angle), Math.sin(angle));
+				moveVector(entityData, state, dt, Vector2.normalize(fwd));
+				break;
+		}
+	}
+
+	function updatePath(entityData: EnemyEntityData, state: GameState, dt: number): void {
 		let distance = entityData.time / 1000;
 
 		const path = state.enemyPathData[entityData.path];
@@ -150,6 +188,22 @@ export module EnemySystem {
 
 		entityData.transform.position = pos.Position;
 		entityData.transform.angle = pos.Heading;
+	}
+
+	function moveAngle(entityData: EnemyEntityData, state: GameState, dt: number): void {
+		const ang = entityData.time / 2000 + entityData.seed / 65535;
+		entityData.transform.angle = ang;
+	}
+
+	function moveVector(entityData: EnemyEntityData, state: GameState, dt: number, vector: V2): void {
+		var dist = Vector2.multiplyScalar(vector, (entityData.speed * dt) / 1000);
+		var newPos = Vector2.addVector(entityData.transform.position, dist);
+		entityData.transform.position = newPos;
+
+		var bounds = Screen.PlayableArea;
+		if (newPos.x < -50 || newPos.y < -50 || (newPos.x - 50) > bounds.x || (newPos.y - 50) > bounds.y) {
+			Game.Destroy(state, entityData.id);
+		}
 	}
 
 	export function onTakeDamage(entityData: EnemyEntityData, src: EntityData, damage: number, state: GameState) {
@@ -196,8 +250,32 @@ export module EnemySystem {
 				DropSystem.tryCreateDrop(entityData, state);
 			}
 
+			const shipData = GetShipData(entityData.shipData);
+			if (shipData.enemyDeath) {
+				ApplyDeathEffect(entityData, shipData.enemyDeath, state);
+			}
+
 			Game.Destroy(state, entityData.id);
 			return;
+		}
+	}
+
+	function ApplyDeathEffect(entityData: EnemyEntityData, effect: EnemyDeathEffect, state: GameState) {
+		switch (effect) {
+			case EnemyDeathEffect.None:
+				return;
+			case EnemyDeathEffect.Asteroid:
+				const spawnPos = entityData.transform.position;
+				const count = Math.ceil((entityData.seed / 65535) * 2);
+				const angDiff = Math.PI / (count*4);
+				const baseAng = (Math.PI / 2) + ((angDiff * count) / 2);
+
+				for (let i = 0; i <= count; ++i) {
+					const newEnemy = CreateEnemy(8, state);
+					newEnemy.transform.angle = baseAng - (angDiff * i);//i * Math.PI/(count*2) + Math.PI/4;// 180 + (i * (30 / count));
+					newEnemy.transform.position = spawnPos;
+				}
+				break;
 		}
 	}
 
@@ -220,33 +298,58 @@ export module EnemySystem {
 		const id = Game.NextEntityId(state);
 		const seed = Math.random();
 		const shortSeed = Math.floor(seed * 65535);
+		let spriteIdx = 0;
+		if (shipData.sprites)
+			spriteIdx = Math.floor(seed * shipData.sprites.length);
+		console.log(`Enemy sprite idx: ${spriteIdx}`);
 
 		const path = Math.floor(seed * state.pathCount);
 
 		const playerCount = state.playerCount;
-		const hp = (shipData.baseHealth || 50) * (1 + Math.max(0, (playerCount-1) * 0.5));
+		const hp = (shipData.baseHealth || 50) * (1 + Math.max(0, (playerCount - 1) * 0.5));
+
+		const bounds = Screen.PlayableArea;
+		const startPos: V2 = { x: 0, y: 0 };
+		let startAngle = 270;
+		const motionType = shipData.enemyMotion ?? EnemyMotion.Path;
+		if (motionType == EnemyMotion.Horizontal) {
+			//Spawn in the top 3rd of the screen
+			if (seed < 0.5) {
+				startPos.x = bounds.x;
+				startAngle = 90;
+			}
+			startPos.y = 100 + (seed * (bounds.y / 3));
+		}
+		else if (motionType == EnemyMotion.Vertical) {
+			startPos.x = 50 + (seed * (bounds.x - 100));
+			startPos.y = 0;
+		}
 
 		const entityData: EnemyEntityData = {
 			id: id,
 			transform: {
-				position: { x: 0, y: 0 },
-				angle: 3 * Math.PI / 2,
+				position: startPos,
+				angle: startAngle,
 				scale: 1,
 			},
-			shipData: ship,
+			shipData: ship + (spriteIdx << 4),
 			health: hp,
 			maxHealth: hp,
 			collider: (shipData.collider as CircBody),
 			path: path,
 			time: 0,
 			seed: shortSeed,
+			motion: motionType,
 			speed: shipData.speed!,
 			auras: []
 		};
 
 		state.enemies[entityData.id] = entityData;
+		if (shipData.weapon) {
+			const equipData = GetEquipmentData(shipData.weapon!);
+			EquipSystem.CreateEquipment(equipData, id, state);
+		}
 
-		const equipData = GetEquipmentData(shipData.defaultWeapon!);
-		EquipSystem.CreateEquipment(equipData, id, state);
+		return entityData;
 	}
 }

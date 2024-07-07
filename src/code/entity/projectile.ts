@@ -62,7 +62,7 @@ export module ProjectileSystem {
 			return;
 
 		const angle = (targetEntity.transform.angle + 90) * Math.PI / 180;
-		const fwd = Vector2.multiplyScalar(Vector2.makeVector(Math.cos(angle), Math.sin(angle)), targetEntity.speed / 6);
+		const fwd = Vector2.multiplyScalar(Vector2.makeVector(Math.cos(angle), Math.sin(angle)), targetEntity.vel ?? 1);
 		const targetPos = Vector2.addVector(targetEntity.transform.position, fwd);
 
 		const numFired = data.mods?.spreadMod || 1;

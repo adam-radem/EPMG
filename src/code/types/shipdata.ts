@@ -6,18 +6,15 @@ import { V2 } from "../math/vector";
 export { };
 export interface ShipData {
 	type: number;
-	sprite: SpriteID;
+	sprites: SpriteID[];
 	speed: number;
 	baseHealth: number;
-	defaultWeapon: number;
-	defaultAbility?: number;
+	weapon: number;
+	ability?: number;
+	enemyMotion?: number;
+	scoreValue?: number;
+	enemyDeath?: number;
 	collider: CircBody | RectBody | Body;
-	equipPositions: {
-		left: V2;
-		right: V2;
-		front: V2;
-		back: V2;
-	};
 	drops: DropTable | undefined;
 }
 
@@ -63,8 +60,8 @@ export enum ShipSlot {
 export class Ships {
 	static Empty: ShipEquipment = 0;
 	static Colors: number[] = [0, 1, 2, 3];
-	static Players: ShipEquipment[] = [4, 8, 12];
-	static Enemies: ShipEquipment[] = [16, 20, 24, 28, 32];
+	static Players: ShipEquipment[] = [1, 2, 3 /*4*/];
+	static Enemies: ShipEquipment[] = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
 	static RandomColor(): number {
 		return Ships.Colors[Math.floor(Math.random() * Ships.Colors.length)];

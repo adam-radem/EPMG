@@ -6,6 +6,7 @@ import { AddScoreToPlayer, GameState } from "../game/game";
 import { EnemyEntityData, isEnemy } from "./enemy";
 import { GlobalGameParameters } from "../game/static";
 import { AuraSystem } from "../aura/aura";
+import { GetShipData } from "../databases/shipdatabase";
 
 export interface PlayerEntityData extends ShipEntity {
 	target: V2;
@@ -46,8 +47,10 @@ export module PlayerSystem {
 		vel = Vector2.multiplyScalar(vel, shipSpeed * dt / 1000);
 		if (Vector2.sqrMagnitude(diffVector) <= Vector2.sqrMagnitude(vel)) {
 			data.transform.position = targetVector;
+			data.vel = Vector2.magnitude(diffVector);
 			return;
 		}
+		data.vel = Vector2.magnitude(vel);
 		const theta = Math.atan2(vel.y, vel.x);
 		data.transform.angle = Math.floor(theta * (180 / Math.PI) - 90);
 
@@ -119,7 +122,8 @@ export module PlayerSystem {
 	}
 
 	export function enemyKilled(playerId: EntityId, enemyEntity: EnemyEntityData, state: GameState) {
-		const scoreGain = Math.floor(enemyEntity.maxHealth / 2);
+		const shipData = GetShipData(enemyEntity.shipData);
+		const scoreGain = Math.floor(enemyEntity.maxHealth / 2) * (shipData.scoreValue ?? 1);
 		AddScoreToPlayer(playerId, scoreGain, enemyEntity.transform.position, state);
 
 		var abilities = state.playerAbilities[playerId].abilities.filter(x => x.cooldown > 0);

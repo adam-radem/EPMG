@@ -11,18 +11,18 @@ export class HealthBar {
 
 	public constructor() {
 		this.container = new Pixi.Container();
-		this.container.pivot.set(0.5, 1);
+		this.container.pivot.set(0.5, 0);
 
 		this.bg = new Pixi.Graphics();
-		this.bg.pivot.set(0.5, 1);
-		this.bg.rect(-72, -(Height/2 + 1), 8, (Height + 2))
+		this.bg.pivot.set(0.5, 0);
+		this.bg.rect(-72, 2, 8, (Height + 2))
 			.fill({ color: 0x000000, alpha: 0})
 			.stroke({ color: 0xFFFFFF, alpha: 1, width: 2 });
 		this.bg.zIndex = -1;
 		this.container.addChild(this.bg);
 
 		this.healthBar = new Pixi.Graphics();
-		this.healthBar.pivot.set(0.5, 1);
+		this.healthBar.pivot.set(0.5, 0);
 		this.container.addChild(this.healthBar);
 
 		this.container.alpha = 0;
@@ -37,7 +37,7 @@ export class HealthBar {
 			const height = Math.min(Math.max(ratio, 0), 1) * Height;
 			this.healthBar.clear();
 
-			this.healthBar.rect(-71, -Height/2, 6, height)
+			this.healthBar.rect(-71, 2, 6, height)
 				.fill({ color: 0x00FF00, alpha: 1 });
 		}
 

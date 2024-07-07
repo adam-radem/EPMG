@@ -1,13 +1,11 @@
 import * as UI from './code/ui/UIController';
 import * as RenderFactory from "./code/rendering/renderFactory";
 import { App, Scene } from './code/rendering/renderer';
-import { PlayerId, Players } from "dusk-games-sdk";
+import { PlayerId } from "dusk-games-sdk";
 import { GameState, Phase } from "./code/game/game";
 import { Keyboard, KeyState } from "./code/input/keyboard";
 import { RenderEntity } from "./code/rendering/renderEntity";
 import { V2, Vector2 } from './code/math/vector';
-import { ShipObject } from './code/rendering/shipobject';
-import { PlayerEntityData } from './code/entity/player';
 import { BriefingPanel } from './code/ui/BriefingPanel';
 
 export const MaxPlayers = 2;
@@ -30,17 +28,36 @@ export class GameClient {
 	}
 
 	public registerInput() {
+		const onKeyPress = (ev: KeyboardEvent) => {
+			if (!this.localPlayerId)
+				return;
+
+			const val = parseInt(ev.key);
+			if (isNaN(val))
+				return;
+
+			const footer = UI.GetFooterElement(val - 1);
+			if (footer && footer.isEnabled()) {
+				footer.buttonPressed();
+			}
+		};
+
 		const onPointerDown = (ev: PointerEvent) => {
 			if (!this.localPlayerId) //ignore this from spectators
 				return;
 
 			const projected = Scene.toLocal({ x: Math.floor(ev.x), y: Math.floor(ev.y) });
-			Dusk.actions.setTarget({ newTarget: projected });
+			this.directionChanged = true;
 			this.lastInputDirection = projected;
+			dispatch();
+			// Dusk.actions.setTarget({ newTarget: projected });
+			// this.lastInputDirection = projected;
 
 			window.addEventListener('pointermove', cbMove);
 
-			this.interval = window.setInterval(dispatch, 200);
+			if (this.interval)
+				window.clearInterval(this.interval);
+			this.interval = window.setInterval(dispatch, 125);
 		};
 
 		const onPointerMove = (ev: PointerEvent) => {
@@ -64,6 +81,7 @@ export class GameClient {
 
 			window.removeEventListener('pointermove', cbMove);
 			window.clearInterval(this.interval);
+			this.interval = 0;
 		};
 
 		const dispatchEvent = () => {
@@ -74,11 +92,15 @@ export class GameClient {
 			this.directionChanged = false;
 		};
 
+		const keystroke = onKeyPress.bind(this);
+
 		const cbDown = onPointerDown.bind(this);
 		const cbMove = onPointerMove.bind(this);
 		const cbCancel = onPointerCancel.bind(this);
 
 		const dispatch = dispatchEvent.bind(this);
+
+		window.addEventListener('keydown', keystroke);
 
 		App.canvas?.addEventListener('pointerdown', cbDown);
 		App.canvas?.addEventListener('pointerup', cbCancel);
