@@ -16,7 +16,7 @@ export class HealthBar {
 		this.bg = new Pixi.Graphics();
 		this.bg.pivot.set(0.5, 0);
 		this.bg.rect(-72, 2, 8, (Height + 2))
-			.fill({ color: 0x000000, alpha: 0})
+			.fill({ color: 0x000000, alpha: 0 })
 			.stroke({ color: 0xFFFFFF, alpha: 1, width: 2 });
 		this.bg.zIndex = -1;
 		this.container.addChild(this.bg);
@@ -37,8 +37,14 @@ export class HealthBar {
 			const height = Math.min(Math.max(ratio, 0), 1) * Height;
 			this.healthBar.clear();
 
-			this.healthBar.rect(-71, 2, 6, height)
-				.fill({ color: 0x00FF00, alpha: 1 });
+			//Green stays 255 from 1 -> 0.5 and then lerps to 0 from 0.5 -> 0
+			const greenValue = Math.min(Math.max(Math.floor((ratio * 2) * 255), 0), 255);
+			//Red lerps from 0 to 255 from 1 -> 0.5 then stays 255
+			const redValue = Math.min(Math.max(Math.floor((1 - ((ratio - 0.5) * 2)) * 255), 0), 255);
+			const color = (redValue << 16) + (greenValue << 8);
+
+			this.healthBar.rect(-71, Height - height + 2, 6, height)
+				.fill({ color: color, alpha: 1 });
 		}
 
 		if (ratio >= 1 || ratio <= 0) {
