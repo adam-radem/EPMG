@@ -31,35 +31,6 @@ export const SpriteData = new Sprites();
 let starfield: Starfield;
 let debug: Pixi.Graphics | undefined = undefined;
 
-Pixi.Ticker.shared.minFPS = 30;
-Pixi.Ticker.shared.maxFPS = 60;
-
-if (GlobalGameParameters.FPSCounter) {
-	const footer = document.getElementById('ui-footer');
-	const FPS = document.createElement('div');
-	FPS.id = "FPS";
-	FPS.innerHTML = "00.0 fps";
-	footer?.appendChild(FPS);
-	if (FPS) {
-		let time = 0, frame = 0;
-		Pixi.Ticker.shared.add((dt) => {
-			time += App.ticker.elapsedMS;
-			++frame;
-			if (time > 1000) {
-				const avgFT = 1000 / frame;
-				const avgFPS = 1000 / avgFT;
-				FPS.innerHTML = avgFPS.toFixed(1) + " fps";
-				time -= 1000;
-				frame = 0;
-			}
-		});
-	}
-
-	const version = document.createElement('div');
-	version.id = 'version';
-	version.innerHTML = GlobalGameParameters.Version;
-	footer?.appendChild(version);
-}
 export function Init() {
 	return new Promise((resolve) => {
 		App.init(pixiOptions)
@@ -73,6 +44,33 @@ function Configure() {
 	App.ticker.maxFPS = 60;
 	App.ticker.minFPS = 15;
 	App.ticker.add(tick);
+
+	if (GlobalGameParameters.FPSCounter) {
+		const footer = document.getElementById('ui-footer');
+		const FPS = document.createElement('div');
+		FPS.id = "FPS";
+		FPS.innerHTML = "00.0 fps";
+		footer?.appendChild(FPS);
+		if (FPS) {
+			let time = 0, frame = 0;
+			App.ticker.add((dt) => {
+				time += dt.elapsedMS;
+				++frame;
+				if (time > 1000) {
+					const avgFT = 1000 / frame;
+					const avgFPS = 1000 / avgFT;
+					FPS.innerHTML = avgFPS.toFixed(1) + " fps";
+					time -= 1000;
+					frame = 0;
+				}
+			});
+		}
+
+		const version = document.createElement('div');
+		version.id = 'version';
+		version.innerHTML = GlobalGameParameters.Version;
+		footer?.appendChild(version);
+	}
 
 	const playable = Screen.PlayableArea;
 
@@ -109,6 +107,7 @@ function Configure() {
 function tick(ticker: Pixi.Ticker) {
 	if (starfield)
 		starfield.onUpdate(ticker.deltaTime);
+
 }
 
 window.onload = resize;

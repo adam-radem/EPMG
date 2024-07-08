@@ -186,7 +186,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 				this.mainSprite!.tint = "0xFFAAAAAA";
 			}
 			else {
-				this.shipContainer!.alpha = 1;
+				this.parentContainer!.alpha = 1;
 				this.mainSprite!.alpha = 1;
 				this.mainSprite!.tint = "0xFFFFFF";
 			}
