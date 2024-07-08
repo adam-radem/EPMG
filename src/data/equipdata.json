@@ -118,6 +118,73 @@
 					"spread": 0
 				}
 			}
+		},
+		"mineBullet": {
+			"type": 102,
+			"sprite": null,
+			"slot": 4,
+			"anchor": {
+				"x": 0,
+				"y": 0
+			},
+			"weapon": {
+				"cooldown": 500,
+				"range": 4000,
+				"special": 0,
+				"projectile": {
+					"type": 101,
+					"speed": 300,
+					"damage": 80,
+					"motion": 0,
+					"life": 2500,
+					"spread": 0
+				}
+			}
+		},
+		"mineLaser": {
+			"type": 103,
+			"sprite": null,
+			"slot": 4,
+			"anchor": {
+				"x": 0,
+				"y": 0
+			},
+			"weapon": {
+				"cooldown": 500,
+				"range": 4000,
+				"special": 0,
+				"projectile": {
+					"type": 100,
+					"speed": 400,
+					"damage": 50,
+					"motion": 0,
+					"life": 2500,
+					"spread": 0
+				}
+			}
+		},
+		"forwardLaser": {
+			"type": 104,
+			"sprite": null,
+			"slot": 4,
+			"anchor": {
+				"x": 0,
+				"y": 0
+			},
+			"weapon": {
+				"cooldown": 100,
+				"range": 3000,
+				"special": 0,
+				"targetType": 1,
+				"projectile": {
+					"type": 100,
+					"speed": 700,
+					"damage": 50,
+					"motion": 0,
+					"life": 3500,
+					"spread": 0
+				}
+			}
 		}
 	}
 }

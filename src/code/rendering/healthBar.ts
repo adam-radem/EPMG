@@ -46,12 +46,13 @@ export class HealthBar {
 			this.healthBar.rect(-71, Height - height + 2, 6, height)
 				.fill({ color: color, alpha: 1 });
 		}
+		
+		if (this.interval) {
+			window.clearInterval(this.interval);
+		}
 
 		if (ratio >= 1 || ratio <= 0) {
-			if (this.interval) {
-				window.clearInterval(this.interval);
-			}
-			this.interval = window.setInterval(this.fade.bind(this), 160);
+			this.interval = window.setInterval(this.fade.bind(this), 16);
 		} else {
 			this.container.alpha = 1;
 		}
@@ -60,5 +61,7 @@ export class HealthBar {
 	private fade() {
 		if (this.container.alpha > 0)
 			this.container.alpha -= 1 / 60;
+		else 
+			window.clearInterval(this.interval);
 	}
 }

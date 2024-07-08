@@ -24,6 +24,11 @@ export interface EquipData extends EntityData {
 	modifiers: EquipmentModifierData;
 }
 
+enum WeaponTargetType {
+	Targeted = 0,
+	Forward = 1
+}
+
 function distanceTo(weaponPosition: V2, targetPosition: V2) {
 	const vec = Vector2.subtract(Vector2.clone(weaponPosition), targetPosition);
 	return Vector2.sqrMagnitude(vec);
@@ -50,10 +55,21 @@ function fireWeapon(entityData: EquipData, weaponData: WeaponEquipmentData, targ
 			proj: weaponData.projectile,
 			mods: mods,
 			position: entityData.transform.position,
-			target: target,
 			owner: owner,
 			team: TeamId.Neither
 		};
+		switch (weaponData.targetType) {
+			case WeaponTargetType.Forward:
+				const ownerData = state.enemies[owner];
+				if (ownerData)
+					proj.angle = ownerData.transform.angle;
+				else
+					proj.angle = 90;
+				break;
+			default:
+				proj.target = target;
+				break;
+		}
 		ProjectileSystem.CreateProjectile(proj, state);
 	}
 }
@@ -161,6 +177,11 @@ export module EquipSystem {
 		//Enemy is dead or removed from the map
 		if (!enemyData || enemyData.health <= 0) {
 			Destroy(state, entityData.id);
+			return;
+		}
+
+		if (weaponData.targetType! === WeaponTargetType.Forward) {
+			fireWeapon(entityData, weaponData, 0, entityData.owner, state);
 			return;
 		}
 

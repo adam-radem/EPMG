@@ -1,6 +1,4 @@
 import { drops } from "../../data/dropdata.json";
-import { GetAbilityData } from "../aura/ability";
-import { DropEntityData } from "../entity/drop";
 import { EnemyEntityData } from "../entity/enemy";
 import { GetShipType } from "../types/shipdata";
 import { GetShipData } from "./shipdatabase";
@@ -11,7 +9,7 @@ interface WeightedDrop {
 }
 
 export interface DropTable {
-	drops: Array<WeightedDrop>;
+	table: Array<WeightedDrop>;
 }
 
 export enum AbilityType {
@@ -88,13 +86,13 @@ export function EvaluateDrop(enemy: EnemyEntityData) {
 	const enemyType = GetShipType(enemy.shipData);
 	const enemyData = GetShipData(enemyType);
 
-	if (enemyData.drops && enemyData.drops.drops.length > 0) {
+	if (enemyData.drops && enemyData.drops.table.length > 0) {
 		let seed = enemy.seed / 65535.0;
 		let totalWeight = 0;
 
-		enemyData.drops.drops.forEach(x => totalWeight += x.weight);
-		for (let i = 0; i != enemyData.drops.drops.length; ++i) {
-			const drop = enemyData.drops.drops[i];
+		enemyData.drops.table.forEach(x => totalWeight += x.weight);
+		for (let i = 0; i != enemyData.drops.table.length; ++i) {
+			const drop = enemyData.drops.table[i];
 			seed -= drop.weight / totalWeight;
 			if (seed <= 0) {
 				return drop;

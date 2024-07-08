@@ -19,7 +19,7 @@
 					"x": 0,
 					"y": 0
 				},
-				"radius": 30
+				"radius": 15
 			},
 			"weapon": 2,
 			"ability": 1
@@ -39,7 +39,7 @@
 					"x": 0,
 					"y": 0
 				},
-				"radius": 30
+				"radius": 15
 			},
 			"weapon": 1,
 			"ability": 2
@@ -59,7 +59,7 @@
 					"x": 0,
 					"y": 0
 				},
-				"radius": 30
+				"radius": 15
 			},
 			"weapon": 3,
 			"ability": 3
@@ -82,6 +82,22 @@
 					"y": 0
 				},
 				"radius": 30
+			},
+			"drops": {
+				"table": [
+					{
+						"type": 0,
+						"weight": 10
+					},
+					{
+						"type": 1,
+						"weight": 5
+					},
+					{
+						"type": 2,
+						"weight": 1
+					}
+				]
 			}
 		},
 		"ufoEnemy": {
@@ -100,6 +116,22 @@
 					"y": 0
 				},
 				"radius": 30
+			},
+			"drops": {
+				"table": [
+					{
+						"type": 0,
+						"weight": 10
+					},
+					{
+						"type": 20,
+						"weight": 5
+					},
+					{
+						"type": 21,
+						"weight": 1
+					}
+				]
 			}
 		},
 		"bigAsteroid": {
@@ -122,7 +154,23 @@
 				},
 				"radius": 30
 			},
-			"enemyDeath": 1
+			"enemyDeath": 1,
+			"drops": {
+				"table": [
+					{
+						"type": 10,
+						"weight": 10
+					},
+					{
+						"type": 11,
+						"weight": 5
+					},
+					{
+						"type": 12,
+						"weight": 1
+					}
+				]
+			}
 		},
 		"smallAsteroid": {
 			"type": 8,
@@ -141,6 +189,96 @@
 					"y": 0
 				},
 				"radius": 20
+			},
+			"drops": {
+				"table": [
+					{
+						"type": 0,
+						"weight": 10
+					},
+					{
+						"type": 10,
+						"weight": 5
+					},
+					{
+						"type": 11,
+						"weight": 1
+					}
+				]
+			}
+		},
+		"bulletMine": {
+			"type": 9,
+			"sprites": [
+				"ufoYellow"
+			],
+			"speed": 90,
+			"baseHealth": 120,
+			"weapon": 0,
+			"enemyMotion": 2,
+			"scoreValue": 3,
+			"collider": {
+				"center": {
+					"x": 0,
+					"y": 0
+				},
+				"radius": 80
+			},
+			"enemyDeath": 2
+		},
+		"laserMine": {
+			"type": 10,
+			"sprites": [
+				"ufoGreen"
+			],
+			"speed": 90,
+			"baseHealth": 120,
+			"weapon": 0,
+			"enemyMotion": 2,
+			"scoreValue": 4,
+			"collider": {
+				"center": {
+					"x": 0,
+					"y": 0
+				},
+				"radius": 80
+			},
+			"enemyDeath": 3
+		},
+		"kamikazeDrone": {
+			"type": 11,
+			"sprites": [
+				"enemyBlack2"
+			],
+			"speed": 270,
+			"baseHealth": 40,
+			"weapon": 0,
+			"enemyMotion": 4,
+			"scoreValue": 2,
+			"collider": {
+				"center": {
+					"x": 0,
+					"y": 0
+				},
+				"radius": 30
+			}
+		},
+		"spinner": {
+			"type": 12,
+			"sprites": [
+				"enemyBlack4"
+			],
+			"speed": 300,
+			"baseHealth": 90,
+			"weapon": 104,
+			"enemyMotion": 5,
+			"scoreValue": 3,
+			"collider": {
+				"center": {
+					"x": 0,
+					"y": 0
+				},
+				"radius": 30
 			}
 		}
 	}

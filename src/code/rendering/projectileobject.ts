@@ -29,9 +29,6 @@ export class ProjectileObject implements RenderEntity<ProjectileData> {
 		this.container.x = data.transform.position.x;
 		this.container.y = data.transform.position.y;
 	}
-	onCreate?(): void {
-		// throw new Error("Method not implemented.");
-	}
 	onDestroy?(): void {
 		this.container.destroy();
 	}

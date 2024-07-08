@@ -39,7 +39,8 @@ export interface ProjectileCreationData {
 	proj: WeaponProjectileData,
 	mods: WeaponModifierData,
 	position: V2,
-	target: EntityId,
+	target?: EntityId,
+	angle?: number,
 	owner: EntityId;
 	team: TeamId,
 }
@@ -47,8 +48,15 @@ export interface ProjectileCreationData {
 export module ProjectileSystem {
 
 	export function CreateProjectile(data: ProjectileCreationData, state: GameState) {
-		const target = data.target;
+		if (data.target !== undefined) {
+			fireAtTarget(data.target, data, state);
+		}
+		else if (data.angle !== undefined) {
+			fireAtAngle(data.angle, data, state);
+		}
+	}
 
+	function fireAtTarget(target: EntityId, data: ProjectileCreationData, state: GameState) {
 		let targetEntity: EntityData;
 		if (target in state.players) {
 			data.team = TeamId.Enemy;
@@ -60,17 +68,28 @@ export module ProjectileSystem {
 		}
 		else
 			return;
-
 		const angle = (targetEntity.transform.angle + 90) * Math.PI / 180;
 		const fwd = Vector2.multiplyScalar(Vector2.makeVector(Math.cos(angle), Math.sin(angle)), targetEntity.vel ?? 1);
 		const targetPos = Vector2.addVector(targetEntity.transform.position, fwd);
+		const numFired = data.mods?.spreadMod || 1;
+		const range = 15 * (numFired - 1);
+		const baseAngle = Vector2.vectorAngle(Vector2.subtract(targetPos, data.position));
+		for (let i = 0; i != numFired; ++i) {
+			const r = range * i;
+			const randSpread = ((Math.random() * 2 - 1) * data.proj.spread * Math.PI / 180);
+			const spawnAngle = baseAngle + randSpread + r - (range / 2);
 
+			makeProjectile(data, spawnAngle, state);
+		}
+	}
+
+	function fireAtAngle(angle: number, data: ProjectileCreationData, state: GameState) {
 		const numFired = data.mods?.spreadMod || 1;
 		const range = 15 * (numFired - 1);
 		for (let i = 0; i != numFired; ++i) {
 			const r = range * i;
 			const randSpread = ((Math.random() * 2 - 1) * data.proj.spread * Math.PI / 180);
-			const baseAngle = Vector2.vectorAngle(Vector2.subtract(targetPos, data.position));
+			const baseAngle = angle;
 			const spawnAngle = baseAngle + randSpread + r - (range / 2);
 
 			makeProjectile(data, spawnAngle, state);
@@ -113,10 +132,10 @@ export module ProjectileSystem {
 			return;
 		}
 
+		let targetPos: V2 | undefined = undefined;
 		if (entityData.motion == ProjectileMotion.Tracked) {
 			const target = entityData.target;
 			if (target) {
-				let targetPos: V2;
 				if (target in state.enemies) {
 					targetPos = Vector2.clone(state.enemies[target].transform.position);
 				}
@@ -138,11 +157,17 @@ export module ProjectileSystem {
 		const pos = Vector2.addVector(entityData.transform.position, dir);
 
 		const bounds = Screen.PlayableArea;
-		if (pos.x < 0 || pos.x > bounds.x || pos.y < 0 || pos.y > bounds.y) {
+		if (pos.x < -50 || pos.x > bounds.x + 50 || pos.y < -50 || pos.y > bounds.y + 50) {
 			Destroy(state, entityData.id);
 			return;
 		}
-
+		if (targetPos) {
+			var targetDiff = Vector2.subtract(targetPos, entityData.transform.position);
+			if (Vector2.sqrMagnitude(targetDiff) < Vector2.sqrMagnitude(dir)) {
+				entityData.transform.position = targetPos;
+				return;
+			}
+		}
 		entityData.transform.position = pos;
 	}
 
@@ -166,9 +191,8 @@ export module ProjectileSystem {
 		}
 
 		if (projectile.pierce && projectile.pierce > 0) {
-			console.log(`Pierce projectile hit ${other.id} -- last hit: ${projectile.lastHit}`);
 			projectile.pierce -= 1;
-			projectile.damage *= 0.5;
+			projectile.damage = projectile.damage * 0.5;
 			projectile.lastHit = other.id;
 
 			if (projectile.motion === ProjectileMotion.Tracked) {
@@ -242,6 +266,6 @@ export module ProjectileSystem {
 			return;
 
 		const data = GetEquipmentData(projectile.type).weapon?.projectile;
-		EnemySystem.onTakeDamage(enemy, projectile, data!.damage, state);
+		EnemySystem.onTakeDamage(enemy, projectile, projectile.damage, state);
 	}
 }

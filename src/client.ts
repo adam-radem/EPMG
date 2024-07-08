@@ -175,6 +175,11 @@ export class GameClient {
 			proj.onUpdate(state.projectiles[projectileId], state);
 		}
 
+		for (const dropId in state.drops) {
+			const drop = this.renderEntities[dropId];
+			drop.onUpdate(state.drops[dropId], state);
+		}
+
 		if (this.localPlayerId)
 			this.localPlayerPosition = state.players[this.localPlayerId].transform.position;
 
@@ -218,6 +223,14 @@ export class GameClient {
 			this.renderEntities[projectileId] = projectile;
 		}
 
+		for (const dropId in state.drops) {
+			if (dropId in this.renderEntities)
+				continue;
+
+			const drop = RenderFactory.CreateDrop(dropId, state.drops[dropId]);
+			this.renderEntities[dropId] = drop;
+		}
+
 		for (const id in this.renderEntities) {
 			if (id in state.players)
 				continue;
@@ -226,6 +239,8 @@ export class GameClient {
 			if (id in state.equipment)
 				continue;
 			if (id in state.projectiles)
+				continue;
+			if (id in state.drops)
 				continue;
 
 			this.deletedEntities.push(id);

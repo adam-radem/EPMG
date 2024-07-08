@@ -1,4 +1,4 @@
-import { Destroy, GameState, Phase } from "../game/game";
+import { AddScoreToPlayer, Destroy, GameState, Phase } from "../game/game";
 import { GlobalGameParameters } from "../game/static";
 import { LevelRunner } from "../level/timeline";
 import { Vector2 } from "../math/vector";
@@ -75,6 +75,8 @@ function Cleanup(state: GameState) {
 			delete state.equipment[id];
 		else if (id in state.projectiles)
 			delete state.projectiles[id];
+		else if (id in state.drops)
+			delete state.drops[id];
 	}
 	state.removed.length = 0;
 }
@@ -85,6 +87,8 @@ export module Level {
 		state.level.progress = 0;
 		state.level.eventIdx = 0;
 		state.level.seed = Math.floor(Math.random() * 65535);
+
+		state.scoreDrops.length = 0;
 
 		for (const pid in state.players) {
 			const playerData = state.players[pid];
@@ -101,7 +105,12 @@ export module Level {
 		for (const pid in state.projectiles) {
 			Destroy(state, pid);
 		}
-		state.scoreDrops = [];
+
+		for (const did in state.drops) {
+			Destroy(state, did);
+		}
+
+		Cleanup(state);
 	}
 
 	export function Run(state: GameState, dt: number): void { RunGamePhase(state, dt); }

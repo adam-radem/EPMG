@@ -18,6 +18,7 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 	healthBar: HealthBar | undefined;
 	mainSprite: Pixi.Sprite | undefined;
 	deathSprite: Pixi.Sprite | undefined;
+	previousHealth: number = 1;
 
 	public constructor(id: EntityId, data: ShipEntity) {
 		this.shipData = Ships.Empty;
@@ -47,7 +48,11 @@ export class ShipObject implements RenderEntity<ShipEntity> {
 
 
 	private updateHealthBar(ratio: number) {
-		this.healthBar?.setHealthValue(ratio);
+		if(this.previousHealth !== ratio)
+		{
+			this.healthBar?.setHealthValue(ratio);
+			this.previousHealth = ratio;
+		}
 	}
 
 	public setShipData(entity: ShipEntity) {

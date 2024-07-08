@@ -8,46 +8,43 @@
 		{
 			"id": 1,
 			"name": "Small HP",
-			"healthRestore": 10
+			"sprite": "star2",
+			"healthRestore": 100
 		},
 		{
 			"id": 2,
 			"name": "Big HP",
-			"healthRestore": 25
-		},
-		{
-			"id": 3,
-			"name": "Full HP",
-			"healthRestore": 100
+			"sprite": "star2",
+			"healthRestore": 250
 		},
 		{
 			"id": 10,
 			"name": "Mini Score",
-			"scoreValue": 100
-		},
-		{
-			"id": 11,
-			"name": "Little Score",
-			"scoreValue": 250
-		},
-		{
-			"id": 12,
-			"name": "Big Score",
+			"sprite": "star1",
 			"scoreValue": 500
 		},
 		{
-			"id": 13,
-			"name": "Mega Score",
+			"id": 11,
+			"name": "Big Score",
+			"sprite": "star1",
 			"scoreValue": 1000
+		},
+		{
+			"id": 12,
+			"name": "Mega Score",
+			"sprite": "star1",
+			"scoreValue": 2000
 		},
 		{
 			"id": 20,
 			"name": "Mini Cooldown",
+			"sprite": "star2",
 			"cooldownValue": 1000
 		},
 		{
 			"id": 21,
 			"name": "Big Cooldown",
+			"sprite": "star2",
 			"cooldownValue": 2000
 		}
 	]

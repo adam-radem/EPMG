@@ -34,9 +34,9 @@ export class LevelRunner {
 		//No more events! Level is complete
 		if (eventIdx >= timeline.events.length) {
 			//Wait for enemies to be defeated.
-			for(let _ in state.enemies)
+			for (let _ in state.enemies)
 				return;
-			
+
 			state.level.progress += dt;
 			if (state.level.progress < 1000) {
 				return;
@@ -75,20 +75,20 @@ export class LevelRunner {
 		for (var i = 0; i < event.count; ++i) {
 			const startTime = (i * event.interval) + event.startTime;
 			if (prevTime < startTime && state.level.progress >= startTime) {
-				LevelRunner.InvokeEvent(state, event);
+				LevelRunner.InvokeEvent(state, event, i);
 			}
 		}
 	}
 
-	private static InvokeEvent(state: GameState, event: TimelineEvent) {
+	private static InvokeEvent(state: GameState, event: TimelineEvent, idx: number) {
 		if (isSpawnEnemyEvent(event)) {
-			const randomEnemyIdx = Math.floor(Math.random() * event.enemies.length);
-			const enemyId = event.enemies[randomEnemyIdx];
+			const enemyIdx = idx % event.enemies.length;
+			const enemyId = event.enemies[enemyIdx];
 			let parallelCount = event.parallel || 1;
-			if(state.playerCount >= 3){
+			if (state.playerCount >= 3) {
 				parallelCount += 1;
 			}
-			for(let i = 0; i != parallelCount; ++i)
+			for (let i = 0; i != parallelCount; ++i)
 				EnemySystem.CreateEnemy(Ships.Enemies[enemyId], state);
 		}
 	}

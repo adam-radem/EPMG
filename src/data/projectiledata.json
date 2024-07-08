@@ -7,6 +7,10 @@
 		"shortLaser_red": {
 			"type": 100,
 			"sprite": "laserRed01"
+		},
+		"enemyBullet": {
+			"type": 101,
+			"sprite": "laserRed04"
 		}
 	}
 }

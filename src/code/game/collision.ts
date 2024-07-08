@@ -115,10 +115,8 @@ export module CollisionSystem {
 		//Cache player collider data
 		for (const pid in state.players) {
 			const playerData = state.players[pid];
-			if (colliderActive(playerData.collider, state)) {
-				const col = transformCollider(playerData.transform, playerData.collider);
-				players[pid] = col;
-			}
+			const col = transformCollider(playerData.transform, playerData.collider);
+			players[pid] = col;
 		}
 
 		//Cache enemy collider data
@@ -138,6 +136,10 @@ export module CollisionSystem {
 				if (overlap(players[pid], dropCol)) {
 					DropSystem.onCollect(drop, state.players[pid], state);
 				}
+			}
+
+			if (!colliderActive(state.players[pid].collider, state)) {
+				break;
 			}
 
 			//Check for player <-> enemy collisions

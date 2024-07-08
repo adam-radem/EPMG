@@ -9,26 +9,28 @@
 			"events": [
 				{
 					"startTime": 750,
+					"interval": 750,
+					"count": 9,
+					"enemies": [
+						0,
+						6,
+						3
+					]
+				},
+				{
+					"startTime": 5000,
 					"interval": 1000,
-					"count": 2,
+					"count": 18,
 					"enemies": [
-						2
+						1,2,4
 					]
 				},
 				{
-					"startTime": 2500,
-					"interval": 900,
-					"count": 4,
+					"startTime": 22000,
+					"interval": 750,
+					"count": 15,
 					"enemies": [
-						2
-					]
-				},
-				{
-					"startTime": 8000,
-					"interval": 800,
-					"count": 6,
-					"enemies": [
-						2
+						5
 					]
 				}
 			]

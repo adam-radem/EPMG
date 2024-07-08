@@ -176,8 +176,8 @@ export function NewGameState(allPlayerIds: string[]): GameState {
 		++cnt;
 	}
 
-	for (var i = 0; i != 3; ++i) {
-		CreateRandomPath(state);
+	for (var i = 0; i != 4; ++i) {
+		CreateRandomPath(state, i);
 	}
 
 	console.log(`Game has been initialized with ${allPlayerIds.length} players`);
@@ -191,20 +191,29 @@ export function AddScoreToPlayer(playerId: EntityId, scoreValue: number, positio
 	}
 }
 
-function CreateRandomPath(state: GameState) {
+function CreateRandomPath(state: GameState, idx: number) {
 	const pathPoints: V2[] = [];
-	let x = 0, y = 0;
-	const inv = Math.random() < 0.5;
-	for (let i = 0; i != 9; ++i) {
-		//left = 0, middle = 1, right = 2
-		x = (i % 3) / 2 * (Screen.PlayableArea.x + 200) - 100;
-		if (inv)
-			x = Screen.PlayableArea.x - x;
+	const bounds = Screen.PlayableArea;
+	const inv = (idx % 2 == 0);
+	const yOffset = 100 * idx;
+	const minWidth = bounds.x / 6;
+	const maxWidth = bounds.x / 4;
+	
+	// enter top left
+	pathPoints.push({ x: 80 + (Math.random() * maxWidth), y: -10 });
+	//first waypoint - top right
+	pathPoints.push({ x: (bounds.x - 80) - (Math.random() * minWidth), y: 50 + yOffset + (Math.random() * 200) });
+	//second waypoint - middle left
+	pathPoints.push({ x: 80 + (Math.random() * minWidth), y: 250 + yOffset + (Math.random() * 200) });
+	//third waypoint - bottom right
+	pathPoints.push({ x: (bounds.x - 80) - (Math.random() * minWidth), y: 550 + yOffset + (Math.random() * 200) });
+	//exit bottom right
+	pathPoints.push({ x: (bounds.x - 80) - (Math.random() * maxWidth), y: bounds.y + 10 });
 
-		//every 3 i values = 200 pixels less
-		y = Math.floor(i / 3) * (Screen.PlayableArea.y - 200) / 2 + (Math.random() * 400);
-
-		pathPoints.push({ x: x, y: y });
+	if (inv) {
+		for (let i = 0; i != pathPoints.length; ++i) {
+			pathPoints[i].x = bounds.x - pathPoints[i].x;
+		}
 	}
 
 	EnemySystem.CreatePath(state, pathPoints);

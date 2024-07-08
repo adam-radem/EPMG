@@ -70,7 +70,7 @@ export module DropSystem {
 		if (drop.healthRestore) {
 			const newHealth = player.health + drop.healthRestore;
 			if (player.maxHealth < newHealth) {
-				scoreGain += Math.floor((newHealth - player.maxHealth) / 2);
+				scoreGain += Math.floor((newHealth - player.maxHealth) * 2);
 			}
 			player.health = Math.min(newHealth, player.maxHealth);
 			pickedUp = true;
@@ -85,11 +85,12 @@ export module DropSystem {
 			var abilities = state.playerAbilities[player.id].abilities.filter(x => x.cooldown > 0);
 			if (abilities.length > 0) {
 				var active = Math.floor(Math.random() * abilities.length);
-				abilities[active].cooldown -= 500;
+				abilities[active].cooldown -= drop.cooldownValue;
 			}
 			else {
-				scoreGain += Math.floor(drop.cooldownValue / 2);
+				scoreGain += Math.floor(drop.cooldownValue * 2);
 			}
+			pickedUp = true;
 		}
 
 		if (drop.ability) {

@@ -44,6 +44,7 @@ export interface WeaponEquipmentData {
 	projectile: WeaponProjectileData | undefined;
 	cooldown: number;
 	range: number;
+	targetType?: number;
 	special?: number;
 	specialValue?: number;
 }
@@ -61,7 +62,7 @@ export class Ships {
 	static Empty: ShipEquipment = 0;
 	static Colors: number[] = [0, 1, 2, 3];
 	static Players: ShipEquipment[] = [1, 2, 3 /*4*/];
-	static Enemies: ShipEquipment[] = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+	static Enemies: ShipEquipment[] = [5, 6, 7, 9, 10, 11, 12, 13, 14, 15];
 
 	static RandomColor(): number {
 		return Ships.Colors[Math.floor(Math.random() * Ships.Colors.length)];
