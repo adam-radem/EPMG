@@ -28,8 +28,9 @@ export const Scene = new Pixi.Container();
 export const Background = new Pixi.Graphics();
 export const SpriteData = new Sprites();
 
-let starfield: Starfield;
+App.ticker.minFPS = App.ticker.maxFPS = 60;
 
+let starfield: Starfield;
 let debug: Pixi.Graphics | undefined = undefined;
 
 if (GlobalGameParameters.FPSCounter) {
@@ -40,10 +41,8 @@ if (GlobalGameParameters.FPSCounter) {
 	footer?.appendChild(FPS);
 	if (FPS) {
 		let time = 0, frame = 0;
-		const ticker = new Pixi.Ticker();
-		ticker.stop();
-		ticker.add((dt) => {
-			time += ticker.elapsedMS;
+		App.ticker.add((dt) => {
+			time += App.ticker.elapsedMS;
 			++frame;
 			if (time > 1000) {
 				const avgFT = 1000 / frame;
@@ -53,7 +52,6 @@ if (GlobalGameParameters.FPSCounter) {
 				frame = 0;
 			}
 		});
-		ticker.start();
 	}
 
 	const version = document.createElement('div');

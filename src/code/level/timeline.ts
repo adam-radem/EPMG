@@ -8,7 +8,7 @@ interface TimelineEvent {
 	startTime: number;
 	interval: number;
 	count: number;
-	parallel: number | undefined;
+	parallel?: number;
 }
 
 interface SpawnEnemyEvent extends TimelineEvent {
