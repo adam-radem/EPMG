@@ -19,7 +19,7 @@
 					"x": 0,
 					"y": 0
 				},
-				"radius": 15
+				"radius": 30
 			},
 			"weapon": 2,
 			"ability": 1
@@ -39,7 +39,7 @@
 					"x": 0,
 					"y": 0
 				},
-				"radius": 15
+				"radius": 30
 			},
 			"weapon": 1,
 			"ability": 2
@@ -59,7 +59,7 @@
 					"x": 0,
 					"y": 0
 				},
-				"radius": 15
+				"radius": 30
 			},
 			"weapon": 3,
 			"ability": 3

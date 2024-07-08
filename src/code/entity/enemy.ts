@@ -95,7 +95,7 @@ export class EnemyPath {
 		let pathPos = getXY(pts, distance);
 		pathPos = Vector2.addVector(pathPos, { x: 0, y: Math.sin(seed + distance / 1000) * 100 });
 
-		let nextPos = getXY(pts, Math.min(distance + 30, path.TotalDistance - 1));
+		let nextPos = getXY(pts, Math.min(distance + 30, path.TotalDistance));
 		nextPos = Vector2.addVector(nextPos, { x: 0, y: Math.sin(seed + (distance + 10) / 1000) * 100 });
 
 		let vec = Vector2.makeVector(nextPos.x, nextPos.y);

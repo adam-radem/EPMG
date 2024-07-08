@@ -198,7 +198,7 @@ function CreateRandomPath(state: GameState, idx: number) {
 	const yOffset = 100 * idx;
 	const minWidth = bounds.x / 6;
 	const maxWidth = bounds.x / 4;
-	
+
 	// enter top left
 	pathPoints.push({ x: 80 + (Math.random() * maxWidth), y: -10 });
 	//first waypoint - top right
@@ -208,7 +208,7 @@ function CreateRandomPath(state: GameState, idx: number) {
 	//third waypoint - bottom right
 	pathPoints.push({ x: (bounds.x - 80) - (Math.random() * minWidth), y: 550 + yOffset + (Math.random() * 200) });
 	//exit bottom right
-	pathPoints.push({ x: (bounds.x - 80) - (Math.random() * maxWidth), y: bounds.y + 10 });
+	pathPoints.push({ x: (bounds.x - 80) - (Math.random() * maxWidth), y: bounds.y + 50 });
 
 	if (inv) {
 		for (let i = 0; i != pathPoints.length; ++i) {
