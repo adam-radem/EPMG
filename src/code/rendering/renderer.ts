@@ -28,10 +28,11 @@ export const Scene = new Pixi.Container();
 export const Background = new Pixi.Graphics();
 export const SpriteData = new Sprites();
 
-App.ticker.minFPS = App.ticker.maxFPS = 60;
-
 let starfield: Starfield;
 let debug: Pixi.Graphics | undefined = undefined;
+
+Pixi.Ticker.shared.minFPS = 30;
+Pixi.Ticker.shared.maxFPS = 60;
 
 if (GlobalGameParameters.FPSCounter) {
 	const footer = document.getElementById('ui-footer');
@@ -41,7 +42,7 @@ if (GlobalGameParameters.FPSCounter) {
 	footer?.appendChild(FPS);
 	if (FPS) {
 		let time = 0, frame = 0;
-		App.ticker.add((dt) => {
+		Pixi.Ticker.shared.add((dt) => {
 			time += App.ticker.elapsedMS;
 			++frame;
 			if (time > 1000) {
